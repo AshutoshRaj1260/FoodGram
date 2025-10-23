@@ -1,0 +1,141 @@
+@import './variables.css';
+
+/* Reels container: full height, vertical scroll, snap per child */
+.reels { 
+  height: 100vh;
+  width: 100vw;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  -webkit-overflow-scrolling: touch;
+  background: var(--bg);
+}
+
+.reel {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  scroll-snap-align: start;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent; /* let video cover edge-to-edge */
+  overflow: hidden; /* crop any children to avoid visible rounded boxes */
+  border-radius: 0; /* ensure no inherited rounding */
+  box-shadow: none; /* clear any shadow from parent styles */
+}
+
+.reel video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* ensure full-cover */
+}
+
+/* remove inline gap and ensure full-bleed */
+.reel video { display: block; border-radius: 0; }
+
+/* top overlay containing description and button */
+.reel .overlay {
+  position: absolute;
+  left: 12px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 12;
+  align-items: flex-start;
+  padding: 6px 8px;
+}
+
+.reel .description {
+  color: rgba(255,255,255,0.95);
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.18;
+  max-width: 80vw;
+  /* truncate to two lines */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.reel .visit-btn {
+  display: inline-block;
+  background: rgba(45,212,191,0.95);
+  color: #001219;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 6px 18px rgba(13,35,35,0.28);
+}
+
+/* small control at bottom center for hint */
+.reel .hint {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255,255,255,0.72);
+  font-size: 0.9rem;
+  z-index: 10;
+}
+
+/* support for keyboard focus outline */
+.reel .visit-btn:focus { outline: 2px solid color-mix(in srgb, var(--primary) 60%, #000); outline-offset: 2px; }
+
+@media (max-width: 720px) {
+  .reel .description { max-width: 100%; font-size: 0.95rem; }
+  .reel .overlay { bottom: 20px; left: 12px; right: auto; }
+}
+
+/* Right-side vertical controls like Instagram */
+.reel .controls {
+  position: absolute;
+  right: 12px;
+  bottom: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  z-index: 14;
+  align-items: center;
+}
+.reel .control-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.35);
+  display: grid;
+  place-items: center;
+  color: white;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.reel .control-item { display:flex; flex-direction: column; align-items: center; gap:6px; }
+.reel .control-item .count { font-size: 0.85rem; color: rgba(255,255,255,0.95); }
+
+/* Bottom nav */
+.bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 60;
+  display: flex;
+  justify-content: center;
+  padding: 8px 12px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.18));
+  backdrop-filter: blur(6px);
+}
+.bottom-nav .nav-inner{ display:flex; gap:18px; align-items:center; width: min(420px, 92%); padding:6px 12px; border-radius:999px; background: rgba(0,0,0,0.32); }
+.bottom-nav a { color:white; text-decoration:none; display:flex; flex-direction:column; gap:4px; align-items:center; padding:6px 8px; }
+.bottom-nav a svg{ width:20px; height:20px }
+.bottom-nav span{ font-size:0.75rem; color: rgba(255,255,255,0.95) }
+
+/* make snap behavior stricter on some browsers */
+.reel { scroll-snap-stop: always; }
