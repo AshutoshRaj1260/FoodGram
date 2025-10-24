@@ -34,8 +34,11 @@ const Home = () => {
   }, [videos]);
 
   useEffect(() => {
+
+    const apiUrl = import.meta.env.VITE_API_URL;
+
     axios
-      .get("http://localhost:3000/api/food", { withCredentials: true })
+      .get(`${apiUrl}/api/food`, { withCredentials: true })
       .then((response) => setVideos(response.data.foodItems))
       .catch(() => {
         // fallback sample content when backend isn't available during dev
@@ -92,8 +95,11 @@ const Home = () => {
   }
 
   async function saveVideo(item){
+
+    const apiUrl = import.meta.env.VITE_API_URL;
+
     const response = await axios.post(
-      "http://localhost:3000/api/food/save",
+      `${apiUrl}/api/food/save`,
       { foodId: item._id },
       { withCredentials: true }
     );

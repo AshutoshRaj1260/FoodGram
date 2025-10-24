@@ -25,9 +25,12 @@ const Saved = () => {
   }, []);
 
   const removeSaved = async (item) => {
+
+    const apiUrl = import.meta.env.VITE_API_URL;
+
     try {
       await axios.post(
-        "http://localhost:3000/api/food/save",
+        `${apiUrl}/api/food/save`,
         { foodId: item._id },
         { withCredentials: true }
       );
