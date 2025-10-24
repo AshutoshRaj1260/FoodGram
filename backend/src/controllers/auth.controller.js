@@ -30,7 +30,12 @@ async function registerUser(req, res) {
     process.env.JWT_SECRET
   );
 
-  res.cookie("token", token);
+  res.cookie("token", token, {
+    httpOnly: true, // JS cannot read cookie
+    secure: process.env.NODE_ENV === "production", // HTTPS only in production
+    sameSite: "none", // required for cross-domain
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
+  });
 
   res.status(201).json({
     message: "User Registered Successfully",
@@ -65,7 +70,12 @@ async function loginUser(req, res) {
     },
     process.env.JWT_SECRET
   );
-  res.cookie("token", token);
+  res.cookie("token", token, {
+    httpOnly: true, // JS cannot read cookie
+    secure: process.env.NODE_ENV === "production", // HTTPS only in production
+    sameSite: "none", // required for cross-domain
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
+  });
   res.status(200).json({
     message: "User Logged In Successfully",
     user: {
