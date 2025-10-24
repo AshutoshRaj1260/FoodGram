@@ -61,11 +61,31 @@ async function saveFood(req, res) {
   });
   if (isAlreadySaved) {
     await saveModel.deleteOne({ user: user._id, food: foodId });
+
+    await foodModel.findByIdAndUpdate(foodId, { $inc: { saveCount: -1 } });
     res.status(200).json({ message: "Food item unsaved successfully" });
   } else {
     await saveModel.create({ user: user._id, food: foodId });
+    await foodModel.findByIdAndUpdate(foodId, { $inc: { saveCount: 1 } });
     res.status(200).json({ message: "Food item saved successfully" });
   }
+}
+
+async function getSavedFood(req, res) {
+  const user = req.user;
+
+  const savedFoods = await saveModel.find({ user: user._id }).populate("food");
+
+  if (!savedFoods || savedFoods.length === 0) {
+    return res.status(404).json({
+      message: "No saved food items found",
+    });
+  }
+
+  res.status(200).json({
+    message: "Saved food items fetched successfully",
+    savedFoods,
+  });
 }
 
 module.exports = {
@@ -73,4 +93,5 @@ module.exports = {
   getFoodItems,
   likeFood,
   saveFood,
+  getSavedFood,
 };
