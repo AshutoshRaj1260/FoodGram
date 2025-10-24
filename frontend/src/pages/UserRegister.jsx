@@ -8,12 +8,15 @@ export default function UserRegister() {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
+
+    const apiUrl = import.meta.env.VITE_API_URL;
+
     e.preventDefault();
     const name = e.target.name.value;
     const email = e.target.email.value;
     const password = e.target.password.value;
 
-    const response = await axios.post('http://localhost:3000/api/auth/user/register', {
+    const response = await axios.post(`${apiUrl}/api/auth/user/register`, {
       fullName: name,
       email: email,
       password: password

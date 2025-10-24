@@ -67,8 +67,11 @@ const Home = () => {
   }, []);
 
   async function likeVideo(item) {
+
+    const apiUrl = import.meta.env.VITE_API_URL;
+
     const response = await axios.post(
-      "http://localhost:3000/api/food/like",
+      `${apiUrl}/api/food/like`,
       { foodId: item._id },
       { withCredentials: true }
     );

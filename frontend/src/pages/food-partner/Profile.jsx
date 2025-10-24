@@ -19,7 +19,10 @@ const Profile = () => {
     const { id } = useParams();
 
     useEffect(() => {
-        axios.get(`http://localhost:3000/api/food-partner/${id}`, { withCredentials: true })   
+
+      const apiUrl = import.meta.env.VITE_API_URL;
+
+        axios.get(`${apiUrl}/api/food-partner/${id}`, { withCredentials: true })   
             .then(response => {
                 setProfile(response.data.foodPartner);
                 setVideos(response.data.foodPartner.foodItems);

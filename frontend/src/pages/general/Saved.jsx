@@ -6,8 +6,11 @@ const Saved = () => {
   const [videos, setVideos] = useState([]);
 
   useEffect(() => {
+
+    const apiUrl = import.meta.env.VITE_API_URL;
+
     axios
-      .get("http://localhost:3000/api/food/save", { withCredentials: true })
+      .get(`${apiUrl}/api/food/save`, { withCredentials: true })
       .then((response) => {
         const savedFoods = response.data.savedFoods.map((item) => ({
           _id: item.food._id,

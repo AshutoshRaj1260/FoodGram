@@ -8,6 +8,9 @@ export default function PartnerRegister() {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
+
+    const apiUrl = import.meta.env.VITE_API_URL;
+
     e.preventDefault();
     const businessName = e.target.businessName.value;
     const owner = e.target.owner.value;
@@ -16,7 +19,7 @@ export default function PartnerRegister() {
     const email = e.target.email.value;
     const password = e.target.password.value;
 
-    const response = await axios.post('http://localhost:3000/api/auth/foodpartner/register', {
+    const response = await axios.post(`${apiUrl}/api/auth/foodpartner/register`, {
       businessName: businessName,
       ownerName: owner,
       phone: phone,

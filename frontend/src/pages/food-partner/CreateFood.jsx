@@ -16,6 +16,8 @@ const CreateFood = () => {
   const navigate = useNavigate();
 
   const onSubmit = async (e) => {
+
+    const apiUrl = import.meta.env.VITE_API_URL;
     e.preventDefault()
 
     const formData = new FormData();
@@ -24,7 +26,7 @@ const CreateFood = () => {
     formData.append('description', e.target.description.value);  
     formData.append('video', e.target.video.files[0]);
 
-    const response = await axios.post('http://localhost:3000/api/food', formData, {
+    const response = await axios.post('${apiUrl/api/food', formData, {
       withCredentials: true,})
 
       navigate('/');

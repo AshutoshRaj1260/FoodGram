@@ -8,11 +8,14 @@ export default function PartnerLogin() {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
+
+    const apiUrl = import.meta.env.VITE_API_URL;
+
     e.preventDefault();
     const email = e.target.email.value;
     const password = e.target.password.value;
 
-    const response = await axios.post('http://localhost:3000/api/auth/foodpartner/login', {
+    const response = await axios.post(`${apiUrl}/api/auth/foodpartner/login`, {
       email: email,
       password: password
     },{
