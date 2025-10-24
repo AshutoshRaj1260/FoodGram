@@ -26,8 +26,9 @@ const CreateFood = () => {
     formData.append('description', e.target.description.value);  
     formData.append('video', e.target.video.files[0]);
 
-    const response = await axios.post('${apiUrl/api/food', formData, {
-      withCredentials: true,})
+    const response = await axios.post(`${apiUrl}/api/food`, formData, {
+      withCredentials: true,
+    });
 
       navigate('/');
 

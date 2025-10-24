@@ -40,34 +40,7 @@ const Home = () => {
     axios
       .get(`${apiUrl}/api/food`, { withCredentials: true })
       .then((response) => setVideos(response.data.foodItems))
-      .catch(() => {
-        // fallback sample content when backend isn't available during dev
-        setVideos([
-          {
-            _id: "1",
-            video:
-              "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-            description:
-              "Fresh biryani made daily. Try our chef specials today!",
-            likes: 23,
-            bookmarks: 12,
-            comments: 45,
-            foodPartner: "1",
-          },
-          {
-            _id: "2",
-            video:
-              "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-            description:
-              "Quick delivery across the city. Hot, tasty, and ready in minutes.",
-            likes: 9,
-            bookmarks: 3,
-            comments: 5,
-            foodPartner: "2",
-          },
-        ]);
-      });
-  }, []);
+  }, [  ]);
 
   async function likeVideo(item) {
 
