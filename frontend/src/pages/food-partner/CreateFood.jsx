@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import '../../styles/create-food.css'
 import axios from 'axios'
-import { useNavigate } from 'react-router-dom'
+import {Link, useNavigate } from 'react-router-dom'
 
 const CreateFood = () => {
   const [preview, setPreview] = useState(null)
@@ -52,8 +52,10 @@ const CreateFood = () => {
             <textarea name="description" className="input" placeholder="Short description for the reel" />
 
             <div className="actions">
-              <button className="btn" type="submit">Create</button>
-              <button className="btn ghost" type="button">Cancel</button>
+              <button className="btn" type="submit" onClick={() => navigate('/home')}>Create</button>
+              <button className="btn ghost" type="button">
+                <Link to="/home" style={{textDecoration:'none'}} >Cancel</Link>
+              </button>
             </div>
           </div>
 

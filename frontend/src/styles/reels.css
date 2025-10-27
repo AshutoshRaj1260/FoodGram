@@ -1,7 +1,7 @@
-@import './variables.css';
+@import "./variables.css";
 
 /* Reels container: full height, vertical scroll, snap per child */
-.reels { 
+.reels {
   /* space reserved so overlays can position relative to the bottom navigation */
   --bottom-nav-height: 72px; /* tweak if you change the bottom-nav padding/size */
   height: 100vh;
@@ -35,14 +35,19 @@
 }
 
 /* remove inline gap and ensure full-bleed */
-.reel video { display: block; border-radius: 0; }
+.reel video {
+  display: block;
+  border-radius: 0;
+}
 
 /* top overlay containing description and button */
 .reel .overlay {
   position: absolute;
   left: 12px;
   /* place the overlay above the bottom navigation and any safe-area inset */
-  bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px) + 12px);
+  bottom: calc(
+    var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px) + 12px
+  );
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -52,7 +57,7 @@
 }
 
 .reel .description {
-  color: rgba(255,255,255,0.95);
+  color: rgba(255, 255, 255, 0.95);
   font-size: 0.95rem;
   font-weight: 600;
   line-height: 1.18;
@@ -68,40 +73,54 @@
 
 .reel .visit-btn {
   display: inline-block;
-  background: rgba(45,212,191,0.95);
+  background: rgba(45, 212, 191, 0.95);
   color: #001219;
   padding: 8px 12px;
   border-radius: 999px;
   font-weight: 700;
   text-decoration: none;
-  box-shadow: 0 6px 18px rgba(13,35,35,0.28);
+  box-shadow: 0 6px 18px rgba(13, 35, 35, 0.28);
 }
 
 /* small control at bottom center for hint */
 .reel .hint {
   position: absolute;
-  bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px) + 6px);
+  bottom: calc(
+    var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px) + 6px
+  );
   left: 50%;
   transform: translateX(-50%);
-  color: rgba(255,255,255,0.72);
+  color: rgba(255, 255, 255, 0.72);
   font-size: 0.9rem;
   z-index: 10;
 }
 
 /* support for keyboard focus outline */
-.reel .visit-btn:focus { outline: 2px solid color-mix(in srgb, var(--primary) 60%, #000); outline-offset: 2px; }
+.reel .visit-btn:focus {
+  outline: 2px solid color-mix(in srgb, var(--primary) 60%, #000);
+  outline-offset: 2px;
+}
 
 @media (max-width: 720px) {
-  .reel .description { max-width: 100%; font-size: 0.95rem; }
+  .reel .description {
+    max-width: 100%;
+    font-size: 0.95rem;
+  }
   /* slightly increase the offset on small screens so content isn't hidden */
-  .reel .overlay { bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px) + 10px); left: 12px; right: auto; }
+  .reel .overlay {
+    bottom: calc(
+      var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px) + 10px
+    );
+    left: 12px;
+    right: auto;
+  }
 }
 
 /* Right-side vertical controls like Instagram (icon column) */
 .reel .controls {
   position: absolute;
   right: 14px;
-  bottom: 120px;
+  bottom: 10rem;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -109,29 +128,38 @@
   align-items: center;
 }
 .reel .control-btn {
-  width: 46px;
-  height: 46px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
-  background: rgba(0,0,0,0.36);
+  background: rgba(0, 0, 0, 0.795);
   display: grid;
   place-items: center;
   color: white;
   text-decoration: none;
   font-weight: 700;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.28);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.623);
 }
 /* normalize when used as a button element */
 .reel .control-btn[type="button"] {
   border: 0;
   padding: 0;
-  background: rgba(0,0,0,0.36);
+  background: rgba(0, 0, 0, 0.747);
   cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
+  font-weight: 7000;
 }
 
-.reel .control-item { display:flex; flex-direction: column; align-items: center; gap:6px; }
-.reel .control-item .count { font-size: 0.84rem; color: rgba(255,255,255,0.95); }
+.reel .control-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.reel .control-item .count {
+  font-size: 0.84rem;
+  color: rgba(255, 255, 255, 0.95);
+}
 
 /* Bottom nav */
 .bottom-nav {
@@ -143,16 +171,44 @@
   display: flex;
   justify-content: center;
   padding: 8px 12px;
-  background: linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.14));
-  backdrop-filter: blur(6px);
+  /* background: linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.14));
+  backdrop-filter: blur(6px); */
 }
-.bottom-nav .nav-inner{ display:flex; gap:18px; align-items:center; width: min(420px, 92%); padding:6px 12px; border-radius:999px; background: rgba(0,0,0,0.28); }
-.bottom-nav .nav-link { color:white; text-decoration:none; display:flex; flex-direction:column; gap:4px; align-items:center; padding:6px 8px; }
-.bottom-nav .nav-link svg{ width:20px; height:20px }
-.bottom-nav span{ font-size:0.75rem; color: rgba(255,255,255,0.95) }
+.bottom-nav .nav-inner {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  width: min(420px, 92%);
+  padding: 2px 2px;
+  border-radius: 12px;
+  background: rgb(0, 0, 0);
+  /* box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28); */
+  
+}
+.bottom-nav .nav-link {
+  color: white;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  padding: 6px 8px;
+}
+.bottom-nav .nav-link svg {
+  width: 20px;
+  height: 20px;
+}
+.bottom-nav span {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.95);
+}
 
 /* make snap behavior stricter on some browsers */
-.reel { scroll-snap-stop: always; }
+.reel {
+  scroll-snap-stop: always;
+}
 
 /* make snap behavior stricter on some browsers */
-.reel { scroll-snap-stop: always; }
+.reel {
+  scroll-snap-stop: always;
+}

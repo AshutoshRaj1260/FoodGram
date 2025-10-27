@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
 import "../../styles/reels.css";
 import axios from "axios";
+import BottomNavBar from "../../components/BottomNavBar";
+import { useNavigate } from "react-router-dom";
 
 const Saved = () => {
+  const userType = localStorage.getItem("userType") || "user";
   const [videos, setVideos] = useState([]);
 
-  useEffect(() => {
+  const navigate = useNavigate();
 
+  useEffect(() => {
     const apiUrl = import.meta.env.VITE_API_URL;
 
     axios
@@ -25,7 +29,6 @@ const Saved = () => {
   }, []);
 
   const removeSaved = async (item) => {
-
     const apiUrl = import.meta.env.VITE_API_URL;
 
     try {
@@ -39,65 +42,70 @@ const Saved = () => {
   };
 
   return (
-    <div style={{ padding: 24, minHeight: "100vh", background: "var(--bg)" }}>
-      <h2 style={{ color: "var(--text)", marginBottom: 12 }}>Saved</h2>
-      {videos.length === 0 ? (
-        <p style={{ color: "var(--muted)" }}>You haven't saved anything yet.</p>
-      ) : (
-        <div
-          style={{
-            marginTop: 18,
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
-            gap: 12,
-          }}
-        >
-          {videos.map((item) => (
-            <div
-              key={item._id}
-              style={{
-                position: "relative",
-                borderRadius: 8,
-                overflow: "hidden",
-                background: "#000",
-                height: 180,
-              }}
-            >
-              <video
-                src={item.video}
-                muted
-                loop
-                autoPlay
-                onClick={(e) => e.target.requestFullscreen()}
+    <>
+      <div style={{ padding: 24, minHeight: "100vh", background: "var(--bg)" }}>
+        <h2 style={{ color: "var(--text)", marginBottom: 12 }}>Saved</h2>
+        {videos.length === 0 ? (
+          <p style={{ color: "var(--muted)" }}>
+            You haven't saved anything yet.
+          </p>
+        ) : (
+          <div
+            style={{
+              marginTop: 18,
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
+              gap: 12,
+            }}
+          >
+            {videos.map((item) => (
+              <div
+                key={item._id}
                 style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  cursor: "pointer",
-                }}
-              />
-              <button
-                onClick={() => removeSaved(item)}
-                style={{
-                  position: "absolute",
-                  top: 6,
-                  right: 6,
-                  background: "rgba(0,0,0,0.5)",
-                  border: "none",
-                  color: "#fff",
-                  padding: "4px 8px",
-                  borderRadius: 4,
-                  cursor: "pointer",
-                  fontSize: 12,
+                  position: "relative",
+                  borderRadius: 8,
+                  overflow: "hidden",
+                  background: "#000",
+                  height: 180,
                 }}
               >
-                Remove
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+                <video
+                  src={item.video}
+                  muted
+                  loop
+                  autoPlay
+                  onClick={() => navigate(`/reels/${item._id}`)}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    cursor: "pointer",
+                  }}
+                />
+                <button
+                  onClick={() => removeSaved(item)}
+                  style={{
+                    position: "absolute",
+                    top: 6,
+                    right: 6,
+                    background: "rgba(0,0,0,0.5)",
+                    border: "none",
+                    color: "#fff",
+                    padding: "4px 8px",
+                    borderRadius: 4,
+                    cursor: "pointer",
+                    fontSize: 12,
+                  }}
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      <BottomNavBar userType={userType} />
+    </>
   );
 };
 

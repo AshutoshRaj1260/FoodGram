@@ -1,35 +1,38 @@
-import React from 'react';
-import '../styles/auth.css';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import "../styles/auth.css";
+import axios from "axios";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function PartnerLogin() {
-
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-
     const apiUrl = import.meta.env.VITE_API_URL;
 
     e.preventDefault();
     const email = e.target.email.value;
     const password = e.target.password.value;
 
-    const response = await axios.post(`${apiUrl}/api/auth/foodpartner/login`, {
-      email: email,
-      password: password
-    },{
-      withCredentials: true
-    })
+    const response = await axios.post(
+      `${apiUrl}/api/auth/foodpartner/login`,
+      {
+        email: email,
+        password: password,
+      },
+      {
+        withCredentials: true,
+      }
+    );
 
     console.log(response.data);
-    navigate('/create-food');
-
+        localStorage.setItem("userType", "partner");
+    console.log(localStorage.getItem("userType"));
+    navigate("/create-food");
   };
-
 
   return (
     <div className="auth-wrap">
+      <div className="brand-header">FoodGram</div>
       <main className="card" role="main">
         <section className="hero">
           <div className="logo" aria-hidden="true" />
@@ -47,24 +50,43 @@ export default function PartnerLogin() {
             <form className="form" onSubmit={handleSubmit}>
               <div className="input">
                 <label htmlFor="email">Email</label>
-                <input id="email" name="email" type="email" placeholder="contact@business.com" />
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="contact@business.com"
+                />
               </div>
 
               <div className="input">
                 <label htmlFor="password">Password</label>
-                <input id="password" name="password" type="password" placeholder="Your password" />
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  placeholder="Your password"
+                />
               </div>
 
               <div className="or-row">Or continue with email</div>
 
               <div className="actions">
-                <button className="btn" type="submit">Sign in</button>
-                <a className="switch-link" href="/foodpartner/register">Need an account?</a>
+                <button className="btn" type="submit">
+                  Sign in
+                </button>
+                <Link className="switch-link" to="/foodpartner/register">
+                  Need an account?
+                </Link>
               </div>
             </form>
           </div>
         </section>
       </main>
+      <div>
+        <Link className="switch-link" to="/">
+          Are you a user? Sign in here.
+        </Link>
+      </div>
     </div>
   );
 }

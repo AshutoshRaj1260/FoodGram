@@ -1,4 +1,8 @@
 @import './variables.css';
+@font-face {
+  font-family: 'Dancing Script';
+  src: url('../fonts/static/DancingScript-Medium.ttf');
+}
 
 /* Global reset */
 * { box-sizing: border-box; }
@@ -94,6 +98,12 @@ body {
   line-height: 1.4;
   resize: vertical;
   min-height: 72px;
+}
+
+.brand-header {
+  font-size: 5rem;
+  font-family: 'Dancing Script';
+
 }
 
 @media (max-width: 520px) {
