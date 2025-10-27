@@ -6,12 +6,13 @@ const cors = require('cors');
 const foodPartnerRoutes = require('./routes/food-partner.routes');
 
 const app = express();
-app.use(express.json());
-app.use(cookieParser());
 app.use(cors({
     origin: process.env.FRONTEND_URL.replace(/\/$/, ""),
     credentials: true,
 }))
+
+app.use(express.json());
+app.use(cookieParser());
 
 app.get('/', (req,res) => {
     res.send("Hello World!");
