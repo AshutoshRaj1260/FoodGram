@@ -24,6 +24,58 @@ FoodGram is a full-stack video-sharing web application, similar to TikTok or Ins
 
 ---
 
+## 📂 Project Structure
+
+Here is the high-level structure of the FoodGram application:
+
+<pre>
+FoodGram/
+├── backend/
+│   ├── controllers/
+│   │   ├── auth.controller.js
+│   │   ├── food.controller.js      
+│   │   └── ...
+│   ├── middleware/
+│   │   └── auth.middleware.js
+│   ├── models/
+│   │   ├── user.model.js
+│   │   ├── foodpartner.model.js
+│   │   └── food.model.js
+│   ├── routes/
+│   │   ├── auth.routes.js
+│   │   ├── food.routes.js
+│   │   └── food-partner.routes.js
+│   ├── .env.example
+│   ├── app.js
+│   ├── package.json
+│   └── server.js
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   └── BottomNavBar.jsx
+│   │   ├── pages/
+│   │   │   ├── general/
+│   │   │   │   ├── Home.jsx
+│   │   │   │   └── Saved.jsx
+│   │   │   ├── food-partner/
+│   │   │   │   ├── CreateFood.jsx
+│   │   │   │   └── Profile.jsx
+│   │   │   ├── UserLogin.jsx
+│   │   │   ├── UserRegister.jsx
+│   │   │   └── ...
+│   │   ├── styles/
+│   │   │   └── auth.css
+│   │   ├── AppRoutes.jsx
+│   │   └── main.jsx
+│   ├── .env.example
+│   ├── index.html
+│   └── package.json
+│
+├── .gitignore
+└── README.md
+</pre>
+
 ## 🚀 Getting Started: Local Setup
 
 Follow these instructions to get a copy of the project running on your local machine.
