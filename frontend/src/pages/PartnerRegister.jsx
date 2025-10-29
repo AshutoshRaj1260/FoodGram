@@ -38,7 +38,17 @@ export default function PartnerRegister() {
 
   return (
     <div className="auth-wrap">
-      <div style={{ paddingBottom:'3rem', fontSize:'4rem' }} className="brand-header">
+      <div
+        style={{ paddingBottom: "1rem", fontSize: "4rem" }}
+        className="brand-header"
+      >
+        <div>
+          <img
+            style={{ width: "100px", height: "100px" }}
+            src="/brandLogo.png"
+            alt=""
+          />
+        </div>
         FoodGram
       </div>
       <main className="card" role="main">
@@ -125,7 +135,7 @@ export default function PartnerRegister() {
         </section>
       </main>
 
-      <div style={{margin:'1.8rem'}}>
+      <div style={{ margin: "1.8rem" }}>
         <Link className="switch-link" to="/user/register">
           Are you a user? Register here.
         </Link>

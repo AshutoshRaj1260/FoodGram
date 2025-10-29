@@ -22,6 +22,7 @@ body {
   display: grid;
   place-items: center;
   padding: calc(var(--space-lg) * 1.5);
+  gap: var(--space-md); /* Added a gap between header, card, and link */
 }
 
 .card {
@@ -103,7 +104,10 @@ body {
 .brand-header {
   font-size: 5rem;
   font-family: 'Dancing Script';
-
+  /* These properties align the logo and "FoodGram" text horizontally */
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
 }
 
 @media (max-width: 520px) {

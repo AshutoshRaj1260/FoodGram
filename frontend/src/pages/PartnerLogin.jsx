@@ -25,14 +25,23 @@ export default function PartnerLogin() {
     );
 
     console.log(response.data);
-        localStorage.setItem("userType", "partner");
+    localStorage.setItem("userType", "partner");
     console.log(localStorage.getItem("userType"));
     navigate("/create-food");
   };
 
   return (
     <div className="auth-wrap">
-      <div className="brand-header">FoodGram</div>
+      <div className="brand-header">
+        <div>
+          <img
+            style={{ width: "100px", height: "100px" }}
+            src="/brandLogo.png"
+            alt=""
+          />
+        </div>
+        FoodGram
+      </div>
       <main className="card" role="main">
         <section className="hero">
           <div className="logo" aria-hidden="true" />
