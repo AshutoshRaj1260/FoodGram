@@ -32,7 +32,7 @@ async function registerUser(req, res) {
 
   res.cookie("token", token, {
     httpOnly: true, // JS cannot read cookie
-    secure: process.env.NODE_ENV === "production", // HTTPS only in production
+    secure: true,
     sameSite: "none", // required for cross-domain
     maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
   });
@@ -72,7 +72,7 @@ async function loginUser(req, res) {
   );
   res.cookie("token", token, {
     httpOnly: true, // JS cannot read cookie
-    secure: process.env.NODE_ENV === "production", // HTTPS only in production
+    secure: true,
     sameSite: "none", // required for cross-domain
     maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
   });
@@ -87,11 +87,11 @@ async function loginUser(req, res) {
 }
 
 function logoutUser(req, res) {
-res.clearCookie("token", {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "none",
-});
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  });
   res.status(200).json({
     message: "User Logged Out Successfully",
   });
@@ -127,7 +127,7 @@ async function registerFoodPartner(req, res) {
 
   res.cookie("token", token, {
     httpOnly: true, // JS cannot read cookie
-    secure: process.env.NODE_ENV === "production", // HTTPS only in production
+    secure: true,
     sameSite: "none", // required for cross-domain
     maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
   });
@@ -165,7 +165,7 @@ async function loginFoodPartner(req, res) {
   );
   res.cookie("token", token, {
     httpOnly: true, // JS cannot read cookie
-    secure: process.env.NODE_ENV === "production", // HTTPS only in production
+    secure: true,
     sameSite: "none", // required for cross-domain
     maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
   });
@@ -180,11 +180,11 @@ async function loginFoodPartner(req, res) {
 }
 
 function logoutFoodPartner(req, res) {
-res.clearCookie("token", {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "none",
-});
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  });
   res.status(200).json({
     message: "Food Partner Logged Out Successfully",
   });

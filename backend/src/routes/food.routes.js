@@ -13,7 +13,7 @@ router.post(
   authMiddleware.authFoodPartnerMiddleware,
   upload.single("video"),
   foodController.createFood
-);
+);  
 
 router.get("/", authMiddleware.authUserMiddleware, foodController.getFoodItems);
 
