@@ -42,12 +42,8 @@ export default function PartnerRegister() {
         style={{ paddingBottom: "1rem", fontSize: "4rem" }}
         className="brand-header"
       >
-        <div>
-          <img
-            style={{ width: "100px", height: "100px" }}
-            src="/brandLogo.png"
-            alt=""
-          />
+        <div className="brand-logo">
+          <img src="/brandLogo.png" alt="" />
         </div>
         FoodGram
       </div>
