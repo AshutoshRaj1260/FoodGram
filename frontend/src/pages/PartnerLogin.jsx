@@ -33,9 +33,8 @@ export default function PartnerLogin() {
   return (
     <div className="auth-wrap">
       <div className="brand-header">
-        <div>
+        <div className="brand-logo">
           <img
-            style={{ width: "100px", height: "100px" }}
             src="/brandLogo.png"
             alt=""
           />
