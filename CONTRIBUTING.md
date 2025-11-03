@@ -25,7 +25,7 @@ We're thrilled you're interested in contributing to FoodGram! This document outl
 
 ## 1. Code of Conduct
 
-Please note that this project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project, you agree to abide by its terms. (You may want to create a `CODE_OF_CONDUCT.md` file later).
+Please note that this project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project, you agree to abide by its terms.
 
 ## 2. How Can I Contribute?
 
@@ -88,10 +88,10 @@ To contribute code, you'll need to set up the project locally.
     # Your MongoDB connection string
     MONGODB_URI=your_mongodb_connection_string
 
-    # A secret string for signing JWTs
-    JWT_SECRET=your_super_secret_key_at_least_32_chars
+    # A secret string for signing JWTs (recommended: at least 32 characters)
+    JWT_SECRET=your_super_secret_key
 
-    # Your frontend's local URL for CORS
+    # Your frontend's local URL for CORS (Vite's default)
     FRONTEND_URL=http://localhost:5173
 
     # Your ImageKit credentials (for video uploads)
@@ -107,7 +107,7 @@ To contribute code, you'll need to set up the project locally.
     ```
     Create a `.env` file in the `frontend` directory with:
     ```ini
-    # Your backend's local API URL
+    # Your backend's local API URL (Note: Vite uses VITE_ prefix for env vars)
     VITE_API_URL=http://localhost:8000
     ```
 
@@ -148,6 +148,7 @@ We use a feature-branch workflow.
 
 1.  **Ensure your branch is up-to-date** with the `main` branch of the original repository:
     ```bash
+    # From your feature branch
     git fetch upstream
     git rebase upstream/main
     git push origin your-branch-name --force # Use --force if you rebased
