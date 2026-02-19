@@ -4,13 +4,13 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import BottomNavBar from "../../components/BottomNavBar";
 import { useParams } from "react-router-dom";
-import LikeIcon from '@mui/icons-material/FavoriteBorder';
-import BookmarksIcon from '@mui/icons-material/BookmarkBorder';;
+import LikeIcon from "@mui/icons-material/FavoriteBorder";
+import BookmarksIcon from "@mui/icons-material/BookmarkBorder";
 
 const Home = () => {
   const [videos, setVideos] = useState([]);
   const containerRef = useRef(null);
-
+  
   const userType = localStorage.getItem("userType") || "user";
 
   const { id } = useParams();
@@ -58,26 +58,53 @@ const Home = () => {
       .then((response) => setVideos(response.data.foodItems));
   }, []);
 
+  // async function likeVideo(item) {
+  //   const apiUrl = import.meta.env.VITE_API_URL;
+
+  //   const response = await axios.post(
+  //     `${apiUrl}/api/food/like`,
+  //     { foodId: item._id },
+  //     { withCredentials: true },
+  //   );
+
+  //   if (response.data.like) {
+  //     setVideos((prev) =>
+  //       prev.map((v) =>
+  //         v._id === item._id ? { ...v, likeCount: v.likeCount + 1 } : v,
+  //       ),
+  //     );
+  //   } else {
+  //     setVideos((prev) =>
+  //       prev.map((v) =>
+  //         v._id === item._id ? { ...v, likeCount: v.likeCount - 1 } : v,
+  //       ),
+  //     );
+  //   }
+  // }
   async function likeVideo(item) {
     const apiUrl = import.meta.env.VITE_API_URL;
 
     const response = await axios.post(
       `${apiUrl}/api/food/like`,
       { foodId: item._id },
-      { withCredentials: true }
+      { withCredentials: true },
     );
 
     if (response.data.like) {
+      // If Liked: Add 1
       setVideos((prev) =>
         prev.map((v) =>
-          v._id === item._id ? { ...v, likeCount: v.likeCount + 1 } : v
-        )
+          v._id === item._id ? { ...v, likeCount: (v.likeCount || 0) + 1 } : v,
+        ),
       );
     } else {
+      // If Unliked: Subtract 1, but FORCE it to stay at 0 or higher
       setVideos((prev) =>
         prev.map((v) =>
-          v._id === item._id ? { ...v, likeCount: v.likeCount - 1 } : v
-        )
+          v._id === item._id 
+            ? { ...v, likeCount: Math.max(0, (v.likeCount || 0) - 1) } 
+            : v,
+        ),
       );
     }
   }
@@ -88,64 +115,71 @@ const Home = () => {
     const response = await axios.post(
       `${apiUrl}/api/food/save`,
       { foodId: item._id },
-      { withCredentials: true }
+      { withCredentials: true },
     );
     if (response.data.save) {
       setVideos((prev) =>
         prev.map((v) =>
-          v._id === item._id ? { ...v, saveCount: v.saveCount + 1 } : v
-        )
+          v._id === item._id ? { ...v, saveCount: v.saveCount + 1 } : v,
+        ),
       );
     } else {
       setVideos((prev) =>
         prev.map((v) =>
-          v._id === item._id ? { ...v, saveCount: v.saveCount - 1 } : v
-        )
+          v._id === item._id ? { ...v, saveCount: v.saveCount - 1 } : v,
+        ),
       );
     }
   }
 
   return (
     <>
-      <div className="reels" role="list" ref={containerRef}>
-        {videos.map((item) => (
-          <article className="reel" key={item._id} role="listitem">
-            <video src={item.video} muted loop playsInline preload="metadata" />
+      <div className="reel-section">
+        <div className="reels" role="list" ref={containerRef}>
+          {videos.map((item) => (
+            <article className="reel" key={item._id} role="listitem">
+              <video
+                src={item.video}
+                muted
+                loop
+                playsInline
+                preload="metadata"
+              />
 
-            <div className="overlay">
-              <div className="description">{item.description}</div>
-              <Link
-                className="visit-btn"
-                to={"/food-partner/" + item.foodPartner}
-              >
-                Visit store
-              </Link>
-            </div>
-
-            <div className="controls" aria-hidden>
-              <div className="control-item">
-                <button
-                  type="button"
-                  onClick={() => likeVideo(item)}
-                  className="control-btn"
-                  aria-label="Like"
+              <div className="overlay">
+                <div className="description">{item.description}</div>
+                <Link
+                  className="visit-btn"
+                  to={"/food-partner/" + item.foodPartner}
                 >
-                  <LikeIcon fontSize="large" />
-                </button>
-                <div className="count">{item.likeCount || 0}</div>
+                  Visit store
+                </Link>
               </div>
 
-              <div className="control-item">
-                <button
-                  type="button"
-                  onClick={() => saveVideo(item)}
-                  className="control-btn"
-                  aria-label="Save"
-                >
-                  <BookmarksIcon fontSize="large" />
-                </button>
-                <div className="count">{item.saveCount || 0}</div>
-              </div>
+              <div className="controls" aria-hidden>
+                <div className="control-item">
+                  <button
+                    type="button"
+                    onClick={() => likeVideo(item)}
+                    className="control-btn"
+                    aria-label="Like"
+                  >
+                    <LikeIcon fontSize="large" />
+                  </button>
+                  <div className="count">{item.likeCount || 0}</div>
+                </div>
+
+                <div className="control-item">
+                  <button
+                    type="button"
+                    onClick={() => saveVideo(item)}
+                    className="control-btn"
+                    aria-label="Save"
+                  >
+                    <BookmarksIcon fontSize="large" />
+                  </button>
+                  <div className="count">{item.saveCount || 0}</div>
+                </div>
 
                 {/* <div className="control-item">
                   <button
@@ -168,11 +202,12 @@ const Home = () => {
                   </button>
                   <div className="count">{item.comments || 0}</div>
                 </div> */}
-            </div>
+              </div>
 
-            <div className="hint">Scroll to view more</div>
-          </article>
-        ))}
+              <div className="hint">Scroll to view more</div>
+            </article>
+          ))}
+        </div>
       </div>
       <BottomNavBar userType={userType} />
     </>

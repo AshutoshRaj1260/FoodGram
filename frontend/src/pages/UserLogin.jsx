@@ -1,102 +1,207 @@
 import React from "react";
+import { useState, useEffect } from "react";
 import "../styles/auth.css";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import backgroundImage from "../assets/backgroundImage.jpeg";
+import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
 
 export default function UserLogin() {
   const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState("");
 
+  const handleUserChange = (e) => {
+    console.log(e.target.value);
+
+    if (e.target.value === "foodpartner") {
+      navigate("/foodpartner/login");
+    }
+  };
   const handleSubmit = async (e) => {
     const apiUrl = import.meta.env.VITE_API_URL;
+    setErrorMessage("");
 
     e.preventDefault();
     const email = e.target.email.value;
     const password = e.target.password.value;
 
-    const response = await axios.post(
-      `${apiUrl}/api/auth/user/login`,
-      {
-        email: email,
-        password: password,
-      },
-      {
-        withCredentials: true,
-      }
-    );
+    try {
+      const response = await axios.post(
+        `${apiUrl}/api/auth/user/login`,
+        {
+          email: email,
+          password: password,
+        },
+        {
+          withCredentials: true,
+        },
+      );
+      localStorage.setItem("userType", "user");
+      console.log(localStorage.getItem("userType"));
+      navigate("/home");
+    } catch (err) {
+      console.log(err.response.data.message);
 
-    console.log(response.data);
-    localStorage.setItem("userType", "user");
-    console.log(localStorage.getItem("userType"));
-    navigate("/home");
+      setErrorMessage(err.response.data.message);
+    }
   };
 
+  useEffect(() => {
+    if (errorMessage) {
+      const timer = setTimeout(() => {
+        setErrorMessage("");
+      }, 5000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [errorMessage]);
+
   return (
-    <div className="auth-wrap">
-      <div className="brand-header">
-        <div className="brand-logo">
-          <img
-            src="/brandLogo.png"
-            alt=""
-          />
-        </div>
-        FoodGram
-      </div>
+    // <div className="auth-wrap">
+    //   <div className="brand-header">
+    //     <div className="brand-logo">
+    //       <img
+    //         src="/brandLogo.png"
+    //         alt=""
+    //       />
+    //     </div>
+    //     FoodGram
+    //   </div>
 
-      <main className="card" role="main">
-        <section className="hero">
-          <div className="logo" aria-hidden="true" />
-          <h2>Welcome back</h2>
-          <p>Sign in to continue ordering your favorite meals.</p>
-        </section>
+    //   <main className="card" role="main">
+    //     <section className="hero">
+    //       <div className="logo" aria-hidden="true" />
+    //       <h2>Welcome back</h2>
+    //       <p>Sign in to continue ordering your favorite meals.</p>
+    //     </section>
 
-        <section className="form-pane">
-          <div className="container">
-            <div className="brand">
-              <h1>User Login</h1>
-              <p>Welcome back — sign in to continue.</p>
+    //     <section className="form-pane">
+    //       <div className="container">
+    //         <div className="brand">
+    //           <h1>User Login</h1>
+    //           <p>Welcome back — sign in to continue.</p>
+    //         </div>
+
+    //         <form className="form" onSubmit={handleSubmit}>
+    //           <div className="input">
+    //             <label htmlFor="email">Email</label>
+    //             <input
+    //               id="email"
+    //               name="email"
+    //               type="email"
+    //               placeholder="you@example.com"
+    //             />
+    //           </div>
+
+    //           <div className="input">
+    //             <label htmlFor="password">Password</label>
+    //             <input
+    //               id="password"
+    //               name="password"
+    //               type="password"
+    //               placeholder="Your password"
+    //             />
+    //           </div>
+
+    //           <div className="or-row">Or continue with email</div>
+
+    //           <div className="actions">
+    //             <button className="btn" type="submit">
+    //               Sign in
+    //             </button>
+    //             <Link className="switch-link" to="/user/register">
+    //               Need an account?
+    //             </Link>
+    //           </div>
+    //         </form>
+    //       </div>
+    //     </section>
+    //   </main>
+
+    //   <div>
+    //     <Link className="switch-link" to="/foodpartner/login">
+    //       Are you a food partner? Sign in here.
+    //     </Link>
+    //   </div>
+    // </div>
+    <>
+      <div className="authPage">
+        <div className="form-container">
+          <div className="form-left">
+            <img
+              className="form-image"
+              src={backgroundImage}
+              alt="Background"
+            />
+          </div>
+          <div className="form-right">
+            <div className="top">
+              <h2>FOODGRAM</h2>
+              <select
+                onChange={(e) => {
+                  handleUserChange(e);
+                }}
+              >
+                <option value="user">User</option>
+                <option value="foodpartner">Food Partner</option>
+              </select>
             </div>
 
-            <form className="form" onSubmit={handleSubmit}>
-              <div className="input">
-                <label htmlFor="email">Email</label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="you@example.com"
+            {errorMessage && (
+              <div className="errorBanner">
+                <ReportGmailerrorredIcon
+                  sx={{ fontSize: "40px", color: "#e91938" }}
                 />
+                <div className="error">
+                  <h5>{errorMessage}</h5>
+                  <p>Please try again</p>
+                </div>
+                <div className="errorLine"></div>
+              </div>
+            )}
+
+            <section className="formPane">
+              <div className="form-header">
+                <h2>User Login</h2>
+                <p>Welcome back</p>
               </div>
 
-              <div className="input">
-                <label htmlFor="password">Password</label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  placeholder="Your password"
-                />
-              </div>
+              <form className="form" onSubmit={handleSubmit}>
+                <div className="inputBox">
+                  <label htmlFor="email">Email</label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="you@example.com"
+                  />
+                </div>
 
-              <div className="or-row">Or continue with email</div>
+                <div className="inputBox">
+                  <label htmlFor="password">Password</label>
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder="Your password"
+                  />
+                </div>
 
-              <div className="actions">
-                <button className="btn" type="submit">
-                  Sign in
-                </button>
-                <Link className="switch-link" to="/user/register">
-                  Need an account?
-                </Link>
-              </div>
-            </form>
+                {/* <div className="or-row">Or continue with email</div> */}
+
+                <div className="actions">
+                  <button className="btn" type="submit">
+                    Login
+                  </button>
+                  <Link className="switch-link" to="/user/register">
+                    Need an account?
+                  </Link>
+                </div>
+              </form>
+            </section>
           </div>
-        </section>
-      </main>
-
-      <div>
-        <Link className="switch-link" to="/foodpartner/login">
-          Are you a food partner? Sign in here.
-        </Link>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
