@@ -41,6 +41,7 @@ const Saved = () => {
     } catch {}
   };
 
+  console.log("Saved Videos State:", videos);
   return (
     <>
       <div style={{ padding: 24, minHeight: "100vh", background: "var(--bg)" }}>
