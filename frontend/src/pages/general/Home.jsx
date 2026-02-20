@@ -58,77 +58,49 @@ const Home = () => {
       .then((response) => setVideos(response.data.foodItems));
   }, []);
 
-  // async function likeVideo(item) {
-  //   const apiUrl = import.meta.env.VITE_API_URL;
-
-  //   const response = await axios.post(
-  //     `${apiUrl}/api/food/like`,
-  //     { foodId: item._id },
-  //     { withCredentials: true },
-  //   );
-
-  //   if (response.data.like) {
-  //     setVideos((prev) =>
-  //       prev.map((v) =>
-  //         v._id === item._id ? { ...v, likeCount: v.likeCount + 1 } : v,
-  //       ),
-  //     );
-  //   } else {
-  //     setVideos((prev) =>
-  //       prev.map((v) =>
-  //         v._id === item._id ? { ...v, likeCount: v.likeCount - 1 } : v,
-  //       ),
-  //     );
-  //   }
-  // }
   async function likeVideo(item) {
     const apiUrl = import.meta.env.VITE_API_URL;
 
-    const response = await axios.post(
-      `${apiUrl}/api/food/like`,
-      { foodId: item._id },
-      { withCredentials: true },
-    );
+    try {
+      const response = await axios.post(
+        `${apiUrl}/api/food/like`,
+        { foodId: item._id },
+        { withCredentials: true },
+      );
 
-    if (response.data.like) {
-      // If Liked: Add 1
+      console.log("Like response:", response.data);
+
+      // Update the count using the backend response
       setVideos((prev) =>
         prev.map((v) =>
-          v._id === item._id ? { ...v, likeCount: (v.likeCount || 0) + 1 } : v,
+          v._id === item._id ? { ...v, likeCount: response.data.likeCount } : v,
         ),
       );
-    } else {
-      // If Unliked: Subtract 1, but FORCE it to stay at 0 or higher
-      setVideos((prev) =>
-        prev.map((v) =>
-          v._id === item._id 
-            ? { ...v, likeCount: Math.max(0, (v.likeCount || 0) - 1) } 
-            : v,
-        ),
-      );
+    } catch (error) {
+      console.error("Like error:", error.response?.data || error.message);
     }
   }
 
   async function saveVideo(item) {
     const apiUrl = import.meta.env.VITE_API_URL;
 
-    const response = await axios.post(
-      `${apiUrl}/api/food/save`,
-      { foodId: item._id },
-      { withCredentials: true },
-    );
-    if (response.data.save) {
+    try {
+      const response = await axios.post(
+        `${apiUrl}/api/food/save`,
+        { foodId: item._id },
+        { withCredentials: true },
+      );
+
+      console.log("Save response:", response.data);
+
+      // Update the count using the backend response
       setVideos((prev) =>
         prev.map((v) =>
-          v._id === item._id ? { ...v, saveCount: v.saveCount + 1 } : v,
+          v._id === item._id ? { ...v, saveCount: response.data.saveCount } : v,
         ),
       );
-    } else {
-      setVideos((prev) =>
-        prev.map((v) =>
-          v._id === item._id ? { ...v, saveCount: v.saveCount - 1 } : v,
-        ),
-      );
+    } catch (error) {
+      console.error("Save error:", error.response?.data || error.message);
     }
   }
 
