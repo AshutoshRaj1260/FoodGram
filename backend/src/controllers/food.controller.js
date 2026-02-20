@@ -42,12 +42,20 @@ async function likeFood(req, res) {
   if (isAlreadyLiked) {
     await likeModel.deleteOne({ user: user._id, food: foodId });
 
-    await foodModel.findByIdAndUpdate(foodId, { $inc: { likeCount: -1 } });
-    res.status(200).json({ message: "Food item unliked successfully" });
+    const updatedFood = await foodModel.findByIdAndUpdate(foodId, { $inc: { likeCount: -1 } }, { new: true });
+    res.status(200).json({ 
+      message: "Food item unliked successfully",
+      liked: false,
+      likeCount: updatedFood.likeCount
+    });
   } else {
     await likeModel.create({ user: user._id, food: foodId });
-    await foodModel.findByIdAndUpdate(foodId, { $inc: { likeCount: 1 } });
-    res.status(200).json({ message: "Food item liked successfully" });
+    const updatedFood = await foodModel.findByIdAndUpdate(foodId, { $inc: { likeCount: 1 } }, { new: true });
+    res.status(200).json({ 
+      message: "Food item liked successfully",
+      liked: true,
+      likeCount: updatedFood.likeCount
+    });
   }
 }
 
@@ -62,12 +70,20 @@ async function saveFood(req, res) {
   if (isAlreadySaved) {
     await saveModel.deleteOne({ user: user._id, food: foodId });
 
-    await foodModel.findByIdAndUpdate(foodId, { $inc: { saveCount: -1 } });
-    res.status(200).json({ message: "Food item unsaved successfully" });
+    const updatedFood = await foodModel.findByIdAndUpdate(foodId, { $inc: { saveCount: -1 } }, { new: true });
+    res.status(200).json({ 
+      message: "Food item unsaved successfully",
+      saved: false,
+      saveCount: updatedFood.saveCount
+    });
   } else {
     await saveModel.create({ user: user._id, food: foodId });
-    await foodModel.findByIdAndUpdate(foodId, { $inc: { saveCount: 1 } });
-    res.status(200).json({ message: "Food item saved successfully" });
+    const updatedFood = await foodModel.findByIdAndUpdate(foodId, { $inc: { saveCount: 1 } }, { new: true });
+    res.status(200).json({ 
+      message: "Food item saved successfully",
+      saved: true,
+      saveCount: updatedFood.saveCount
+    });
   }
 }
 
