@@ -337,20 +337,6 @@
   outline-offset: 2px;
 }
 
-@media (max-width: 720px) {
-  .reel .description {
-    max-width: 100%;
-    font-size: 0.95rem;
-  }
-  .reel .overlay {
-    bottom: calc(
-      var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px) + 10px
-    );
-    left: 12px;
-    right: auto;
-  }
-}
-
 .reel .controls {
   position: absolute;
   right: 14px;
