@@ -5,6 +5,10 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import backgroundImage from "../assets/backgroundImage.jpeg";
 import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
+import MailOutlineIcon from "@mui/icons-material/MailOutline";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import PersonOutlineIcon from "@mui/icons-material/Person";
+import BrandLogo from "../../public/brandLogo.png";
 
 export default function UserLogin() {
   const navigate = useNavigate();
@@ -125,26 +129,45 @@ export default function UserLogin() {
     //   </div>
     // </div>
     <>
-      <div className="authPage">
-        <div className="form-container">
-          <div className="form-left">
-            <img
-              className="form-image"
-              src={backgroundImage}
-              alt="Background"
-            />
+      <div className="auth-page">
+        <div className="auth-card">
+          {/* Left image panel */}
+          <div className="auth-image-panel">
+            <img src={backgroundImage} alt="Delicious food spread" />
+            <div className="auth-image-overlay">
+              <div className="auth-overlay-content">
+                <span className="auth-badge">✨ Premium Experience</span>
+                <h1>Made for Food Lovers</h1>
+                <p>
+                  Good coffee, good food, great moments.
+                  <br />
+                  Let’s continue your journey!
+                </p>
+              </div>
+            </div>
           </div>
-          <div className="form-right">
-            <div className="top">
-              <h2>FOODGRAM</h2>
-              <select
-                onChange={(e) => {
-                  handleUserChange(e);
-                }}
-              >
-                <option value="user">User</option>
-                <option value="foodpartner">Food Partner</option>
-              </select>
+
+          {/* Right form panel */}
+          <div className="auth-form-panel">
+            <div className="auth-form-header">
+              <span className="auth-logo">
+                {" "}
+                <img src={BrandLogo} alt="logo" className="auto-logo-image" />
+                <p className="auth-logo-text">FOODGRAM</p>
+              </span>
+              <div className="auth-select-wrapper">
+                <PersonOutlineIcon className="auth-select-icon" />
+                <select
+                  className="auth-role-select"
+                  onChange={(e) => {
+                    handleUserChange(e);
+                  }}
+                  aria-label="Login as"
+                >
+                  <option value="user">User</option>
+                  <option value="foodpartner">Food Partner</option>
+                </select>
+              </div>
             </div>
 
             {errorMessage && (
@@ -160,45 +183,51 @@ export default function UserLogin() {
               </div>
             )}
 
-            <section className="formPane">
-              <div className="form-header">
-                <h2>User Login</h2>
-                <p>Welcome back</p>
-              </div>
+            <h2 className="auth-title">
+              Welcome Back<span className="wave-hand">👋</span>
+            </h2>
+            <p className="auth-subtitle">
+              Sign in to continue enjoying Foodgram
+            </p>
 
-              <form className="form" onSubmit={handleSubmit}>
-                <div className="inputBox">
-                  <label htmlFor="email">Email</label>
+            <form onSubmit={handleSubmit}>
+              <div className="auth-field">
+                <label htmlFor="email">Email</label>
+                <div className="auth-input-wrapper">
+                  <MailOutlineIcon className="auth-input-icon" />
                   <input
                     id="email"
                     name="email"
                     type="email"
                     placeholder="you@example.com"
+                    aria-label="Email address"
+                    required
                   />
                 </div>
+              </div>
 
-                <div className="inputBox">
-                  <label htmlFor="password">Password</label>
+              <div className="auth-field">
+                <label htmlFor="password">Password</label>
+                <div className="auth-input-wrapper">
+                  <LockOutlinedIcon className="auth-input-icon" />
                   <input
                     id="password"
                     name="password"
                     type="password"
-                    placeholder="Your password"
+                    placeholder="your password"
+                    aria-label="Password"
+                    required
                   />
                 </div>
+              </div>
+              <button className="auth-btn" type="submit">
+                Login
+              </button>
+            </form>
 
-                {/* <div className="or-row">Or continue with email</div> */}
-
-                <div className="actions">
-                  <button className="btn" type="submit">
-                    Login
-                  </button>
-                  <Link className="switch-link" to="/user/register">
-                    Need an account?
-                  </Link>
-                </div>
-              </form>
-            </section>
+            <div className="auth-footer">
+              Don't have an account? <a href="/user/register">Sign up</a>
+            </div>
           </div>
         </div>
       </div>
