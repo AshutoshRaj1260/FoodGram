@@ -15,8 +15,19 @@ async function authFoodPartnerMiddleware(req, res, next) {
 
     const foodPartner = await foodPartnerModel.findById(decoded.id);
 
-    req.foodPartner = foodPartner;
+    if (!foodPartner) {
+      return res.status(401).json({
+        message: "Account not found. Please login again.",
+      });
+    }
 
+    if (!foodPartner.isEmailVerified) {
+      return res.status(403).json({
+        message: "Email not verified. Please verify your email first",
+      });
+    }
+
+    req.foodPartner = foodPartner;
     next();
   } catch (error) {
     return res.status(401).json({
@@ -36,8 +47,19 @@ async function authUserMiddleware(req, res, next) {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await userModel.findById(decoded.id);
 
-    req.user = user;
+    if (!user) {
+      return res.status(401).json({
+        message: "Account not found. Please login again.",
+      });
+    }
 
+    if (!user.isEmailVerified) {
+      return res.status(403).json({
+        message: "Email not verified. Please verify your email first",
+      });
+    }
+
+    req.user = user;
     next();
   } catch (error) {
     return res.status(401).json({

@@ -25,6 +25,16 @@ const foodPartnerSchema = new mongoose.Schema({
     password: {
         type: String,
         required : true
+    },
+    isEmailVerified: {
+        type: Boolean,
+        default: false
+    },
+    verifyOTP: {
+        type: String
+    },
+    verifyOTPExpires: {
+        type: Date
     }
 })
 
