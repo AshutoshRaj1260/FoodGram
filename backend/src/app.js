@@ -4,6 +4,7 @@ const authRoutes = require("./routes/auth.routes");
 const foodRoutes = require("./routes/food.routes");
 const cors = require("cors");
 const foodPartnerRoutes = require("./routes/food-partner.routes");
+const passport = require("./services/passport.service");
 
 const app = express();
 app.use(
@@ -17,6 +18,9 @@ app.use(
 
 app.use(express.json());
 app.use(cookieParser());
+
+
+app.use(passport.initialize());
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
