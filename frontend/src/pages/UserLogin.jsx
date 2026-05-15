@@ -223,6 +223,13 @@ export default function UserLogin() {
               <button className="auth-btn" type="submit">
                 Login
               </button>
+              <button type="button" className="auth-btn"
+              onClick={() => {
+                  window.location.href = import.meta.env.VITE_GOOGLE_AUTH_URL;
+                }}
+              >
+                Continue with Google
+              </button>
             </form>
 
             <div className="auth-footer">

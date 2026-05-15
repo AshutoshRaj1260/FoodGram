@@ -217,9 +217,15 @@ export default function PartnerLogin() {
                   />
                 </div>
               </div>
-
               <button className="auth-btn" type="submit">
                 Login
+              </button>
+              <button type="button" className="auth-btn"
+              onClick={() => {
+                  window.location.href = import.meta.env.VITE_GOOGLE_AUTH_URL;
+                }}
+              >
+                Continue with Google
               </button>
             </form>
 
