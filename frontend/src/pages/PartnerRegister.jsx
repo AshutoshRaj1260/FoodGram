@@ -3,6 +3,14 @@ import "../styles/auth.css";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import backgroundImage from "../assets/backgroundImage.jpeg";
+import MailOutlineIcon from "@mui/icons-material/MailOutline";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import DeliveryDiningIcon from "@mui/icons-material/DeliveryDining";
+import BrandLogo from "../../public/brandLogo.png";
+import PersonOutlineIcon from "@mui/icons-material/Person";
+import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
+import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
+import LocalPhoneOutlinedIcon from '@mui/icons-material/LocalPhoneOutlined';
 
 export default function PartnerRegister() {
   const navigate = useNavigate();
@@ -147,104 +155,152 @@ export default function PartnerRegister() {
     //   </div>
     // </div>
     <>
-      <div className="authPage">
-        <div className="form-container">
-          <div className="form-left">
-            <img
-              className="form-image"
-              src={backgroundImage}
-              alt="Background"
-            />
-          </div>
-          <div className="form-right">
-            <div className="top">
-              <h2>FOODGRAM</h2>
-              <select
-                onChange={(e) => {
-                  handleUserChange(e);
-                }}
-              >
-                <option value="foodpartner">Food Partner</option>
-                <option value="user">User</option>
-              </select>
-            </div>
-
-            <section className="formPane">
-              <div className="form-header">
-                <h2>Join as a partner</h2>
+      <div className="auth-page">
+        <div className="auth-card">
+          {/* Left image panel */}
+          <div className="auth-image-panel">
+            <img src={backgroundImage} alt="Delicious food spread" />
+            <div className="auth-image-overlay">
+              <div className="auth-overlay-content">
+                <span className="auth-badge">✨ Premium Experience</span>
+                <h1>Made for Food Lovers</h1>
                 <p>
-                  Register your kitchen to receive orders and grow your
-                  business.
+                  Good coffee, good food, great moments.
+                  <br />
+                  Let’s continue your journey!
                 </p>
               </div>
+            </div>
+          </div>
 
-              <form className="form" onSubmit={handleSubmit}>
-                <div className="inputBoxesWrapper">
-                  {" "}
-                  <div className="inputBox">
-                    <label htmlFor="businessname">Business name</label>
+          {/* Right form panel */}
+          <div className="auth-form-panel">
+            <div className="auth-form-header">
+              <span className="auth-logo">
+                {" "}
+                <img src={BrandLogo} alt="logo" className="auto-logo-image" />
+                <p className="auth-logo-text">FOODGRAM</p>
+              </span>
+              <div className="auth-select-wrapper">
+                <PersonOutlineIcon className="auth-select-icon" />
+                <select
+                  className="auth-role-select"
+                  onChange={(e) => {
+                    handleUserChange(e);
+                  }}
+                  aria-label="Signup as"
+                >
+                  <option value="foodpartner">Food Partner</option>
+                  <option value="user">User</option>
+                </select>
+              </div>
+            </div>
+
+            <h2 className="auth-title">
+              Create Account <span className="stars">✨</span>
+            </h2>
+            <p className="auth-subtitle">
+              Bring your flavors to the Foodgram community
+            </p>
+
+            <form onSubmit={handleSubmit}>
+              <div className="inputBoxesWrapper">
+                {/* old Wrapper above */}
+                <div className="auth-field">
+                  <label htmlFor="businessname">Business name</label>
+                  <div className="auth-input-wrapper">
+                    <StorefrontOutlinedIcon className="auth-input-icon" />
                     <input
                       id="businessName"
                       name="businessName"
                       placeholder="Burger Kings"
+                      aria-label="Business name"
+                      required
                     />
                   </div>
-                  <div className="inputBox">
-                    <label htmlFor="ownerName">Owner name</label>
+                </div>
+
+                <div className="auth-field">
+                  <label htmlFor="ownername">Owner name</label>
+                  <div className="auth-input-wrapper">
+                    <PersonOutlinedIcon className="auth-input-icon" />
                     <input
-                      id="ownerName"
-                      name="businessName"
+                      id="ownername"
+                      name="ownername"
                       placeholder="Jane Doe"
+                      aria-label="Owner name"
+                      required
                     />
                   </div>
-                  <div className="inputBox">
-                    <label htmlFor="phone">Phone number</label>
+                </div>
+
+                <div className="auth-field">
+                  <label htmlFor="phone">Phone number</label>
+                  <div className="auth-input-wrapper">
+                    <LocalPhoneOutlinedIcon className="auth-input-icon" />
                     <input
                       id="phone"
                       name="phone"
                       type="tel"
                       placeholder="+91 55555 55555"
+                      aria-label="Phone number"
+                      required
                     />
                   </div>
-                  <div className="inputBox">
-                    <label htmlFor="address">Address</label>
+                </div>
+
+                <div className="auth-field">
+                  <label htmlFor="address">Address</label>
+                  <div className="auth-input-wrapper">
                     <textarea
-                      name="address"
                       id="address"
+                      name="address"
                       placeholder="Street, City, State, ZIP"
                       rows={3}
+                      aria-label="address"
+                      required
                     ></textarea>
                   </div>
-                  <div className="inputBox">
-                    <label htmlFor="email">Email</label>
+                </div>
+
+                <div className="auth-field">
+                  <label htmlFor="email">Email</label>
+                  <div className="auth-input-wrapper">
+                    <MailOutlineIcon className="auth-input-icon" />
                     <input
                       id="email"
                       name="email"
                       type="email"
-                      placeholder="contact@business.com"
+                      placeholder="you@example.com"
+                      aria-label="Email address"
+                      required
                     />
                   </div>
-                  <div className="inputBox">
-                    <label htmlFor="password">Password</label>
+                </div>
+                <div className="auth-field">
+                  <label htmlFor="password">Password</label>
+                  <div className="auth-input-wrapper">
+                    <LockOutlinedIcon className="auth-input-icon" />
                     <input
                       id="password"
                       name="password"
                       type="password"
-                      placeholder="Create a password"
+                      placeholder="your password"
+                      aria-label="Password"
+                      required
                     />
                   </div>
                 </div>
-                {/* <div className="or-row">Or continue with email</div> */}
-                <div className="actions">
-                  <button className="btn" type="submit">
-                    Create account
-                  </button>
-                  <Link className="switch-link" to="/foodpartner/login">
-                    Already have an account?
-                  </Link>
-                </div>
-              </form>
-            </section>
+              </div>
+
+              <button className="auth-btn" type="submit">
+                Create account
+              </button>
+            </form>
+
+            <div className="auth-footer">
+              Already have an account? <a href="/">Sign in</a>
+            </div>
           </div>
         </div>
       </div>
