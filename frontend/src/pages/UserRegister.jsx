@@ -7,14 +7,16 @@ import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import PersonOutlineIcon from "@mui/icons-material/Person";
 import BrandLogo from "../../public/brandLogo.png";
+import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 
 export default function UserRegister() {
   const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = React.useState("");
+  const [successMessage, setSuccessMessage] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const handleUserChange = (e) => {
-    console.log(e.target.value);
-
     if (e.target.value === "foodpartner") {
       navigate("/foodpartner/register");
     }
@@ -22,26 +24,28 @@ export default function UserRegister() {
 
   const handleSubmit = async (e) => {
     const apiUrl = import.meta.env.VITE_API_URL;
-
     e.preventDefault();
+    setErrorMessage("");
+    setSuccessMessage("");
+    setIsLoading(true);
+
     const name = e.target.name.value;
     const email = e.target.email.value;
     const password = e.target.password.value;
 
-    const response = await axios.post(
-      `${apiUrl}/api/auth/user/register`,
-      {
-        fullName: name,
-        email: email,
-        password: password,
-      },
-      {
-        withCredentials: true,
-      },
-    );
-
-    console.log(response.data);
-    navigate("/home");
+    try {
+      const response = await axios.post(
+        `${apiUrl}/api/auth/user/register`,
+        { fullName: name, email, password },
+        { withCredentials: true },
+      );
+      setSuccessMessage(response.data.message || "Account created! Please check your email.");
+      setTimeout(() => navigate("/verify-email", { state: { email, role: "user" } }), 1500);
+    } catch (err) {
+      setErrorMessage(err.response?.data?.message || "Registration failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -157,6 +161,23 @@ export default function UserRegister() {
               </div>
             </div>
 
+            {errorMessage && (
+              <div className="errorBanner">
+                <ReportGmailerrorredIcon sx={{ fontSize: "40px", color: "#e91938" }} />
+                <div className="error">
+                  <h5>{errorMessage}</h5>
+                  <p>Please try again</p>
+                </div>
+                <div className="errorLine"></div>
+              </div>
+            )}
+
+            {successMessage && (
+              <div className="successBanner">
+                <h5>✅ {successMessage}</h5>
+              </div>
+            )}
+
             <h2 className="auth-title">
               Create Account <span className="stars">✨</span>
             </h2>
@@ -209,8 +230,8 @@ export default function UserRegister() {
                 </div>
               </div>
 
-              <button className="auth-btn" type="submit">
-                Create account
+              <button className="auth-btn" type="submit" disabled={isLoading}>
+                {isLoading ? <span className="btn-spinner" /> : "Create account"}
               </button>
             </form>
 

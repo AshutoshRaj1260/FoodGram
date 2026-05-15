@@ -13,10 +13,12 @@ import BrandLogo from "../../public/brandLogo.png";
 export default function PartnerLogin() {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isUnverified, setIsUnverified] = useState(false);
+  const [tempEmail, setTempEmail] = useState("");
 
   const handleUserChange = (e) => {
-    console.log(e.target.value);
-
     if (e.target.value === "user") {
       navigate("/");
     }
@@ -25,41 +27,46 @@ export default function PartnerLogin() {
   const handleSubmit = async (e) => {
     const apiUrl = import.meta.env.VITE_API_URL;
     setErrorMessage("");
-
+    setSuccessMessage("");
+    setIsUnverified(false);
+    setIsLoading(true);
     e.preventDefault();
     const email = e.target.email.value;
     const password = e.target.password.value;
+    setTempEmail(email);
+
     try {
       const response = await axios.post(
         `${apiUrl}/api/auth/foodpartner/login`,
-        {
-          email: email,
-          password: password,
-        },
-        {
-          withCredentials: true,
-        },
+        { email, password },
+        { withCredentials: true },
       );
-
-      console.log(response.data);
       localStorage.setItem("userType", "partner");
-      console.log(localStorage.getItem("userType"));
-      navigate("/create-food");
+      setSuccessMessage(response.data.message || "Logged in successfully!");
+      setTimeout(() => navigate("/create-food"), 1500);
     } catch (err) {
-      console.log(err.response.data.message);
-      setErrorMessage(err.response.data.message);
+      setErrorMessage(err.response?.data?.message || "Login failed. Please try again.");
+      if (err.response?.status === 403) {
+        setIsUnverified(true);
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     if (errorMessage) {
-      const timer = setTimeout(() => {
-        setErrorMessage("");
-      }, 5000);
-
+      const timer = setTimeout(() => setErrorMessage(""), 5000);
       return () => clearTimeout(timer);
     }
   }, [errorMessage]);
+
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => setSuccessMessage(""), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage]);
 
   return (
     // <div className="auth-wrap">
@@ -176,9 +183,25 @@ export default function PartnerLogin() {
                 />
                 <div className="error">
                   <h5>{errorMessage}</h5>
-                  <p>Please try again</p>
+                  {isUnverified ? (
+                    <Link 
+                      to="/verify-email" 
+                      state={{ email: tempEmail, role: "partner" }}
+                      style={{ color: "#c0392b", fontSize: "0.75rem", fontWeight: "700", textDecoration: "underline" }}
+                    >
+                      Verify Now
+                    </Link>
+                  ) : (
+                    <p>Please try again</p>
+                  )}
                 </div>
                 <div className="errorLine"></div>
+              </div>
+            )}
+
+            {successMessage && (
+              <div className="successBanner">
+                <h5>✅ {successMessage}</h5>
               </div>
             )}
 
@@ -217,8 +240,8 @@ export default function PartnerLogin() {
                   />
                 </div>
               </div>
-              <button className="auth-btn" type="submit">
-                Login
+              <button className="auth-btn" type="submit" disabled={isLoading}>
+                {isLoading ? <span className="btn-spinner" /> : "Login"}
               </button>
               <button type="button" className="auth-btn"
               onClick={() => {

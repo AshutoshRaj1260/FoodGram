@@ -8,6 +8,7 @@ import Home from "../pages/general/Home.jsx";
 import CreateFood from "../pages/food-partner/CreateFood.jsx";
 import Profile from "../pages/food-partner/Profile.jsx";
 import Saved from "../pages/general/Saved.jsx";
+import VerifyEmail from "../pages/VerifyEmail.jsx";
 const AppRoutes = () => {
     return (
         <Router>
@@ -21,6 +22,7 @@ const AppRoutes = () => {
                 <Route path="/create-food" element={<CreateFood />} />
                 <Route path="/food-partner/:id" element={<Profile />} />
                 <Route path="/saved" element={<Saved />} />
+                <Route path="/verify-email" element={<VerifyEmail />} />
             </Routes>
         </Router>
     )

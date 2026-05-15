@@ -11,9 +11,13 @@ import PersonOutlineIcon from "@mui/icons-material/Person";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 import LocalPhoneOutlinedIcon from '@mui/icons-material/LocalPhoneOutlined';
+import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
 
 export default function PartnerRegister() {
   const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = React.useState("");
+  const [successMessage, setSuccessMessage] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const handleUserChange = (e) => {
     console.log(e.target.value);
@@ -25,8 +29,11 @@ export default function PartnerRegister() {
 
   const handleSubmit = async (e) => {
     const apiUrl = import.meta.env.VITE_API_URL;
-
     e.preventDefault();
+    setErrorMessage("");
+    setSuccessMessage("");
+    setIsLoading(true);
+
     const businessName = e.target.businessName.value;
     const owner = e.target.owner.value;
     const phone = e.target.phone.value;
@@ -34,23 +41,19 @@ export default function PartnerRegister() {
     const email = e.target.email.value;
     const password = e.target.password.value;
 
-    const response = await axios.post(
-      `${apiUrl}/api/auth/foodpartner/register`,
-      {
-        businessName: businessName,
-        ownerName: owner,
-        phone: phone,
-        address: address,
-        email: email,
-        password: password,
-      },
-      {
-        withCredentials: true,
-      },
-    );
-
-    console.log(response.data);
-    navigate("/create-food");
+    try {
+      const response = await axios.post(
+        `${apiUrl}/api/auth/foodpartner/register`,
+        { businessName, ownerName: owner, phone, address, email, password },
+        { withCredentials: true },
+      );
+      setSuccessMessage(response.data.message || "Account created! Please check your email.");
+      setTimeout(() => navigate("/verify-email", { state: { email, role: "partner" } }), 1500);
+    } catch (err) {
+      setErrorMessage(err.response?.data?.message || "Registration failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -195,6 +198,22 @@ export default function PartnerRegister() {
                 </select>
               </div>
             </div>
+            {errorMessage && (
+              <div className="errorBanner">
+                <ReportGmailerrorredIcon sx={{ fontSize: "40px", color: "#e91938" }} />
+                <div className="error">
+                  <h5>{errorMessage}</h5>
+                  <p>Please try again</p>
+                </div>
+                <div className="errorLine"></div>
+              </div>
+            )}
+
+            {successMessage && (
+              <div className="successBanner">
+                <h5>✅ {successMessage}</h5>
+              </div>
+            )}
 
             <h2 className="auth-title">
               Create Account <span className="stars">✨</span>
@@ -226,7 +245,7 @@ export default function PartnerRegister() {
                     <PersonOutlinedIcon className="auth-input-icon" />
                     <input
                       id="ownername"
-                      name="ownername"
+                      name="owner"
                       placeholder="Jane Doe"
                       aria-label="Owner name"
                       required
@@ -293,8 +312,8 @@ export default function PartnerRegister() {
                 </div>
               </div>
 
-              <button className="auth-btn" type="submit">
-                Create account
+              <button className="auth-btn" type="submit" disabled={isLoading}>
+                {isLoading ? <span className="btn-spinner" /> : "Create account"}
               </button>
             </form>
 
