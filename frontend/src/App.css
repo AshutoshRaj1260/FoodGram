@@ -1,10 +1,30 @@
-*{
-  margin: 0%;
-  padding: 0%;
+* {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
-html,body{
+
+html, body {
   height: 100%;
   width: 100%;
-  font-family: 'Roboto', sans-serif;
+  font-family: var(--font-sans);
+  background-color: var(--bg);
+  color: var(--text);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
+
+#root {
+  width: 100%;
+}
+
+/* Utility classes */
+button {
+  font-family: inherit;
+}
+
+input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+

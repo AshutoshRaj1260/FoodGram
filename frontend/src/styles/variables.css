@@ -1,6 +1,6 @@
 /* Centralized CSS variables for theme and spacing */
 :root {
-  /* Colors - light */
+  /* Colors - light mode (default) */
   --bg: #f7fafc;
   --surface: #ffffff;
   --text: #0f172a;
@@ -24,13 +24,12 @@
   --text-size-sm: 0.875rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0b1220;
-    --surface: #071226;
-    --text: #e6eef8;
-    --muted: #94a3b8;
-    --primary: #2dd4bf;
-    --primary-contrast: #001219;
-  }
+/* Dark mode theme */
+[data-theme="dark"] {
+  --bg: #0b1220;
+  --surface: #071226;
+  --text: #e6eef8;
+  --muted: #94a3b8;
+  --primary: #2dd4bf;
+  --primary-contrast: #001219;
 }

@@ -214,7 +214,9 @@ body {
   font-size: 28px;
 }
 
-.wave-hand:hover {
+.wave-hand:hover,
+.wave-hand:active,
+.wave-hand:focus-visible {
   animation: wave 2s ease-in-out;
 }
 
@@ -258,7 +260,9 @@ body {
   font-size: 28px;
 }
 
-.stars:hover {
+.stars:hover,
+.stars:active,
+.stars:focus-visible {
   animation: starPulse 1.8s ease-in-out;
 }
 
@@ -417,7 +421,8 @@ body {
   transition: background 0.2s, transform 0.1s;
 }
 
-.auth-btn:hover {
+.auth-btn:hover,
+.auth-btn:focus-visible {
   background: #a93226;
 }
 
@@ -438,7 +443,9 @@ body {
   text-decoration: none;
 }
 
-.auth-footer a:hover {
+.auth-footer a:hover,
+.auth-footer a:active,
+.auth-footer a:focus-visible {
   text-decoration: underline;
 }
 

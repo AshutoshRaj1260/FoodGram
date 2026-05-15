@@ -1,0 +1,73 @@
+/* Landing Page Styles */
+.landing-page {
+  width: 100%;
+  overflow-x: hidden;
+  background: var(--bg);
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Default light theme section styling */
+.landing-page section {
+  scroll-margin-top: 70px;
+}
+
+/* Animation utilities */
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Responsive tweaks */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .landing-page section {
+    scroll-margin-top: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .landing-page section {
+    scroll-margin-top: 60px;
+  }
+}
