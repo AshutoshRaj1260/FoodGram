@@ -3,6 +3,11 @@ import "../styles/auth.css";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import backgroundImage from "../assets/backgroundImage.jpeg";
+import MailOutlineIcon from "@mui/icons-material/MailOutline";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import PersonOutlineIcon from "@mui/icons-material/Person";
+import BrandLogo from "../../public/brandLogo.png";
+import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 
 export default function UserRegister() {
   const navigate = useNavigate();
@@ -111,68 +116,107 @@ export default function UserRegister() {
     //   </div>
     // </div>
     <>
-      <div className="authPage">
-        <div className="form-container">
-          <div className="form-left">
-            <img
-              className="form-image"
-              src={backgroundImage}
-              alt="Background"
-            />
+      <div className="auth-page">
+        <div className="auth-card">
+          {/* Left image panel */}
+          <div className="auth-image-panel">
+            <img src={backgroundImage} alt="Delicious food spread" />
+            <div className="auth-image-overlay">
+              <div className="auth-overlay-content">
+                <span className="auth-badge">✨ Premium Experience</span>
+                <h1>Made for Food Lovers</h1>
+                <p>
+                  Good coffee, good food, great moments.
+                  <br />
+                  Let’s continue your journey!
+                </p>
+              </div>
+            </div>
           </div>
-          <div className="form-right">
-            <div className="top">
-              <h2>FOODGRAM</h2>
-              <select
-                onChange={(e) => {
-                  handleUserChange(e);
-                }}
-              >
-                <option value="user">User</option>
-                <option value="foodpartner">Food Partner</option>
-              </select>
+
+          {/* Right form panel */}
+          <div className="auth-form-panel">
+            <div className="auth-form-header">
+              <span className="auth-logo">
+                {" "}
+                <img src={BrandLogo} alt="logo" className="auto-logo-image" />
+                <p className="auth-logo-text">FOODGRAM</p>
+              </span>
+              <div className="auth-select-wrapper">
+                <PersonOutlineIcon className="auth-select-icon" />
+                <select
+                  className="auth-role-select"
+                  onChange={(e) => {
+                    handleUserChange(e);
+                  }}
+                  aria-label="Signup as"
+                >
+                  <option value="user">User</option>
+                  <option value="foodpartner">Food Partner</option>
+                </select>
+              </div>
             </div>
 
-            <section className="formPane">
-              <div className="form-header">
-                <h2>User Sign Up</h2>
-                <p>Sign up to discover great meals in your area.</p>
+            <h2 className="auth-title">
+              Create Account <span className="stars">✨</span>
+            </h2>
+            <p className="auth-subtitle">
+              Join Foodgram and start exploring delicious moments
+            </p>
+
+            <form onSubmit={handleSubmit}>
+              <div className="auth-field">
+                <label htmlFor="name">Full name</label>
+                <div className="auth-input-wrapper">
+                  <PersonOutlinedIcon className="auth-input-icon" />
+                  <input
+                    id="name"
+                    name="name"
+                    placeholder="Jane Doe"
+                    aria-label="Full name"
+                    required
+                  />
+                </div>
               </div>
 
-              <form className="form" onSubmit={handleSubmit}>
-                <div className="inputBox">
-                  <label htmlFor="name">Full name</label>
-                  <input id="name" name="name" placeholder="Jane Doe" />
-                </div>
-                <div className="inputBox">
-                  <label htmlFor="email">Email</label>
+              <div className="auth-field">
+                <label htmlFor="email">Email</label>
+                <div className="auth-input-wrapper">
+                  <MailOutlineIcon className="auth-input-icon" />
                   <input
                     id="email"
                     name="email"
                     type="email"
                     placeholder="you@example.com"
+                    aria-label="Email address"
+                    required
                   />
                 </div>
-                <div className="inputBox">
-                  <label htmlFor="password">Password</label>
+              </div>
+
+              <div className="auth-field">
+                <label htmlFor="password">Password</label>
+                <div className="auth-input-wrapper">
+                  <LockOutlinedIcon className="auth-input-icon" />
                   <input
                     id="password"
                     name="password"
                     type="password"
-                    placeholder="Your password"
+                    placeholder="your password"
+                    aria-label="Password"
+                    required
                   />
                 </div>
-                {/* <div className="or-row">Or continue with email</div> */}
-                <div className="actions">
-                  <button className="btn" type="submit">
-                    Create account
-                  </button>
-                  <Link className="switch-link" to="/">
-                    Already have an account?
-                  </Link>
-                </div>
-              </form>
-            </section>
+              </div>
+
+              <button className="auth-btn" type="submit">
+                Create account
+              </button>
+            </form>
+
+            <div className="auth-footer">
+              Already have an account? <a href="/">Sign in</a>
+            </div>
           </div>
         </div>
       </div>
