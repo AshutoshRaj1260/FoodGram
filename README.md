@@ -76,7 +76,7 @@ FoodGram/
 └── README.md
 </pre>
 
-## 🚀 Getting Started: Local Setup
+## 🚀 Getting Started: 
 
 Follow these instructions to get a copy of the project running on your local machine.
 
@@ -86,8 +86,92 @@ Follow these instructions to get a copy of the project running on your local mac
 * npm
 * A MongoDB database (You can use a free [MongoDB Atlas](https://www.mongodb.com/cloud/atlas/register) cluster)
 
-### 1. Clone the Repository
+### ImageKit API Keys
 
-```bash
-git clone [https://github.com/AshutoshRaj1260/FoodGram.git](https://github.com/AshutoshRaj1260/FoodGram.git)
-cd FoodGram
+Follow the steps below to access the ImageKit API keys necessary to run the project:
+- Access the website at: https://imagekit.io/ .
+- Click on "Sign Up" to make an account and fill in the details as necessary.
+- Navigate to "Developer Options" on the left panel to retrieve all keys:
+
+![display](image.png)
+
+### Local Setup
+
+1.  **Fork the repository:**
+    Go to the [FoodGram GitHub repository](https://github.com/AshutoshRaj1260/FoodGram) and click the "Fork" button in the top right.
+
+2.  **Clone your forked repository:**
+    ```bash
+    git clone [https://github.com/YOUR_GITHUB_USERNAME/FoodGram.git](https://github.com/YOUR_GITHUB_USERNAME/FoodGram.git)
+    cd FoodGram
+    ```
+    (Replace `YOUR_GITHUB_USERNAME` with your actual GitHub username.)
+
+3.  **Install Backend Dependencies:**
+    ```bash
+    cd backend
+    npm install
+    ```
+    Create a `.env` file in the `backend` directory with the following variables:
+    ```ini
+    # Your MongoDB connection string
+    MONGODB_URI=your_mongodb_connection_string
+
+    # A secret string for signing JWTs (recommended: at least 32 characters)
+    JWT_SECRET=your_super_secret_key
+
+    # Your frontend's local URL for CORS (Vite's default)
+    FRONTEND_URL=http://localhost:5173
+
+    # Your ImageKit credentials (for video uploads)
+    IMAGEKIT_PRIVATE_KEY=your_imagekit_private_key
+    IMAGEKIT_PUBLIC_KEY=your_imagekit_public_key
+    IMAGEKIT_URL_ENDPOINT=[https://ik.imagekit.io/your_imagekit_id/](https://ik.imagekit.io/your_imagekit_id/)
+    ```
+
+4.  **Install Frontend Dependencies:**
+    ```bash
+    cd ../frontend # Go back to the root, then into frontend
+    npm install
+    ```
+    Create a `.env` file in the `frontend` directory with:
+    ```ini
+    # Your backend's local API URL (Note: Vite uses VITE_ prefix for env vars)
+    VITE_API_URL=http://localhost:8000
+    ```
+---
+
+## Running the Application
+
+You will need two separate terminal windows.
+
+* **In Terminal 1 (Backend):**
+    ```bash
+    cd backend
+    npm start # Or `nodemon server.js` if you have nodemon installed
+    # The backend server should start on http://localhost:8000
+    ```
+
+* **In Terminal 2 (Frontend):**
+    ```bash
+    cd frontend
+    npm run dev
+    # The frontend application should be accessible at http://localhost:5173
+    ```
+    Open `http://localhost:5173` in your browser.
+
+--- 
+
+## Contributing 
+
+FoodGram is **actively looking for contributors**, built in the open, and every PR matters.
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) for the full workflow, coding guidelines, and how to find
+good first issues. Ensure all interactions follow the [CODE_OF_CONDUCT.md] (CODE_OF_CONDUCT.md).
+
+Good places to start:
+
+- Issues labeled
+  [`good-first-issue`](https://github.com/Zerith-Labs/ZerithDB/issues?q=label%3Agood-first-issue)
+
+---
