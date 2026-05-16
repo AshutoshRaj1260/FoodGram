@@ -115,7 +115,7 @@ Follow the steps below to access the ImageKit API keys necessary to run the proj
     Create a `.env` file in the `backend` directory with the following variables:
     ```ini
     # Your MongoDB connection string
-    MONGODB_URI=your_mongodb_connection_string
+    MONGO_URI=your_mongodb_connection_string
 
     # A secret string for signing JWTs (recommended: at least 32 characters)
     JWT_SECRET=your_super_secret_key
