@@ -8,7 +8,7 @@ import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import PersonOutlineIcon from "@mui/icons-material/Person";
-import BrandLogo from "../../public/brandLogo.png";
+import BrandLogo from "/brandLogo.png";
 
 export default function UserLogin() {
   const navigate = useNavigate();
