@@ -168,3 +168,44 @@ FoodGram is **actively looking for contributors**, built in the open, and every 
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) for the full workflow, coding guidelines, and how to find
 good first issues. Ensure all interactions follow the [CODE_OF_CONDUCT.md] (CODE_OF_CONDUCT.md).
+
+
+```bash
+git clone https://github.com/AshutoshRaj1260/FoodGram.git
+cd FoodGram
+```
+
+## 🐳 Running with Docker (Recommended)
+
+The easiest way to get FoodGram up and running is using Docker Compose. This will set up both the backend and frontend in containers.
+
+### 1. Prerequisites
+* [Docker](https://www.docker.com/products/docker-desktop/) installed on your machine.
+* [Docker Compose](https://docs.docker.com/compose/install/) (usually included with Docker Desktop).
+
+### 2. Environment Variables
+Create `.env` files in both the `backend` and `frontend` directories by copying the provided examples:
+
+**Backend:**
+```bash
+cp backend/.env.example backend/.env
+```
+Fill in your `MONGO_URI` (from MongoDB Atlas) and other credentials in `backend/.env`.
+
+**Frontend:**
+```bash
+cp frontend/.env.example frontend/.env
+```
+Fill in the `VITE_API_URL` and `VITE_GOOGLE_AUTH_URL` in `frontend/.env`.
+
+### 3. Run with Docker Compose
+From the root of the project, run:
+
+```bash
+docker-compose up --build
+```
+
+The application will be available at:
+*   **Frontend:** [http://localhost:5173](http://localhost:5173)
+*   **Backend:** [http://localhost:3000](http://localhost:3000)
+
