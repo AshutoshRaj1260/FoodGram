@@ -6,13 +6,16 @@ import backgroundImage from "../assets/backgroundImage.jpeg";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import DeliveryDiningIcon from "@mui/icons-material/DeliveryDining";
-import BrandLogo from "../../public/brandLogo.png";
+import BrandLogo from "/brandLogo.png";
 import PersonOutlineIcon from "@mui/icons-material/Person";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 import LocalPhoneOutlinedIcon from '@mui/icons-material/LocalPhoneOutlined';
 
-export default function PartnerRegister() {
+const isValidPassword = (p) =>
+  p.length >= 8 && /[0-9]/.test(p) && /[A-Z]/.test(p) && /[^A-Za-z0-9]/.test(p);
+
+export default function PartnerRegister({ onFlash }) {
   const navigate = useNavigate();
 
   const handleUserChange = (e) => {
@@ -28,11 +31,19 @@ export default function PartnerRegister() {
 
     e.preventDefault();
     const businessName = e.target.businessName.value;
-    const owner = e.target.owner.value;
+    const owner = e.target.ownername.value;
     const phone = e.target.phone.value;
     const address = e.target.address.value;
     const email = e.target.email.value;
     const password = e.target.password.value;
+
+    if (!isValidPassword(password)) {
+      onFlash(
+        "Follow the password guidelines.",
+        "error"
+      );
+      return;
+    }
 
     const response = await axios.post(
       `${apiUrl}/api/auth/foodpartner/register`,
@@ -285,11 +296,16 @@ export default function PartnerRegister() {
                       id="password"
                       name="password"
                       type="password"
+                      maxLength={64}
                       placeholder="your password"
                       aria-label="Password"
                       required
                     />
+                    
                   </div>
+                  <p className="psw_info">
+                        Must contain at least 8 characters with a number, uppercase letter, and special character.
+                  </p>
                 </div>
               </div>
 
