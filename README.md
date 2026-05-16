@@ -168,10 +168,3 @@ FoodGram is **actively looking for contributors**, built in the open, and every 
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) for the full workflow, coding guidelines, and how to find
 good first issues. Ensure all interactions follow the [CODE_OF_CONDUCT.md] (CODE_OF_CONDUCT.md).
-
-Good places to start:
-
-- Issues labeled
-  [`good-first-issue`](https://github.com/Zerith-Labs/ZerithDB/issues?q=label%3Agood-first-issue)
-
----
