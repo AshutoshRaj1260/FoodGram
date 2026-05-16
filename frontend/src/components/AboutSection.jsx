@@ -6,7 +6,6 @@ const AboutSection = () => {
   const videos = [
     "/8477403-hd_1080_1920_24fps.mp4",
     "/8908528-hd_1080_1920_25fps.mp4",
-    "/4252295-uhd_2160_4096_25fps.mp4",
   ];
 
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
