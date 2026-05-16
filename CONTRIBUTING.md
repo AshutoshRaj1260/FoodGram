@@ -1,4 +1,4 @@
-# Contributing to FoodGram 🍔
+# Contributing to FoodGram 🍔 
 
 We're thrilled you're interested in contributing to FoodGram! This document outlines how you can get involved, the development process, and what to expect.
 
