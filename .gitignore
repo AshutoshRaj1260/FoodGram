@@ -1,2 +1,12 @@
 .env
 node_modules
+
+# Video files
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+*.flv
+*.wmv
+*.m4v

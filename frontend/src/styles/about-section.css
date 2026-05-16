@@ -304,11 +304,6 @@
   }
 }
 
-  .about-text {
-    font-size: 1rem;
-  }
-}
-
 @media (max-width: 480px) {
   .about {
     padding: 40px var(--space-md);

@@ -16,9 +16,9 @@ const AboutSection = () => {
   useEffect(() => {
     const nextIndex = (currentVideoIndex + 1) % videos.length;
     const nextVideoUrl = videos[nextIndex];
-    
+
     // Create a hidden video element to preload the next video
-    const preloadVideo = document.createElement('video');
+    const preloadVideo = document.createElement("video");
     preloadVideo.src = nextVideoUrl;
     preloadVideo.preload = "auto";
     preloadVideo.muted = true;
@@ -70,7 +70,10 @@ const AboutSection = () => {
         <div className="about-content">
           <h2 className="section-title">About FoodGram</h2>
           <p className="about-text">
-            FoodGram is a revolutionary platform that brings food enthusiasts together. Whether you're a professional chef or a home cook, FoodGram is your creative space to showcase culinary talents and discover amazing recipes from around the world.
+            FoodGram is a revolutionary platform that brings food enthusiasts
+            together. Whether you're a professional chef or a home cook,
+            FoodGram is your creative space to showcase culinary talents and
+            discover amazing recipes from around the world.
           </p>
 
           <div className="about-highlights">
