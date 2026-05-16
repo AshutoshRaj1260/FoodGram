@@ -180,17 +180,18 @@ export default function UserLogin() {
                   />
 
                   <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    style={{
-                      background: "none",
-                      border: "none",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      color: "#666",
-                    }}
-                  >
+  type="button"
+  onClick={() => setShowPassword(!showPassword)}
+  aria-label={showPassword ? "Hide password" : "Show password"}
+  style={{
+    background: "none",
+    border: "none",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    color: "#666",
+  }}
+>
                     {showPassword ? (
                       <VisibilityOffOutlinedIcon />
                     ) : (
