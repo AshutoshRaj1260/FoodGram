@@ -1,6 +1,20 @@
 version: '3.8'
 
 services:
+  mongodb:
+    image: mongo:latest
+    container_name: foodgram-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  redis:
+    image: redis:latest
+    container_name: foodgram-redis
+    ports:
+      - "6379:6379"
+
   backend:
     build:
       context: ./backend
@@ -10,6 +24,9 @@ services:
       - "3000:3000"
     env_file:
       - ./backend/.env
+    depends_on:
+      - mongodb
+      - redis
 
   frontend:
     build:
@@ -20,3 +37,6 @@ services:
       - "5173:80"
     depends_on:
       - backend
+
+volumes:
+  mongodb_data:
