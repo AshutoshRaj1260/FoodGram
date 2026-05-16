@@ -6,8 +6,14 @@ const cors = require("cors");
 const foodPartnerRoutes = require("./routes/food-partner.routes");
 const passport = require("./services/passport.service");
 const path = require("path");
+const { globalLimiter } = require("./middlewares/rateLimiter.middleware");
 
 const app = express();
+
+app.set('trust proxy', 1);
+
+app.use(globalLimiter);
+
 app.use(
   cors({
     origin: process.env.FRONTEND_URL ? process.env.FRONTEND_URL.replace(/\/$/, "") : undefined,

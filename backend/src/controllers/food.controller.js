@@ -3,6 +3,7 @@ const storageService = require("../services/storage.service");
 const { v4: uuid } = require("uuid");
 const likeModel = require("../models/likes.model");
 const saveModel = require("../models/save.model");
+const { invalidateCache, getOrSetCache } = require("../services/redis.service");
 
 async function createFood(req, res) {
   const fileUploadResult = await storageService.uploadFile(
@@ -16,6 +17,11 @@ async function createFood(req, res) {
     description: req.body.description,
     foodPartner: req.foodPartner._id,
   });
+
+  // Invalidate cache for this partner and the global feed
+  await invalidateCache(`partner:${req.foodPartner._id}`);
+  await invalidateCache('all_food_items');
+
   res.status(201).json({
     message: "Food Item Created Successfully",
     foodItem,
@@ -23,7 +29,11 @@ async function createFood(req, res) {
 }
 
 async function getFoodItems(req, res) {
-  const foodItems = await foodModel.find({});
+  const { data: foodItems, cache } = await getOrSetCache('all_food_items', async () => {
+    return await foodModel.find({});
+  }, 300); // 5 minutes TTL
+
+  res.setHeader('X-Cache', cache);
   res.status(200).json({
     message: "Food Items fetched successfully",
     foodItems,
@@ -43,6 +53,10 @@ async function likeFood(req, res) {
     await likeModel.deleteOne({ user: user._id, food: foodId });
 
     const updatedFood = await foodModel.findByIdAndUpdate(foodId, { $inc: { likeCount: -1 } }, { new: true });
+    
+    await invalidateCache(`partner:${updatedFood.foodPartner}`);
+    await invalidateCache('all_food_items');
+
     res.status(200).json({ 
       message: "Food item unliked successfully",
       liked: false,
@@ -51,6 +65,10 @@ async function likeFood(req, res) {
   } else {
     await likeModel.create({ user: user._id, food: foodId });
     const updatedFood = await foodModel.findByIdAndUpdate(foodId, { $inc: { likeCount: 1 } }, { new: true });
+    
+    await invalidateCache(`partner:${updatedFood.foodPartner}`);
+    await invalidateCache('all_food_items');
+
     res.status(200).json({ 
       message: "Food item liked successfully",
       liked: true,
@@ -71,6 +89,10 @@ async function saveFood(req, res) {
     await saveModel.deleteOne({ user: user._id, food: foodId });
 
     const updatedFood = await foodModel.findByIdAndUpdate(foodId, { $inc: { saveCount: -1 } }, { new: true });
+    
+    await invalidateCache(`partner:${updatedFood.foodPartner}`);
+    await invalidateCache('all_food_items');
+
     res.status(200).json({ 
       message: "Food item unsaved successfully",
       saved: false,
@@ -79,6 +101,10 @@ async function saveFood(req, res) {
   } else {
     await saveModel.create({ user: user._id, food: foodId });
     const updatedFood = await foodModel.findByIdAndUpdate(foodId, { $inc: { saveCount: 1 } }, { new: true });
+    
+    await invalidateCache(`partner:${updatedFood.foodPartner}`);
+    await invalidateCache('all_food_items');
+
     res.status(200).json({ 
       message: "Food item saved successfully",
       saved: true,
