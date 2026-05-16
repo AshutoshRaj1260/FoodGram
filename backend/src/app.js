@@ -16,8 +16,6 @@ const trustProxyValue = process.env.TRUST_PROXY === 'true' ? true :
                        Number(process.env.TRUST_PROXY) || false;
 app.set('trust proxy', trustProxyValue);
 
-app.use(globalLimiter);
-
 app.use(
   cors({
     origin: process.env.FRONTEND_URL ? process.env.FRONTEND_URL.replace(/\/$/, "") : undefined,
@@ -26,6 +24,8 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+app.use(globalLimiter);
 
 app.use(express.json());
 app.use(cookieParser());

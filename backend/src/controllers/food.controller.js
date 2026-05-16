@@ -54,29 +54,34 @@ async function likeFood(req, res) {
 
     const updatedFood = await foodModel.findByIdAndUpdate(foodId, { $inc: { likeCount: -1 } }, { new: true });
     
-    if (updatedFood) {
-      await invalidateCache(`partner:${updatedFood.foodPartner}`);
-      await invalidateCache('all_food_items');
+    if (!updatedFood) {
+      return res.status(404).json({ message: "Food item not found" });
     }
+
+    await invalidateCache(`partner:${updatedFood.foodPartner}`);
+    await invalidateCache('all_food_items');
 
     res.status(200).json({ 
       message: "Food item unliked successfully",
       liked: false,
-      likeCount: updatedFood ? updatedFood.likeCount : 0
+      likeCount: updatedFood.likeCount
     });
   } else {
     await likeModel.create({ user: user._id, food: foodId });
     const updatedFood = await foodModel.findByIdAndUpdate(foodId, { $inc: { likeCount: 1 } }, { new: true });
     
-    if (updatedFood) {
-      await invalidateCache(`partner:${updatedFood.foodPartner}`);
-      await invalidateCache('all_food_items');
+    if (!updatedFood) {b
+      await likeModel.deleteOne({ user: user._id, food: foodId });
+      return res.status(404).json({ message: "Food item not found" });
     }
+
+    await invalidateCache(`partner:${updatedFood.foodPartner}`);
+    await invalidateCache('all_food_items');
 
     res.status(200).json({ 
       message: "Food item liked successfully",
       liked: true,
-      likeCount: updatedFood ? updatedFood.likeCount : 0
+      likeCount: updatedFood.likeCount
     });
   }
 }
@@ -94,29 +99,35 @@ async function saveFood(req, res) {
 
     const updatedFood = await foodModel.findByIdAndUpdate(foodId, { $inc: { saveCount: -1 } }, { new: true });
     
-    if (updatedFood) {
-      await invalidateCache(`partner:${updatedFood.foodPartner}`);
-      await invalidateCache('all_food_items');
+    if (!updatedFood) {
+      return res.status(404).json({ message: "Food item not found" });
     }
+
+    await invalidateCache(`partner:${updatedFood.foodPartner}`);
+    await invalidateCache('all_food_items');
 
     res.status(200).json({ 
       message: "Food item unsaved successfully",
       saved: false,
-      saveCount: updatedFood ? updatedFood.saveCount : 0
+      saveCount: updatedFood.saveCount
     });
   } else {
     await saveModel.create({ user: user._id, food: foodId });
     const updatedFood = await foodModel.findByIdAndUpdate(foodId, { $inc: { saveCount: 1 } }, { new: true });
     
-    if (updatedFood) {
-      await invalidateCache(`partner:${updatedFood.foodPartner}`);
-      await invalidateCache('all_food_items');
+    if (!updatedFood) {
+      // Rollback: delete the save record we just created
+      await saveModel.deleteOne({ user: user._id, food: foodId });
+      return res.status(404).json({ message: "Food item not found" });
     }
+
+    await invalidateCache(`partner:${updatedFood.foodPartner}`);
+    await invalidateCache('all_food_items');
 
     res.status(200).json({ 
       message: "Food item saved successfully",
       saved: true,
-      saveCount: updatedFood ? updatedFood.saveCount : 0
+      saveCount: updatedFood.saveCount
     });
   }
 }
