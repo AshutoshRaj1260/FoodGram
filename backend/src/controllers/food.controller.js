@@ -70,7 +70,7 @@ async function likeFood(req, res) {
     await likeModel.create({ user: user._id, food: foodId });
     const updatedFood = await foodModel.findByIdAndUpdate(foodId, { $inc: { likeCount: 1 } }, { new: true });
     
-    if (!updatedFood) {b
+    if (!updatedFood) {
       await likeModel.deleteOne({ user: user._id, food: foodId });
       return res.status(404).json({ message: "Food item not found" });
     }
