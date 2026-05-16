@@ -9,7 +9,11 @@ const { globalLimiter } = require("./middlewares/rateLimiter.middleware");
 
 const app = express();
 
-app.set('trust proxy', 1);
+// Trust proxy setting for deployment environments
+const trustProxyValue = process.env.TRUST_PROXY === 'true' ? true : 
+                       process.env.TRUST_PROXY === 'false' ? false : 
+                       Number(process.env.TRUST_PROXY) || false;
+app.set('trust proxy', trustProxyValue);
 
 app.use(globalLimiter);
 

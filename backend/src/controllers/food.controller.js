@@ -54,25 +54,29 @@ async function likeFood(req, res) {
 
     const updatedFood = await foodModel.findByIdAndUpdate(foodId, { $inc: { likeCount: -1 } }, { new: true });
     
-    await invalidateCache(`partner:${updatedFood.foodPartner}`);
-    await invalidateCache('all_food_items');
+    if (updatedFood) {
+      await invalidateCache(`partner:${updatedFood.foodPartner}`);
+      await invalidateCache('all_food_items');
+    }
 
     res.status(200).json({ 
       message: "Food item unliked successfully",
       liked: false,
-      likeCount: updatedFood.likeCount
+      likeCount: updatedFood ? updatedFood.likeCount : 0
     });
   } else {
     await likeModel.create({ user: user._id, food: foodId });
     const updatedFood = await foodModel.findByIdAndUpdate(foodId, { $inc: { likeCount: 1 } }, { new: true });
     
-    await invalidateCache(`partner:${updatedFood.foodPartner}`);
-    await invalidateCache('all_food_items');
+    if (updatedFood) {
+      await invalidateCache(`partner:${updatedFood.foodPartner}`);
+      await invalidateCache('all_food_items');
+    }
 
     res.status(200).json({ 
       message: "Food item liked successfully",
       liked: true,
-      likeCount: updatedFood.likeCount
+      likeCount: updatedFood ? updatedFood.likeCount : 0
     });
   }
 }
@@ -90,25 +94,29 @@ async function saveFood(req, res) {
 
     const updatedFood = await foodModel.findByIdAndUpdate(foodId, { $inc: { saveCount: -1 } }, { new: true });
     
-    await invalidateCache(`partner:${updatedFood.foodPartner}`);
-    await invalidateCache('all_food_items');
+    if (updatedFood) {
+      await invalidateCache(`partner:${updatedFood.foodPartner}`);
+      await invalidateCache('all_food_items');
+    }
 
     res.status(200).json({ 
       message: "Food item unsaved successfully",
       saved: false,
-      saveCount: updatedFood.saveCount
+      saveCount: updatedFood ? updatedFood.saveCount : 0
     });
   } else {
     await saveModel.create({ user: user._id, food: foodId });
     const updatedFood = await foodModel.findByIdAndUpdate(foodId, { $inc: { saveCount: 1 } }, { new: true });
     
-    await invalidateCache(`partner:${updatedFood.foodPartner}`);
-    await invalidateCache('all_food_items');
+    if (updatedFood) {
+      await invalidateCache(`partner:${updatedFood.foodPartner}`);
+      await invalidateCache('all_food_items');
+    }
 
     res.status(200).json({ 
       message: "Food item saved successfully",
       saved: true,
-      saveCount: updatedFood.saveCount
+      saveCount: updatedFood ? updatedFood.saveCount : 0
     });
   }
 }
