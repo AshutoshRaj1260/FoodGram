@@ -4,6 +4,7 @@ const { v4: uuid } = require("uuid");
 const likeModel = require("../models/likes.model");
 const saveModel = require("../models/save.model");
 const { invalidateCache, getOrSetCache } = require("../services/redis.service");
+const mongoose = require("mongoose");
 
 async function createFood(req, res) {
   const fileUploadResult = await storageService.uploadFile(
@@ -44,45 +45,77 @@ async function likeFood(req, res) {
   const { foodId } = req.body;
   const user = req.user;
 
-  const isAlreadyLiked = await likeModel.findOne({
-    user: user._id,
-    food: foodId,
-  });
+  const session = await mongoose.startSession();
+  try {
+    let result;
+    await session.withTransaction(async () => {
+      const isAlreadyLiked = await likeModel.findOne({
+        user: user._id,
+        food: foodId,
+      }).session(session);
 
-  if (isAlreadyLiked) {
-    await likeModel.deleteOne({ user: user._id, food: foodId });
+      if (isAlreadyLiked) {
+        await likeModel.deleteOne({ user: user._id, food: foodId }).session(session);
 
-    const updatedFood = await foodModel.findByIdAndUpdate(foodId, { $inc: { likeCount: -1 } }, { new: true });
-    
-    if (!updatedFood) {
-      return res.status(404).json({ message: "Food item not found" });
-    }
+        const updatedFood = await foodModel.findByIdAndUpdate( 
+          foodId, 
+          { $inc: { likeCount: -1 } }, 
+          { new: true, session }
+        );
+        
+        if (!updatedFood) {
+          throw new Error("NOT_FOUND");
+        }
 
-    await invalidateCache(`partner:${updatedFood.foodPartner}`);
+        result = { 
+          status: 200,
+          message: "Food item unliked successfully",
+          liked: false,
+          likeCount: updatedFood.likeCount,
+          partnerId: updatedFood.foodPartner
+        };
+      } else {
+        // use .create([]) syntax for sessions with transactions
+        await likeModel.create([{ user: user._id, food: foodId }], { session });
+        
+        const updatedFood = await foodModel.findByIdAndUpdate(
+          foodId, 
+          { $inc: { likeCount: 1 } }, 
+          { new: true, session }
+        );
+        
+        if (!updatedFood) {
+          throw new Error("NOT_FOUND");
+        }
+
+        result = { 
+          status: 200,
+          message: "Food item liked successfully",
+          liked: true,
+          likeCount: updatedFood.likeCount,
+          partnerId: updatedFood.foodPartner
+        };
+      }
+    });
+
+    // Only reached if transaction commits
+    await invalidateCache(`partner:${result.partnerId}`);
     await invalidateCache('all_food_items');
 
-    res.status(200).json({ 
-      message: "Food item unliked successfully",
-      liked: false,
-      likeCount: updatedFood.likeCount
+    res.status(result.status).json({ 
+      message: result.message,
+      liked: result.liked,
+      likeCount: result.likeCount
     });
-  } else {
-    await likeModel.create({ user: user._id, food: foodId });
-    const updatedFood = await foodModel.findByIdAndUpdate(foodId, { $inc: { likeCount: 1 } }, { new: true });
-    
-    if (!updatedFood) {
-      await likeModel.deleteOne({ user: user._id, food: foodId });
+
+  } catch (error) {
+    if (error.message === "NOT_FOUND") {
       return res.status(404).json({ message: "Food item not found" });
     }
-
-    await invalidateCache(`partner:${updatedFood.foodPartner}`);
-    await invalidateCache('all_food_items');
-
-    res.status(200).json({ 
-      message: "Food item liked successfully",
-      liked: true,
-      likeCount: updatedFood.likeCount
-    });
+    console.error('Error in likeFood transaction:', error);
+    res.status(500).json({ message: "Internal Server Error" });
+  } finally {
+    await session.endSession();
   }
 }
 
@@ -90,45 +123,76 @@ async function saveFood(req, res) {
   const { foodId } = req.body;
   const user = req.user;
 
-  const isAlreadySaved = await saveModel.findOne({
-    user: user._id,
-    food: foodId,
-  });
-  if (isAlreadySaved) {
-    await saveModel.deleteOne({ user: user._id, food: foodId });
+  const session = await mongoose.startSession();
+  try {
+    let result;
+    await session.withTransaction(async () => {
+      const isAlreadySaved = await saveModel.findOne({
+        user: user._id,
+        food: foodId,
+      }).session(session);
 
-    const updatedFood = await foodModel.findByIdAndUpdate(foodId, { $inc: { saveCount: -1 } }, { new: true });
-    
-    if (!updatedFood) {
-      return res.status(404).json({ message: "Food item not found" });
-    }
+      if (isAlreadySaved) {
+        await saveModel.deleteOne({ user: user._id, food: foodId }).session(session);
 
-    await invalidateCache(`partner:${updatedFood.foodPartner}`);
+        const updatedFood = await foodModel.findByIdAndUpdate(
+          foodId, 
+          { $inc: { saveCount: -1 } }, 
+          { new: true, session }
+        );
+        
+        if (!updatedFood) {
+          throw new Error("NOT_FOUND");
+        }
+
+        result = { 
+          status: 200,
+          message: "Food item unsaved successfully",
+          saved: false,
+          saveCount: updatedFood.saveCount,
+          partnerId: updatedFood.foodPartner
+        };
+      } else {
+        await saveModel.create([{ user: user._id, food: foodId }], { session });
+        
+        const updatedFood = await foodModel.findByIdAndUpdate(
+          foodId, 
+          { $inc: { saveCount: 1 } }, 
+          { new: true, session }
+        );
+        
+        if (!updatedFood) {
+          throw new Error("NOT_FOUND");
+        }
+
+        result = { 
+          status: 200,
+          message: "Food item saved successfully",
+          saved: true,
+          saveCount: updatedFood.saveCount,
+          partnerId: updatedFood.foodPartner
+        };
+      }
+    });
+
+    // Only reached if transaction commits
+    await invalidateCache(`partner:${result.partnerId}`);
     await invalidateCache('all_food_items');
 
-    res.status(200).json({ 
-      message: "Food item unsaved successfully",
-      saved: false,
-      saveCount: updatedFood.saveCount
+    res.status(result.status).json({ 
+      message: result.message,
+      saved: result.saved,
+      saveCount: result.saveCount
     });
-  } else {
-    await saveModel.create({ user: user._id, food: foodId });
-    const updatedFood = await foodModel.findByIdAndUpdate(foodId, { $inc: { saveCount: 1 } }, { new: true });
-    
-    if (!updatedFood) {
-      // Rollback: delete the save record we just created
-      await saveModel.deleteOne({ user: user._id, food: foodId });
+
+  } catch (error) {
+    if (error.message === "NOT_FOUND") {
       return res.status(404).json({ message: "Food item not found" });
     }
-
-    await invalidateCache(`partner:${updatedFood.foodPartner}`);
-    await invalidateCache('all_food_items');
-
-    res.status(200).json({ 
-      message: "Food item saved successfully",
-      saved: true,
-      saveCount: updatedFood.saveCount
-    });
+    console.error('Error in saveFood transaction:', error);
+    res.status(500).json({ message: "Internal Server Error" });
+  } finally {
+    await session.endSession();
   }
 }
 
