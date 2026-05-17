@@ -112,6 +112,13 @@ async function likeFood(req, res) {
     if (error.message === "NOT_FOUND") {
       return res.status(404).json({ message: "Food item not found" });
     }
+    if (error.code === 11000) {
+      // Duplicate key error: another request already created the relation.
+      return res.status(200).json({ 
+        message: "Food item liked successfully",
+        liked: true
+      });
+    }
     console.error('Error in likeFood transaction:', error);
     res.status(500).json({ message: "Internal Server Error" });
   } finally {
@@ -188,6 +195,13 @@ async function saveFood(req, res) {
   } catch (error) {
     if (error.message === "NOT_FOUND") {
       return res.status(404).json({ message: "Food item not found" });
+    }
+    if (error.code === 11000) {
+      // Duplicate key error: another request already saved the item.
+      return res.status(200).json({ 
+        message: "Food item saved successfully",
+        saved: true
+      });
     }
     console.error('Error in saveFood transaction:', error);
     res.status(500).json({ message: "Internal Server Error" });

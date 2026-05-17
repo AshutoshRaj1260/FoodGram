@@ -1,9 +1,14 @@
 const foodPartnerModel = require('../models/foodpartner.model');
 const foodModel = require('../models/food.model');
 const { getOrSetCache } = require('../services/redis.service');
+const mongoose = require('mongoose');
 
 async function getFoodPartnerById(req, res) {
     const foodPartnerId = req.params.id;
+
+    if (!mongoose.isValidObjectId(foodPartnerId)) {
+        return res.status(404).json({ message: 'Food partner not found' });
+    }
 
     try {
         const cacheKey = `partner:${foodPartnerId}`;
