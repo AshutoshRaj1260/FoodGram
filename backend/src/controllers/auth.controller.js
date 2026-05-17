@@ -272,7 +272,7 @@ async function loginFoodPartner(req, res) {
       foodPartner: {
         id: foodPartner._id,
         email: foodPartner.email,
-        name: foodPartner.name,
+        name: foodPartner.businessName,
       },
     });
   } catch (err) {
