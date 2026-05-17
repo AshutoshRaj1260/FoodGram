@@ -11,7 +11,6 @@ import PersonOutlineIcon from "@mui/icons-material/Person";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 import BrandLogo from "../../public/brandLogo.png";
-import BrandLogo from "/brandLogo.png";
 
 export default function UserLogin() {
   const navigate = useNavigate();

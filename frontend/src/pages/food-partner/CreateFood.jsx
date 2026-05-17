@@ -1,37 +1,42 @@
 import React, { useState } from 'react'
 import '../../styles/create-food.css'
 import axios from 'axios'
-import {Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+
+const MAX_DESCRIPTION_LENGTH = 200
 
 const CreateFood = () => {
   const [preview, setPreview] = useState(null)
+  const [description, setDescription] = useState('')
 
   const onFileChange = (e) => {
     const file = e.target.files && e.target.files[0]
+
     if (!file) return
+
     const url = URL.createObjectURL(file)
+
     setPreview({ url, type: file.type })
   }
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const onSubmit = async (e) => {
+    const apiUrl = import.meta.env.VITE_API_URL
 
-    const apiUrl = import.meta.env.VITE_API_URL;
     e.preventDefault()
 
-    const formData = new FormData();
+    const formData = new FormData()
 
-    formData.append('name', e.target.name.value);  
-    formData.append('description', e.target.description.value);  
-    formData.append('video', e.target.video.files[0]);
+    formData.append('name', e.target.name.value)
+    formData.append('description', description)
+    formData.append('video', e.target.video.files[0])
 
     const response = await axios.post(`${apiUrl}/api/food`, formData, {
       withCredentials: true,
-    });
+    })
 
-      navigate('/');
-
+    navigate('/')
   }
 
   return (
@@ -42,19 +47,63 @@ const CreateFood = () => {
         <form className="form-grid" onSubmit={onSubmit}>
           <div className="form">
             <label className="label">Video</label>
-            <label className="file-input input" htmlFor="videoInput">Choose video file</label>
-            <input id="videoInput" name="video" type="file" accept="video/*" style={{ display: 'none' }} onChange={onFileChange} />
+
+            <label className="file-input input" htmlFor="videoInput">
+              Choose video file
+            </label>
+
+            <input
+              id="videoInput"
+              name="video"
+              type="file"
+              accept="video/*"
+              style={{ display: 'none' }}
+              onChange={onFileChange}
+            />
 
             <label className="label">Name</label>
-            <input name="name" className="input" placeholder="Meal name" />
+
+            <input
+              name="name"
+              className="input"
+              placeholder="Meal name"
+            />
 
             <label className="label">Description</label>
-            <textarea name="description" className="input" placeholder="Short description for the reel" />
+
+            <textarea
+              name="description"
+              className="input"
+              placeholder="Short description for the reel"
+              value={description}
+              maxLength={MAX_DESCRIPTION_LENGTH}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+
+            <div
+              style={{
+                textAlign: 'right',
+                marginTop: '6px',
+                fontSize: '14px',
+                color: '#aaa',
+              }}
+            >
+              {description.length}/{MAX_DESCRIPTION_LENGTH} characters
+            </div>
 
             <div className="actions">
-              <button className="btn" type="submit" onClick={() => navigate('/home')}>Create</button>
+              <button
+                className="btn"
+                type="submit"
+                onClick={() => navigate('/home')}
+              >
+                Create
+              </button>
+
               <button className="btn ghost" type="button">
-                <Link to="/home" style={{textDecoration:'none'}} >Cancel</Link>
+                <Link to="/home" style={{ textDecoration: 'none' }}>
+                  Cancel
+                </Link>
               </button>
             </div>
           </div>
@@ -67,7 +116,14 @@ const CreateFood = () => {
                 <img src={preview.url} alt="preview" />
               )
             ) : (
-              <div style={{ color: 'rgba(255,255,255,0.7)', padding: 20 }}>Video preview will appear here</div>
+              <div
+                style={{
+                  color: 'rgba(255,255,255,0.7)',
+                  padding: 20,
+                }}
+              >
+                Video preview will appear here
+              </div>
             )}
           </div>
         </form>
@@ -76,4 +132,4 @@ const CreateFood = () => {
   )
 }
 
-export default CreateFood
+export default CreateFood;
