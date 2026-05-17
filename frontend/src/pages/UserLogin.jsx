@@ -1,16 +1,14 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import "../styles/auth.css";
-import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
-import backgroundImage from "../assets/backgroundImage.jpeg";
-import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
-import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import PersonOutlineIcon from "@mui/icons-material/Person";
-import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
-import BrandLogo from "../../public/brandLogo.png";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import backgroundImage from "../assets/backgroundImage.jpeg";
+import "../styles/auth.css";
 import BrandLogo from "/brandLogo.png";
 
 export default function UserLogin() {
@@ -55,9 +53,11 @@ export default function UserLogin() {
 
       navigate("/home");
     } catch (err) {
-      console.log(err.response.data.message);
+      console.log(err.response?.data?.message);
 
-      setErrorMessage(err.response.data.message);
+      setErrorMessage(
+        err.response?.data?.message || "Invalid Credentials"
+      );
     }
   };
 
@@ -130,9 +130,11 @@ export default function UserLogin() {
                 />
 
                 <div className="error">
-                  <h5>{errorMessage}</h5>
+                  <h5 style={{ color: "#8b0000" }}>{errorMessage}</h5>
 
-                  <p>Please try again</p>
+                  <p style={{ color: "#5f2120", fontWeight: "500" }}>
+                    Please try again
+                  </p>
                 </div>
 
                 <div className="errorLine"></div>
