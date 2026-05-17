@@ -1,0 +1,147 @@
+
+/* Container */
+
+.flash-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 9999;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  pointer-events: none;
+}
+
+/* Flash Card */
+
+.flash {
+  min-width: 260px;
+  max-width: 380px;
+
+  border-radius: 12px;
+  overflow: hidden;
+
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.12);
+
+  font-size: 0.9rem;
+  font-weight: 500;
+
+  pointer-events: auto;
+
+  position: relative;
+
+  animation: flash-slide-in 0.25s ease;
+}
+
+/* Success */
+
+.flash-success {
+  background: #f0fdf4;
+  color: #166534;
+  border-left: 4px solid #22c55e;
+}
+
+/* Error */
+
+.flash-error {
+  background: #fef2f2;
+  color: #991b1b;
+  border-left: 4px solid #ef4444;
+}
+
+/* Body */
+
+.flash-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+
+  padding: 0.9rem 1rem;
+}
+
+/* Icon */
+
+.flash-icon {
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.flash-success .flash-icon {
+  color: #22c55e;
+}
+
+.flash-error .flash-icon {
+  color: #ef4444;
+}
+
+/* Message */
+
+.flash-message {
+  flex: 1;
+  line-height: 1.4;
+}
+
+/* Dismiss Button */
+
+.flash-dismiss {
+  background: transparent;
+  border: none;
+
+  cursor: pointer;
+
+  font-size: 0.85rem;
+  line-height: 1;
+
+  opacity: 0.55;
+
+  color: inherit;
+
+  flex-shrink: 0;
+
+  transition: opacity 0.2s ease;
+}
+
+.flash-dismiss:hover {
+  opacity: 1;
+}
+
+/* Timer Bar */
+
+.flash-timer {
+  display: block;
+
+  height: 3px;
+  width: 100%;
+
+  background: #ef4444;
+
+  animation: wl-flash-timer 4s linear forwards;
+}
+
+/* Animations */
+
+@keyframes wl-flash-timer {
+  from {
+    width: 100%;
+  }
+
+  to {
+    width: 0%;
+  }
+}
+
+@keyframes flash-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
