@@ -9,6 +9,8 @@ const CreateFood = () => {
   const [preview, setPreview] = useState(null)
   const [description, setDescription] = useState('')
 
+  const navigate = useNavigate()
+
   const onFileChange = (e) => {
     const file = e.target.files && e.target.files[0]
 
@@ -19,12 +21,10 @@ const CreateFood = () => {
     setPreview({ url, type: file.type })
   }
 
-  const navigate = useNavigate()
-
   const onSubmit = async (e) => {
-    const apiUrl = import.meta.env.VITE_API_URL
-
     e.preventDefault()
+
+    const apiUrl = import.meta.env.VITE_API_URL
 
     const formData = new FormData()
 
@@ -32,7 +32,7 @@ const CreateFood = () => {
     formData.append('description', description)
     formData.append('video', e.target.video.files[0])
 
-    const response = await axios.post(`${apiUrl}/api/food`, formData, {
+    await axios.post(`${apiUrl}/api/food`, formData, {
       withCredentials: true,
     })
 
@@ -85,7 +85,7 @@ const CreateFood = () => {
                 textAlign: 'right',
                 marginTop: '6px',
                 fontSize: '14px',
-                color: '#aaa',
+                color: '#888',
               }}
             >
               {description.length}/{MAX_DESCRIPTION_LENGTH} characters
@@ -95,16 +95,18 @@ const CreateFood = () => {
               <button
                 className="btn"
                 type="submit"
-                onClick={() => navigate('/home')}
               >
                 Create
               </button>
 
-              <button className="btn ghost" type="button">
-                <Link to="/home" style={{ textDecoration: 'none' }}>
+              <Link
+                to="/home"
+                style={{ textDecoration: 'none' }}
+              >
+                <button className="btn ghost" type="button">
                   Cancel
-                </Link>
-              </button>
+                </button>
+              </Link>
             </div>
           </div>
 
@@ -132,4 +134,4 @@ const CreateFood = () => {
   )
 }
 
-export default CreateFood;
+export default CreateFood
