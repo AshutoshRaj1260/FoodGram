@@ -21,7 +21,6 @@ app.use(
     origin: process.env.FRONTEND_URL ? process.env.FRONTEND_URL.replace(/\/$/, "") : undefined,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
@@ -49,6 +48,15 @@ app.use(express.static(frontendDistPath));
 // 2. Catch-all route to hand off client-side routing back to React Router
 app.get(/(.*)/, (req, res) => {
   res.sendFile(path.join(frontendDistPath, "index.html"));
+});
+
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(err.status || 500).json({
+    message: err.message || "Internal Server Error",
+    ...(process.env.NODE_ENV === "development" && { error: err })
+  });
 });
 
 module.exports = app;

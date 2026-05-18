@@ -3,6 +3,7 @@ const router = express.Router();
 const foodController = require("../controllers/food.controller");
 const authMiddleware = require("../middlewares/auth.middleware");
 const multer = require("multer");
+const catchAsync = require("../utils/catchAsync");
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -12,26 +13,26 @@ router.post(
   "/",
   authMiddleware.authFoodPartnerMiddleware,
   upload.single("video"),
-  foodController.createFood
+  catchAsync(foodController.createFood)
 );  
 
-router.get("/", authMiddleware.authUserMiddleware, foodController.getFoodItems);
+router.get("/", authMiddleware.authUserMiddleware, catchAsync(foodController.getFoodItems));
 
 router.post(
   "/like",
   authMiddleware.authUserMiddleware,
-  foodController.likeFood
+  catchAsync(foodController.likeFood)
 );
 
 router.post(
   "/save",
   authMiddleware.authUserMiddleware,
-  foodController.saveFood
+  catchAsync(foodController.saveFood)
 );
 
 router.get('/save',
   authMiddleware.authUserMiddleware,
-  foodController.getSavedFood
-)
+  catchAsync(foodController.getSavedFood)
+);
 
 module.exports = router;

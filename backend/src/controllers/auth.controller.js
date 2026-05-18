@@ -3,6 +3,29 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const foodPartnerModel = require("../models/foodpartner.model");
 
+const accessTokenOptions = {
+  httpOnly: true,
+  sameSite: "lax",
+  secure: process.env.NODE_ENV === "production",
+};
+
+const refreshTokenOptions = {
+  ...accessTokenOptions,
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+};
+
+function issueTokens(res, id) {
+  const accessToken = jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: "15m",
+  });
+  const refreshToken = jwt.sign({ id }, process.env.JWT_REFRESH_SECRET, {
+    expiresIn: "7d",
+  });
+
+  res.cookie("token", accessToken, accessTokenOptions);
+  res.cookie("refreshToken", refreshToken, refreshTokenOptions);
+}
+
 async function registerUser(req, res) {
   const { fullName, email, password } = req.body;
 
@@ -23,19 +46,7 @@ async function registerUser(req, res) {
     password: hashedPassword,
   });
 
-  const token = jwt.sign(
-    {
-      id: user._id,
-    },
-    process.env.JWT_SECRET
-  );
-
-  res.cookie("token", token, {
-    httpOnly: true, // JS cannot read cookie
-    secure: true,
-    sameSite: "none", // required for cross-domain
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
-  });
+  issueTokens(res, user._id);
 
   res.status(201).json({
     message: "User Registered Successfully",
@@ -64,18 +75,8 @@ async function loginUser(req, res) {
       message: "Invalid Credentials",
     });
   }
-  const token = jwt.sign(
-    {
-      id: user._id,
-    },
-    process.env.JWT_SECRET
-  );
-  res.cookie("token", token, {
-    httpOnly: true, // JS cannot read cookie
-    secure: true,
-    sameSite: "none", // required for cross-domain
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
-  });
+  issueTokens(res, user._id);
+
   res.status(200).json({
     message: "User Logged In Successfully",
     user: {
@@ -87,11 +88,8 @@ async function loginUser(req, res) {
 }
 
 function logoutUser(req, res) {
-  res.clearCookie("token", {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-  });
+  res.clearCookie("token", accessTokenOptions);
+  res.clearCookie("refreshToken", refreshTokenOptions);
   res.status(200).json({
     message: "User Logged Out Successfully",
   });
@@ -118,19 +116,8 @@ async function registerFoodPartner(req, res) {
     password: hashedPassword,
   });
 
-  const token = jwt.sign(
-    {
-      id: foodPartner._id,
-    },
-    process.env.JWT_SECRET
-  );
+  issueTokens(res, foodPartner._id);
 
-  res.cookie("token", token, {
-    httpOnly: true, // JS cannot read cookie
-    secure: true,
-    sameSite: "none", // required for cross-domain
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
-  });
   res.status(201).json({
     message: "Food Partner Registered Successfully",
     foodPartner: {
@@ -157,18 +144,8 @@ async function loginFoodPartner(req, res) {
       message: "Invalid Credentials",
     });
   }
-  const token = jwt.sign(
-    {
-      id: foodPartner._id,
-    },
-    process.env.JWT_SECRET
-  );
-  res.cookie("token", token, {
-    httpOnly: true, // JS cannot read cookie
-    secure: true,
-    sameSite: "none", // required for cross-domain
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
-  });
+  issueTokens(res, foodPartner._id);
+
   res.status(200).json({
     message: "Food Partner Logged In Successfully",
     foodPartner: {
@@ -187,26 +164,40 @@ function googleAuthCallback(req, res) {
     },
     process.env.JWT_SECRET
   );
-  res.cookie("token", token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-    maxAge: 7 * 24 * 60 * 60 * 1000, //1 week
-  });
-  
+  res.cookie("token", token, {});
+
   const frontendUrl = process.env.FRONTEND_URL || "";
   res.redirect(`${frontendUrl}/home`);
 }
 
 function logoutFoodPartner(req, res) {
-  res.clearCookie("token", {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-  });
+  res.clearCookie("token", accessTokenOptions);
+  res.clearCookie("refreshToken", refreshTokenOptions);
   res.status(200).json({
     message: "Food Partner Logged Out Successfully",
   });
+}
+
+function refreshToken(req, res) {
+  const token = req.cookies.refreshToken;
+
+  if (!token) {
+    return res.status(401).json({ message: "Refresh token missing" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+    const accessToken = jwt.sign(
+      { id: decoded.id },
+      process.env.JWT_SECRET,
+      { expiresIn: "15m" }
+    );
+
+    res.cookie("token", accessToken, accessTokenOptions);
+    return res.status(200).json({ message: "Token refreshed" });
+  } catch (error) {
+    return res.status(401).json({ message: "Invalid refresh token" });
+  }
 }
 
 module.exports = {
@@ -217,4 +208,5 @@ module.exports = {
   loginFoodPartner,
   logoutFoodPartner,
   googleAuthCallback,
+  refreshToken,
 };

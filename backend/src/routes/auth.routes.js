@@ -8,19 +8,21 @@ const {
   validate,
 } = require("../middlewares/auth.validator");
 const { loginLimiter } = require('../middlewares/rateLimiter.middleware');
+const { loginLimiter } = require('../middlewares/rateLimiter.middleware');
+const catchAsync = require("../utils/catchAsync");  
 
 const router = express.Router();
 
 //user_auth_routes
-router.post('/user/register', userRegisterValidation, validate, authController.registerUser);
-router.post('/user/login', loginLimiter, loginValidation, validate, authController.loginUser);
-router.get('/user/logout',authController.logoutUser);
-router.get('/refresh-token', authController.refreshToken);
+router.post('/user/register', userRegisterValidation, validate, catchAsync(authController.registerUser));
+router.post('/user/login', loginLimiter, loginValidation, validate, catchAsync(authController.loginUser));
+router.get('/user/logout', authController.logoutUser);
+router.get('/refresh-token', catchAsync(authController.refreshToken));
 
 //foodpartner_auth_routes
-router.post('/foodpartner/register', foodPartnerRegisterValidation, validate, authController.registerFoodPartner);
-router.post('/foodpartner/login', loginLimiter, loginValidation, validate, authController.loginFoodPartner);
-router.get('/foodpartner/logout',authController.logoutFoodPartner); 
+router.post('/foodpartner/register', foodPartnerRegisterValidation, validate, catchAsync(authController.registerFoodPartner));
+router.post('/foodpartner/login', loginLimiter, loginValidation, validate, catchAsync(authController.loginFoodPartner));
+router.get('/foodpartner/logout', authController.logoutFoodPartner); 
 
 //google_oauth_routes
 if (
