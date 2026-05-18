@@ -10,17 +10,21 @@ const generateTokens = (id) => {
 };
 
 const setCookies = (res, accessToken, refreshToken) => {
-  const isProduction = process.env.NODE_ENV === "production";
-  res.cookie("accessToken", accessToken, {
+  // Use HTTPS if FRONTEND_URL starts with https:// OR if NODE_ENV is production
+  const isSecure = process.env.FRONTEND_URL?.startsWith('https') || process.env.NODE_ENV === 'production';
+  
+  res.cookie('accessToken', accessToken, {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
+    secure: isSecure,
+    sameSite: isSecure ? 'none' : 'lax',
+    path: '/',
     maxAge: 15 * 60 * 1000,
   });
-  res.cookie("refreshToken", refreshToken, {
+  res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
+    secure: isSecure,
+    sameSite: isSecure ? 'none' : 'lax',
+    path: '/',
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 };
