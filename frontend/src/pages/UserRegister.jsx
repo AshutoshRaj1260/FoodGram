@@ -25,7 +25,6 @@ export default function UserRegister({ onFlash }) {
   };
 
   const handleSubmit = async (e) => {
-    const apiUrl = import.meta.env.VITE_API_URL;
     e.preventDefault();
 
     const name = e.target.name.value;
@@ -41,7 +40,7 @@ export default function UserRegister({ onFlash }) {
     }
 
     const response = await axios.post(
-      `${apiUrl}/api/auth/user/register`,
+      `/api/auth/user/register`,
       {
         fullName: name,
         email: email,

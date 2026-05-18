@@ -23,7 +23,6 @@ export default function PartnerLogin() {
   };
 
   const handleSubmit = async (e) => {
-    const apiUrl = import.meta.env.VITE_API_URL;
     setErrorMessage("");
 
     e.preventDefault();
@@ -31,7 +30,7 @@ export default function PartnerLogin() {
     const password = e.target.password.value;
     try {
       const response = await axios.post(
-        `${apiUrl}/api/auth/foodpartner/login`,
+        `/api/auth/foodpartner/login`,
         {
           email: email,
           password: password,
