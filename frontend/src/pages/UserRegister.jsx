@@ -49,10 +49,10 @@ export default function UserRegister({ onFlash }) {
       },
       {
         withCredentials: true,
-      },
+      }
     );
 
-    console.log(response.data);
+    localStorage.setItem("userType", "user");
     navigate("/home");
   };
 

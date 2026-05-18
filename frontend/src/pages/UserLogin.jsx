@@ -11,7 +11,7 @@ import PersonOutlineIcon from "@mui/icons-material/Person";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 import BrandLogo from "../../public/brandLogo.png";
-import BrandLogo from "/brandLogo.png";
+// import BrandLogo from "/brandLogo.png";
 
 export default function UserLogin() {
   const navigate = useNavigate();
@@ -38,7 +38,7 @@ export default function UserLogin() {
     const password = e.target.password.value;
 
     try {
-      await axios.post(
+      const response = await axios.post(
         `${apiUrl}/api/auth/user/login`,
         {
           email: email,
@@ -46,13 +46,10 @@ export default function UserLogin() {
         },
         {
           withCredentials: true,
-        },
+        }
       );
 
       localStorage.setItem("userType", "user");
-
-      console.log(localStorage.getItem("userType"));
-
       navigate("/home");
     } catch (err) {
       console.log(err.response.data.message);

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import VideoPlayer from "../../components/VideoPlayer";
 import "../../styles/reels.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
@@ -37,10 +38,10 @@ const Home = () => {
         if (!vid) return;
 
         if (entry.intersectionRatio >= 0.75) {
-          vid.play().catch(() => {});
-        } else {
-          vid.pause();
-        }
+  vid?.play?.().catch(() => {});
+} else {
+  vid?.pause?.();
+}
       });
     }, options);
 
@@ -65,12 +66,9 @@ const Home = () => {
       const response = await axios.post(
         `${apiUrl}/api/food/like`,
         { foodId: item._id },
-        { withCredentials: true },
+        { withCredentials: true }
       );
 
-      console.log("Like response:", response.data);
-
-      // Update the count using the backend response
       setVideos((prev) =>
         prev.map((v) =>
           v._id === item._id ? { ...v, likeCount: response.data.likeCount } : v,
@@ -88,12 +86,9 @@ const Home = () => {
       const response = await axios.post(
         `${apiUrl}/api/food/save`,
         { foodId: item._id },
-        { withCredentials: true },
+        { withCredentials: true }
       );
 
-      console.log("Save response:", response.data);
-
-      // Update the count using the backend response
       setVideos((prev) =>
         prev.map((v) =>
           v._id === item._id ? { ...v, saveCount: response.data.saveCount } : v,
@@ -110,13 +105,7 @@ const Home = () => {
         <div className="reels" role="list" ref={containerRef}>
           {videos.map((item) => (
             <article className="reel" key={item._id} role="listitem">
-              <video
-                src={item.video}
-                muted
-                loop
-                playsInline
-                preload="metadata"
-              />
+             <VideoPlayer src={item.video} />
 
               <div className="overlay">
                 <div className="description">{item.description}</div>

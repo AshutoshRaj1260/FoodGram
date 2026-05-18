@@ -17,10 +17,11 @@ app.set('trust proxy', trustProxyValue);
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL.replace(/\/$/, ""),
+    origin: process.env.FRONTEND_URL?.replace(/\/$/, "") || "http://localhost:5173",
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    maxAge: 3600,
   })
 );
 
@@ -28,8 +29,6 @@ app.use(globalLimiter);
 
 app.use(express.json());
 app.use(cookieParser());
-
-
 app.use(passport.initialize());
 
 app.get("/", (req, res) => {
@@ -39,5 +38,14 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/food", foodRoutes);
 app.use("/api/food-partner", foodPartnerRoutes);
+
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(err.status || 500).json({
+    message: err.message || "Internal Server Error",
+    ...(process.env.NODE_ENV === "development" && { error: err })
+  });
+});
 
 module.exports = app;

@@ -3,7 +3,8 @@ const foodModel = require('../models/food.model');
 const { getOrSetCache } = require('../services/redis.service');
 const mongoose = require('mongoose');
 
-async function getFoodPartnerById(req, res) {
+async function getFoodPartnerById(req, res, next) {
+  try {
     const foodPartnerId = req.params.id;
 
     if (!mongoose.isValidObjectId(foodPartnerId)) {
@@ -28,14 +29,15 @@ async function getFoodPartnerById(req, res) {
             return res.status(404).json({ message: 'Food partner not found' });
         }
 
+
         res.setHeader('X-Cache', cache);
         res.status(200).json({
             foodPartner: foodPartnerData
         });
-    } catch (error) {
-        console.error('Error in getFoodPartnerById:', error);
-        res.status(500).json({ message: 'Internal Server Error' });
-    }
+
+  } catch (error) {
+    next(error);
+  }
 }
 
 
