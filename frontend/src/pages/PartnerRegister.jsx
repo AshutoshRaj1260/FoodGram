@@ -45,23 +45,30 @@ export default function PartnerRegister({ onFlash }) {
       return;
     }
 
-    const response = await axios.post(
-      `${apiUrl}/api/auth/foodpartner/register`,
-      {
-        businessName: businessName,
-        ownerName: owner,
-        phone: phone,
-        address: address,
-        email: email,
-        password: password,
-      },
-      {
-        withCredentials: true,
-      },
-    );
+    try {
+  const response = await axios.post(
+    `${apiUrl}/api/auth/foodpartner/register`,
+    {
+      businessName: businessName,
+      ownerName: owner,
+      phone: phone,
+      address: address,
+      email: email,
+      password: password,
+    },
+    {
+      withCredentials: true,
+    },
+  );
 
-    console.log(response.data);
-    navigate("/create-food");
+  console.log(response.data);
+  navigate("/create-food");
+} catch (err) {
+  onFlash(
+    err.response?.data?.message || "Registration failed",
+    "error"
+  );
+}
   };
 
   return (
@@ -218,7 +225,7 @@ export default function PartnerRegister({ onFlash }) {
               <div className="inputBoxesWrapper">
                 {/* old Wrapper above */}
                 <div className="auth-field">
-                  <label htmlFor="businessname">Business name</label>
+                  <label htmlFor="businessName">Business name</label>
                   <div className="auth-input-wrapper">
                     <StorefrontOutlinedIcon className="auth-input-icon" />
                     <input

@@ -40,20 +40,27 @@ export default function UserRegister({ onFlash }) {
       return;
     }
 
-    const response = await axios.post(
-      `${apiUrl}/api/auth/user/register`,
-      {
-        fullName: name,
-        email: email,
-        password: password,
-      },
-      {
-        withCredentials: true,
-      },
-    );
+    try {
+  const response = await axios.post(
+    `${apiUrl}/api/auth/user/register`,
+    {
+      fullName: name,
+      email: email,
+      password: password,
+    },
+    {
+      withCredentials: true,
+    },
+  );
 
-    console.log(response.data);
-    navigate("/home");
+  console.log(response.data);
+  navigate("/home");
+} catch (err) {
+  onFlash(
+    err.response?.data?.message || "Registration failed",
+    "error"
+  );
+}
   };
 
   return (

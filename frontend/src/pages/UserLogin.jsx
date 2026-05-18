@@ -10,7 +10,6 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import PersonOutlineIcon from "@mui/icons-material/Person";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
-import BrandLogo from "../../public/brandLogo.png";
 import BrandLogo from "/brandLogo.png";
 
 export default function UserLogin() {
@@ -210,8 +209,12 @@ export default function UserLogin() {
                 type="button"
                 className="auth-btn"
                 onClick={() => {
-                  window.location.href =
-                    import.meta.env.VITE_GOOGLE_AUTH_URL;
+                  const googleAuthUrl =
+  import.meta.env.VITE_GOOGLE_AUTH_URL;
+
+if (googleAuthUrl) {
+  window.location.href = googleAuthUrl;
+}
                 }}
               >
                 Continue with Google
