@@ -1118,32 +1118,6 @@ body {
   animation: shrink-progress 5s linear forwards;
 }
 
-.authPage .form-container .form-right .errorBanner .error {
-  display: flex;
-  flex-direction: column;
-  color: #e91938;
-}
-
-.authPage .form-container .form-right .errorBanner .error h5 {
-  font-weight: 700;
-  font-size: larger;
-}
-
-.authPage .form-container .form-right .errorBanner .error p {
-  font-size: small;
-}
-
-.authPage .form-container .form-right .errorBanner .errorLine {
-  background-color: crimson;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  animation: shrink-progress 5s linear forwards;
-  transition: ease-in-out;
-}
-
 @keyframes shrink-progress {
   0% {
     width: 100%;
