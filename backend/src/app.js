@@ -37,7 +37,7 @@ const frontendDistPath = path.join(__dirname, "../../frontend/dist");
 app.use(express.static(frontendDistPath));
 
 // 2. Catch-all route to hand off client-side routing back to React Router
-app.get("*", (req, res) => {
+app.get(/(.*)/, (req, res) => {
   res.sendFile(path.join(frontendDistPath, "index.html"));
 });
 
