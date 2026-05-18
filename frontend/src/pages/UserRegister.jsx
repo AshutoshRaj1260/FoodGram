@@ -40,20 +40,27 @@ export default function UserRegister({ onFlash }) {
             return;
         }
 
-        const response = await axios.post(
-            `${apiUrl}/api/auth/user/register`,
-            {
-                fullName: name,
-                email: email,
-                password: password,
-            },
-            {
-                withCredentials: true,
-            },
-        );
+        try {
+    const response = await axios.post(
+        `${apiUrl}/api/auth/user/register`,
+        {
+            fullName: name,
+            email: email,
+            password: password,
+        },
+        {
+            withCredentials: true,
+        },
+    );
 
-        console.log(response.data);
-        navigate("/home");
+    console.log(response.data);
+    navigate("/home");
+} catch (err) {
+    onFlash(
+        err.response?.data?.message || "Registration failed",
+        "error"
+    );
+}
     };
 
     return (
@@ -230,15 +237,24 @@ export default function UserRegister({ onFlash }) {
                             </button>
 
                             <button
-                                type="button"
-                                className="auth-btn"
-                                onClick={() => {
-                                    window.location.href =
-                                        import.meta.env.VITE_GOOGLE_AUTH_URL;
-                                }}
-                            >
-                                Continue with Google
-                            </button>
+    type="button"
+    className="auth-btn"
+    onClick={() => {
+        const googleAuthUrl =
+            import.meta.env.VITE_GOOGLE_AUTH_URL;
+
+        if (googleAuthUrl) {
+            window.location.href = googleAuthUrl;
+        } else {
+            onFlash(
+                "Google authentication is unavailable.",
+                "error"
+            );
+        }
+    }}
+>
+    Continue with Google
+</button>
                         </form>
 
                         <div className="auth-footer">
