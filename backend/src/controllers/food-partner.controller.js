@@ -1,7 +1,8 @@
 const foodPartnerModel = require('../models/foodpartner.model');
 const foodModel = require('../models/food.model');
 
-async function getFoodPartnerById(req, res) {
+async function getFoodPartnerById(req, res, next) {
+  try {
     const foodPartnerId = req.params.id;
 
     const foodPartner = await foodPartnerModel.findById(foodPartnerId);
@@ -18,6 +19,9 @@ async function getFoodPartnerById(req, res) {
         }
     });
 
+  } catch (error) {
+    next(error);
+  }
 }
 
 

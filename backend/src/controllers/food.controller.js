@@ -4,7 +4,8 @@ const { v4: uuid } = require("uuid");
 const likeModel = require("../models/likes.model");
 const saveModel = require("../models/save.model");
 
-async function createFood(req, res) {
+async function createFood(req, res, next) {
+  try {
   const fileUploadResult = await storageService.uploadFile(
     req.file.buffer,
     uuid()
@@ -20,17 +21,25 @@ async function createFood(req, res) {
     message: "Food Item Created Successfully",
     foodItem,
   });
+  } catch (error) {
+    next(error);
+  }
 }
 
-async function getFoodItems(req, res) {
+async function getFoodItems(req, res, next) {
+  try {
   const foodItems = await foodModel.find({});
   res.status(200).json({
     message: "Food Items fetched successfully",
     foodItems,
   });
+  } catch (error) {
+    next(error);
+  }
 }
 
-async function likeFood(req, res) {
+async function likeFood(req, res, next) {
+  try {
   const { foodId } = req.body;
   const user = req.user;
 
@@ -57,9 +66,13 @@ async function likeFood(req, res) {
       likeCount: updatedFood.likeCount
     });
   }
+  } catch (error) {
+    next(error);
+  }
 }
 
-async function saveFood(req, res) {
+async function saveFood(req, res, next) {
+  try {
   const { foodId } = req.body;
   const user = req.user;
 
@@ -85,9 +98,13 @@ async function saveFood(req, res) {
       saveCount: updatedFood.saveCount
     });
   }
+  } catch (error) {
+    next(error);
+  }
 }
 
-async function getSavedFood(req, res) {
+async function getSavedFood(req, res, next) {
+  try {
   const user = req.user;
 
   const savedFoods = await saveModel.find({ user: user._id }).populate("food");
@@ -97,6 +114,9 @@ async function getSavedFood(req, res) {
     message: "Saved food items fetched successfully",
     savedFoods: savedFoods || [],
   });
+  } catch (error) {
+    next(error);
+  }
 }
 
 module.exports = {
