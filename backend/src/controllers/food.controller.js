@@ -92,15 +92,10 @@ async function getSavedFood(req, res) {
 
   const savedFoods = await saveModel.find({ user: user._id }).populate("food");
 
-  if (!savedFoods || savedFoods.length === 0) {
-    return res.status(404).json({
-      message: "No saved food items found",
-    });
-  }
-
+  // Return an empty array instead of 404 so the frontend doesn't throw an error
   res.status(200).json({
     message: "Saved food items fetched successfully",
-    savedFoods,
+    savedFoods: savedFoods || [],
   });
 }
 

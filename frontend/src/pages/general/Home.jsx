@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import VideoPlayer from "../../components/VideoPlayer";
 import "../../styles/reels.css";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";

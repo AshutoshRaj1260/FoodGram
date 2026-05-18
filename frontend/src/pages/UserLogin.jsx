@@ -8,11 +8,16 @@ import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import PersonOutlineIcon from "@mui/icons-material/Person";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 import BrandLogo from "../../public/brandLogo.png";
+// import BrandLogo from "/brandLogo.png";
 
 export default function UserLogin() {
   const navigate = useNavigate();
+
   const [errorMessage, setErrorMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleUserChange = (e) => {
     console.log(e.target.value);
@@ -21,16 +26,19 @@ export default function UserLogin() {
       navigate("/foodpartner/login");
     }
   };
+
   const handleSubmit = async (e) => {
     const apiUrl = import.meta.env.VITE_API_URL;
+
     setErrorMessage("");
 
     e.preventDefault();
+
     const email = e.target.email.value;
     const password = e.target.password.value;
 
     try {
-      const response = await axios.post(
+      await axios.post(
         `${apiUrl}/api/auth/user/login`,
         {
           email: email,
@@ -40,8 +48,11 @@ export default function UserLogin() {
           withCredentials: true,
         },
       );
+
       localStorage.setItem("userType", "user");
+
       console.log(localStorage.getItem("userType"));
+
       navigate("/home");
     } catch (err) {
       console.log(err.response.data.message);
@@ -55,89 +66,25 @@ export default function UserLogin() {
       const timer = setTimeout(() => {
         setErrorMessage("");
       }, 5000);
-      
+
       return () => clearTimeout(timer);
     }
   }, [errorMessage]);
 
   return (
-    // <div className="auth-wrap">
-    //   <div className="brand-header">
-    //     <div className="brand-logo">
-    //       <img
-    //         src="/brandLogo.png"
-    //         alt=""
-    //       />
-    //     </div>
-    //     FoodGram
-    //   </div>
-
-    //   <main className="card" role="main">
-    //     <section className="hero">
-    //       <div className="logo" aria-hidden="true" />
-    //       <h2>Welcome back</h2>
-    //       <p>Sign in to continue ordering your favorite meals.</p>
-    //     </section>
-
-    //     <section className="form-pane">
-    //       <div className="container">
-    //         <div className="brand">
-    //           <h1>User Login</h1>
-    //           <p>Welcome back — sign in to continue.</p>
-    //         </div>
-
-    //         <form className="form" onSubmit={handleSubmit}>
-    //           <div className="input">
-    //             <label htmlFor="email">Email</label>
-    //             <input
-    //               id="email"
-    //               name="email"
-    //               type="email"
-    //               placeholder="you@example.com"
-    //             />
-    //           </div>
-
-    //           <div className="input">
-    //             <label htmlFor="password">Password</label>
-    //             <input
-    //               id="password"
-    //               name="password"
-    //               type="password"
-    //               placeholder="Your password"
-    //             />
-    //           </div>
-
-    //           <div className="or-row">Or continue with email</div>
-
-    //           <div className="actions">
-    //             <button className="btn" type="submit">
-    //               Sign in
-    //             </button>
-    //             <Link className="switch-link" to="/user/register">
-    //               Need an account?
-    //             </Link>
-    //           </div>
-    //         </form>
-    //       </div>
-    //     </section>
-    //   </main>
-
-    //   <div>
-    //     <Link className="switch-link" to="/foodpartner/login">
-    //       Are you a food partner? Sign in here.
-    //     </Link>
-    //   </div>
-    // </div>
     <>
       <div className="auth-page">
         <div className="auth-card">
           {/* Left image panel */}
           <div className="auth-image-panel">
             <img src={backgroundImage} alt="Delicious food spread" />
+
             <div className="auth-image-overlay">
               <div className="auth-overlay-content">
                 <span className="auth-badge">✨ Premium Experience</span>
+
                 <h1>Made for Food Lovers</h1>
+
                 <p>
                   Good coffee, good food, great moments.
                   <br />
@@ -151,12 +98,18 @@ export default function UserLogin() {
           <div className="auth-form-panel">
             <div className="auth-form-header">
               <span className="auth-logo">
-                {" "}
-                <img src={BrandLogo} alt="logo" className="auto-logo-image" />
+                <img
+                  src={BrandLogo}
+                  alt="logo"
+                  className="auto-logo-image"
+                />
+
                 <p className="auth-logo-text">FOODGRAM</p>
               </span>
+
               <div className="auth-select-wrapper">
                 <PersonOutlineIcon className="auth-select-icon" />
+
                 <select
                   className="auth-role-select"
                   onChange={(e) => {
@@ -175,10 +128,13 @@ export default function UserLogin() {
                 <ReportGmailerrorredIcon
                   sx={{ fontSize: "40px", color: "#e91938" }}
                 />
+
                 <div className="error">
                   <h5>{errorMessage}</h5>
+
                   <p>Please try again</p>
                 </div>
+
                 <div className="errorLine"></div>
               </div>
             )}
@@ -186,6 +142,7 @@ export default function UserLogin() {
             <h2 className="auth-title">
               Welcome Back<span className="wave-hand">👋</span>
             </h2>
+
             <p className="auth-subtitle">
               Sign in to continue enjoying Foodgram
             </p>
@@ -193,8 +150,10 @@ export default function UserLogin() {
             <form onSubmit={handleSubmit}>
               <div className="auth-field">
                 <label htmlFor="email">Email</label>
+
                 <div className="auth-input-wrapper">
                   <MailOutlineIcon className="auth-input-icon" />
+
                   <input
                     id="email"
                     name="email"
@@ -208,24 +167,51 @@ export default function UserLogin() {
 
               <div className="auth-field">
                 <label htmlFor="password">Password</label>
+
                 <div className="auth-input-wrapper">
                   <LockOutlinedIcon className="auth-input-icon" />
+
                   <input
                     id="password"
                     name="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     placeholder="your password"
                     aria-label="Password"
                     required
                   />
+
+                  <button
+  type="button"
+  onClick={() => setShowPassword(!showPassword)}
+  aria-label={showPassword ? "Hide password" : "Show password"}
+  style={{
+    background: "none",
+    border: "none",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    color: "#666",
+  }}
+>
+                    {showPassword ? (
+                      <VisibilityOffOutlinedIcon />
+                    ) : (
+                      <VisibilityOutlinedIcon />
+                    )}
+                  </button>
                 </div>
               </div>
+
               <button className="auth-btn" type="submit">
                 Login
               </button>
-              <button type="button" className="auth-btn"
-              onClick={() => {
-                  window.location.href = import.meta.env.VITE_GOOGLE_AUTH_URL;
+
+              <button
+                type="button"
+                className="auth-btn"
+                onClick={() => {
+                  window.location.href =
+                    import.meta.env.VITE_GOOGLE_AUTH_URL;
                 }}
               >
                 Continue with Google
