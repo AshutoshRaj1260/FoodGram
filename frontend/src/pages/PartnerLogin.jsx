@@ -11,230 +11,243 @@ import DeliveryDiningIcon from "@mui/icons-material/DeliveryDining";
 import BrandLogo from "/brandLogo.png";
 
 export default function PartnerLogin() {
-  const navigate = useNavigate();
-  const [errorMessage, setErrorMessage] = useState("");
+    const navigate = useNavigate();
+    const [errorMessage, setErrorMessage] = useState("");
 
-  const handleUserChange = (e) => {
-    console.log(e.target.value);
+    const handleUserChange = (e) => {
+        console.log(e.target.value);
 
-    if (e.target.value === "user") {
-      navigate("/");
-    }
-  };
+        if (e.target.value === "user") {
+            navigate("/");
+        }
+    };
 
-  const handleSubmit = async (e) => {
-    const apiUrl = import.meta.env.VITE_API_URL;
-    setErrorMessage("");
-
-    e.preventDefault();
-    const email = e.target.email.value;
-    const password = e.target.password.value;
-    try {
-      const response = await axios.post(
-        `${apiUrl}/api/auth/foodpartner/login`,
-        {
-          email: email,
-          password: password,
-        },
-        {
-          withCredentials: true,
-        },
-      );
-
-      console.log(response.data);
-      localStorage.setItem("userType", "partner");
-      console.log(localStorage.getItem("userType"));
-      navigate("/create-food");
-    } catch (err) {
-      console.log(err.response.data.message);
-      setErrorMessage(err.response.data.message);
-    }
-  };
-
-  useEffect(() => {
-    if (errorMessage) {
-      const timer = setTimeout(() => {
+    const handleSubmit = async (e) => {
+        const apiUrl = import.meta.env.VITE_API_URL;
         setErrorMessage("");
-      }, 5000);
 
-      return () => clearTimeout(timer);
-    }
-  }, [errorMessage]);
+        e.preventDefault();
+        const email = e.target.email.value;
+        const password = e.target.password.value;
+        try {
+            const response = await axios.post(
+                `${apiUrl}/api/auth/foodpartner/login`,
+                {
+                    email: email,
+                    password: password,
+                },
+                {
+                    withCredentials: true,
+                },
+            );
 
-  return (
-    // <div className="auth-wrap">
-    //   <div className="brand-header">
-    //     <div className="brand-logo">
-    //       <img
-    //         src="/brandLogo.png"
-    //         alt=""
-    //       />
-    //     </div>
-    //     FoodGram
-    //   </div>
-    //   <main className="card" role="main">
-    //     <section className="hero">
-    //       <div className="logo" aria-hidden="true" />
-    //       <h2>Partner sign in</h2>
-    //       <p>Access your dashboard to manage orders and menu.</p>
-    //     </section>
+            console.log(response.data);
+            localStorage.setItem("userType", "partner");
+            console.log(localStorage.getItem("userType"));
+            navigate("/create-food");
+        } catch (err) {
+            console.log(err.response.data.message);
+            setErrorMessage(err.response.data.message);
+        }
+    };
 
-    //     <section className="form-pane">
-    //       <div className="container">
-    //         <div className="brand">
-    //           <h1>Food Partner Login</h1>
-    //           <p>Sign in to manage orders and menu.</p>
-    //         </div>
+    useEffect(() => {
+        if (errorMessage) {
+            const timer = setTimeout(() => {
+                setErrorMessage("");
+            }, 5000);
 
-    //         <form className="form" onSubmit={handleSubmit}>
-    //           <div className="input">
-    //             <label htmlFor="email">Email</label>
-    //             <input
-    //               id="email"
-    //               name="email"
-    //               type="email"
-    //               placeholder="contact@business.com"
-    //             />
-    //           </div>
+            return () => clearTimeout(timer);
+        }
+    }, [errorMessage]);
 
-    //           <div className="input">
-    //             <label htmlFor="password">Password</label>
-    //             <input
-    //               id="password"
-    //               name="password"
-    //               type="password"
-    //               placeholder="Your password"
-    //             />
-    //           </div>
+    return (
+        // <div className="auth-wrap">
+        //   <div className="brand-header">
+        //     <div className="brand-logo">
+        //       <img
+        //         src="/brandLogo.png"
+        //         alt=""
+        //       />
+        //     </div>
+        //     FoodGram
+        //   </div>
+        //   <main className="card" role="main">
+        //     <section className="hero">
+        //       <div className="logo" aria-hidden="true" />
+        //       <h2>Partner sign in</h2>
+        //       <p>Access your dashboard to manage orders and menu.</p>
+        //     </section>
 
-    //           <div className="or-row">Or continue with email</div>
+        //     <section className="form-pane">
+        //       <div className="container">
+        //         <div className="brand">
+        //           <h1>Food Partner Login</h1>
+        //           <p>Sign in to manage orders and menu.</p>
+        //         </div>
 
-    //           <div className="actions">
-    //             <button className="btn" type="submit">
-    //               Sign in
-    //             </button>
-    //             <Link className="switch-link" to="/foodpartner/register">
-    //               Need an account?
-    //             </Link>
-    //           </div>
-    //         </form>
-    //       </div>
-    //     </section>
-    //   </main>
-    //   <div>
-    //     <Link className="switch-link" to="/">
-    //       Are you a user? Sign in here.
-    //     </Link>
-    //   </div>
-    // </div>
-    <>
-      <div className="auth-page">
-        <div className="auth-card">
-          {/* Left image panel */}
-          <div className="auth-image-panel">
-            <img src={backgroundImage} alt="Delicious food spread" />
-            <div className="auth-image-overlay">
-              <div className="auth-overlay-content">
-                <span className="auth-badge">✨ Premium Experience</span>
-                <h1>Made for Food Lovers</h1>
-                <p>
-                  Good coffee, good food, great moments.
-                  <br />
-                  Let’s continue your journey!
-                </p>
-              </div>
-            </div>
-          </div>
+        //         <form className="form" onSubmit={handleSubmit}>
+        //           <div className="input">
+        //             <label htmlFor="email">Email</label>
+        //             <input
+        //               id="email"
+        //               name="email"
+        //               type="email"
+        //               placeholder="contact@business.com"
+        //             />
+        //           </div>
 
-          {/* Right form panel */}
-          <div className="auth-form-panel">
-            <div className="auth-form-header">
-              <span className="auth-logo">
-                {" "}
-                <img src={BrandLogo} alt="logo" className="auto-logo-image" />
-                <p className="auth-logo-text">FOODGRAM</p>
-              </span>
-              <div className="auth-select-wrapper">
-                <DeliveryDiningIcon className="auth-select-icon" />
-                <select
-                  className="auth-role-select"
-                  onChange={(e) => {
-                    handleUserChange(e);
-                  }}
-                  aria-label="Login as"
-                >
-                  <option value="foodpartner">Food Partner</option>
-                  <option value="user">User</option>
-                </select>
-              </div>
-            </div>
+        //           <div className="input">
+        //             <label htmlFor="password">Password</label>
+        //             <input
+        //               id="password"
+        //               name="password"
+        //               type="password"
+        //               placeholder="Your password"
+        //             />
+        //           </div>
 
-            {errorMessage && (
-              <div className="errorBanner">
-                <ReportGmailerrorredIcon
-                  sx={{ fontSize: "40px", color: "#e91938" }}
-                />
-                <div className="error">
-                  <h5>{errorMessage}</h5>
-                  <p>Please try again</p>
+        //           <div className="or-row">Or continue with email</div>
+
+        //           <div className="actions">
+        //             <button className="btn" type="submit">
+        //               Sign in
+        //             </button>
+        //             <Link className="switch-link" to="/foodpartner/register">
+        //               Need an account?
+        //             </Link>
+        //           </div>
+        //         </form>
+        //       </div>
+        //     </section>
+        //   </main>
+        //   <div>
+        //     <Link className="switch-link" to="/">
+        //       Are you a user? Sign in here.
+        //     </Link>
+        //   </div>
+        // </div>
+        <>
+            <div className="auth-page">
+                <div className="auth-card">
+                    {/* Left image panel */}
+                    <div className="auth-image-panel">
+                        <img src={backgroundImage} alt="Delicious food spread" />
+                        <div className="auth-image-overlay">
+                            <div className="auth-overlay-content">
+                                <span className="auth-badge">✨ Premium Experience</span>
+                                <h1>Made for Food Lovers</h1>
+                                <p>
+                                    Good coffee, good food, great moments.
+                                    <br />
+                                    Let’s continue your journey!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Right form panel */}
+                    <div className="auth-form-panel">
+                        <div className="auth-form-header">
+                            <span className="auth-logo">
+                                {" "}
+                                <img src={BrandLogo} alt="logo" className="auto-logo-image" />
+                                <p className="auth-logo-text">FOODGRAM</p>
+                            </span>
+                            <div className="auth-select-wrapper">
+                                <DeliveryDiningIcon className="auth-select-icon" />
+                                <select
+                                    className="auth-role-select"
+                                    onChange={(e) => {
+                                        handleUserChange(e);
+                                    }}
+                                    aria-label="Login as"
+                                >
+                                    <option value="foodpartner">Food Partner</option>
+                                    <option value="user">User</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {errorMessage && (
+                            <div className="errorBanner">
+                                <ReportGmailerrorredIcon
+                                    sx={{ fontSize: "40px", color: "#e91938" }}
+                                />
+                                <div className="error">
+                                    <h5>{errorMessage}</h5>
+                                    <p>Please try again</p>
+                                </div>
+                                <div className="errorLine"></div>
+                            </div>
+                        )}
+
+                        <h2 className="auth-title">
+                            Welcome Back<span className="wave-hand">👋</span>
+                        </h2>
+                        <p className="auth-subtitle">Sign in to manage orders and menu</p>
+
+                        <form onSubmit={handleSubmit}>
+                            <div className="auth-field">
+                                <label htmlFor="email">Email</label>
+                                <div className="auth-input-wrapper">
+                                    <MailOutlineIcon className="auth-input-icon" />
+                                    <input
+                                        id="email"
+                                        name="email"
+                                        type="email"
+                                        placeholder="contact@business.com"
+                                        aria-label="Email address"
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="auth-field">
+                                <label htmlFor="password">Password</label>
+                                <div className="auth-input-wrapper">
+                                    <LockOutlinedIcon className="auth-input-icon" />
+                                    <input
+                                        id="password"
+                                        name="password"
+                                        type="password"
+                                        placeholder="your password"
+                                        aria-label="Password"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <button className="auth-btn" type="submit">
+                                Login
+                            </button>
+                            <button type="button" className="auth-btn"
+                                onClick={() => {
+                                    const googleAuthUrl =
+                                        import.meta.env.VITE_GOOGLE_AUTH_URL;
+
+                                    if (
+                                        googleAuthUrl &&
+                                        (googleAuthUrl.startsWith("http://") ||
+                                            googleAuthUrl.startsWith("https://"))
+                                    ) {
+                                        window.location.href = googleAuthUrl;
+                                    } else {
+                                        setErrorMessage(
+                                            "Google authentication is currently unavailable."
+                                        );
+                                    }
+                                }}
+                            >
+                                Continue with Google
+                            </button>
+                        </form>
+
+                        <div className="auth-footer">
+                            Don't have an account? <a href="/user/register">Sign up</a>
+                        </div>
+                    </div>
                 </div>
-                <div className="errorLine"></div>
-              </div>
-            )}
-
-            <h2 className="auth-title">
-              Welcome Back<span className="wave-hand">👋</span>
-            </h2>
-            <p className="auth-subtitle">Sign in to manage orders and menu</p>
-
-            <form onSubmit={handleSubmit}>
-              <div className="auth-field">
-                <label htmlFor="email">Email</label>
-                <div className="auth-input-wrapper">
-                  <MailOutlineIcon className="auth-input-icon" />
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="contact@business.com"
-                    aria-label="Email address"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="auth-field">
-                <label htmlFor="password">Password</label>
-                <div className="auth-input-wrapper">
-                  <LockOutlinedIcon className="auth-input-icon" />
-                  <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    placeholder="your password"
-                    aria-label="Password"
-                    required
-                  />
-                </div>
-              </div>
-              <button className="auth-btn" type="submit">
-                Login
-              </button>
-              <button type="button" className="auth-btn"
-              onClick={() => {
-                  window.location.href = import.meta.env.VITE_GOOGLE_AUTH_URL;
-                }}
-              >
-                Continue with Google
-              </button>
-            </form>
-
-            <div className="auth-footer">
-              Don't have an account? <a href="/user/register">Sign up</a>
             </div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
+        </>
+    );
 }

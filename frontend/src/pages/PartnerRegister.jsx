@@ -61,7 +61,6 @@ export default function PartnerRegister({ onFlash }) {
     },
   );
 
-  console.log(response.data);
   navigate("/create-food");
 } catch (err) {
   onFlash(

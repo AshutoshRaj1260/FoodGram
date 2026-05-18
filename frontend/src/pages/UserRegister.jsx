@@ -53,7 +53,6 @@ export default function UserRegister({ onFlash }) {
     },
   );
 
-  console.log(response.data);
   navigate("/home");
 } catch (err) {
   onFlash(
