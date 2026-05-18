@@ -16,15 +16,18 @@ const trustProxyValue = process.env.TRUST_PROXY === 'true' ? 1 :
                        Number(process.env.TRUST_PROXY) || false;
 app.set('trust proxy', trustProxyValue);
 
-app.use(
-  cors({
-    origin: process.env.FRONTEND_URL?.replace(/\/$/, "") || "http://localhost:5173",
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    maxAge: 3600,
-  })
-);
+// CORS configuration - must be before routes
+const corsOptions = {
+  origin: process.env.FRONTEND_URL?.replace(/\/$/, "") || "http://localhost:5173",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  exposedHeaders: ["Content-Type"],
+  maxAge: 3600,
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Enable preflight for all routes
 
 app.use(globalLimiter);
 
