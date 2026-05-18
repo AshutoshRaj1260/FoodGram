@@ -27,8 +27,6 @@ export default function PartnerRegister({ onFlash }) {
   };
 
   const handleSubmit = async (e) => {
-    const apiUrl = import.meta.env.VITE_API_URL;
-
     e.preventDefault();
     const businessName = e.target.businessName.value;
     const owner = e.target.ownername.value;
@@ -46,7 +44,7 @@ export default function PartnerRegister({ onFlash }) {
     }
 
     const response = await axios.post(
-      `${apiUrl}/api/auth/foodpartner/register`,
+      `/api/auth/foodpartner/register`,
       {
         businessName: businessName,
         ownerName: owner,

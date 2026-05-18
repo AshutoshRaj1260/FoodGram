@@ -9,14 +9,13 @@ import AddBoxIcon from '@mui/icons-material/AddBox';
 
 const BottomNavBar = ({ userType }) => {
   const navigate = useNavigate();
-  const apiUrl = import.meta.env.VITE_API_URL;
 
   const handleLogout = async () => {
     try {
       const logoutEndpoint =
         userType === "partner"
-          ? `${apiUrl}/api/auth/foodpartner/logout`
-          : `${apiUrl}/api/auth/user/logout`;
+          ? `/api/auth/foodpartner/logout`
+          : `/api/auth/user/logout`;
 
       await axios.get(logoutEndpoint, { withCredentials: true });
 

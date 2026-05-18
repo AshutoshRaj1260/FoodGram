@@ -41,9 +41,9 @@ services:
 
   backend:
     build:
-      context: ./backend
+      context: .
       dockerfile: Dockerfile
-    container_name: foodgram-backend
+    container_name: foodgram-app
     ports:
       - "3000:3000"
     env_file:

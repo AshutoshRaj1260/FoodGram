@@ -6,8 +6,18 @@ const cors = require("cors");
 const foodPartnerRoutes = require("./routes/food-partner.routes");
 const passport = require("./services/passport.service");
 const { globalLimiter } = require("./middlewares/rateLimiter.middleware");
+const path = require("path");
 
 const app = express();
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL ? process.env.FRONTEND_URL.replace(/\/$/, "") : undefined,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
 
 // Trust proxy setting for deployment environments
 const trustProxyValue = process.env.TRUST_PROXY === 'true' ? 1 : 
@@ -35,21 +45,22 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(passport.initialize());
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
+app.get("/api", (req, res) => {
+  res.send("API is running!");
 });
 
 app.use("/api/auth", authRoutes);
 app.use("/api/food", foodRoutes);
 app.use("/api/food-partner", foodPartnerRoutes);
 
-// Global Error Handler
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(err.status || 500).json({
-    message: err.message || "Internal Server Error",
-    ...(process.env.NODE_ENV === "development" && { error: err })
-  });
+// --- Serve Frontend Static Files ---
+// 1. Point Express to the React/Vite build directory
+const frontendDistPath = path.join(__dirname, "../../frontend/dist");
+app.use(express.static(frontendDistPath));
+
+// 2. Catch-all route to hand off client-side routing back to React Router
+app.get(/(.*)/, (req, res) => {
+  res.sendFile(path.join(frontendDistPath, "index.html"));
 });
 
 module.exports = app;
