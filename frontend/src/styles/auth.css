@@ -1071,22 +1071,51 @@ body {
   scrollbar-width: thin;
 }
 
-.authPage .form-container .form-right .errorBanner {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  top: 12%;
-  width: 350px;
-  height: 60px;
-  background-color: #ebd3c7;
-  border-radius: 8px;
+.errorBanner {
+  width: 100%;
+  max-width: 420px;
+  margin-bottom: 1.2rem;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: #fff1f2;
+  border: 1px solid #fda4af;
   display: flex;
   align-items: center;
-  padding-inline: 20px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-  gap: 20px;
+  gap: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   overflow: hidden;
+  position: relative;
+}
+
+.errorBanner .error {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.errorBanner .error h5 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #be123c;
+  line-height: 1.3;
+}
+
+.errorBanner .error p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #7f1d1d;
+  font-weight: 500;
+}
+
+.errorBanner .errorLine {
+  background-color: #e11d48;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  animation: shrink-progress 5s linear forwards;
 }
 
 .authPage .form-container .form-right .errorBanner .error {
@@ -1147,6 +1176,23 @@ body {
     gap: 3rem;
   }
 }
+
+@media (max-width: 576px) {
+  .errorBanner {
+    max-width: 100%;
+    padding: 12px 14px;
+    gap: 10px;
+  }
+
+  .errorBanner .error h5 {
+    font-size: 0.85rem;
+  }
+
+  .errorBanner .error p {
+    font-size: 0.72rem;
+  }
+}
+
 .psw_info{
   font-size: 0.75rem;   
   line-height: 1rem;    
