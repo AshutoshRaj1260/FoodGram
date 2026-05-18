@@ -19,7 +19,7 @@ const BottomNavBar = ({ userType }) => {
 
       await axios.get(logoutEndpoint, { withCredentials: true });
 
-      // Redirect to the correct login page
+      localStorage.removeItem("userType");
       navigate(userType === "partner" ? "/foodpartner/login" : "/");
     } catch (err) {
       console.log("Logout failed", err);

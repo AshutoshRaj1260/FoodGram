@@ -28,8 +28,6 @@ app.use(globalLimiter);
 
 app.use(express.json());
 app.use(cookieParser());
-
-
 app.use(passport.initialize());
 
 app.get("/api", (req, res) => {

@@ -25,7 +25,6 @@ function issueTokens(res, id) {
   res.cookie("token", accessToken, accessTokenOptions);
   res.cookie("refreshToken", refreshToken, refreshTokenOptions);
 }
-
 async function registerUser(req, res, next) {
   try {
   const { fullName, email, password } = req.body;

@@ -3,20 +3,18 @@ const jwt = require("jsonwebtoken");
 const userModel = require("../models/user.model");
 
 async function authFoodPartnerMiddleware(req, res, next) {
-  const token = req.cookies.token;
-  if (!token) {
+  const accessToken = req.cookies.accessToken;
+  
+  if (!accessToken) {
     return res.status(401).json({
       message: "Login to access this resource",
     });
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
+    const decoded = jwt.verify(accessToken, process.env.JWT_SECRET);
     const foodPartner = await foodPartnerModel.findById(decoded.id);
-
     req.foodPartner = foodPartner;
-
     next();
   } catch (error) {
     return res.status(401).json({
@@ -26,18 +24,17 @@ async function authFoodPartnerMiddleware(req, res, next) {
 }
 
 async function authUserMiddleware(req, res, next) {
-  const token = req.cookies.token;
-  if (!token) {
+  const accessToken = req.cookies.accessToken;
+  
+  if (!accessToken) {
     return res.status(401).json({
       message: "Login to access this resource",
     });
   }
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(accessToken, process.env.JWT_SECRET);
     const user = await userModel.findById(decoded.id);
-
     req.user = user;
-
     next();
   } catch (error) {
     return res.status(401).json({

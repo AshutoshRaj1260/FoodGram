@@ -22,6 +22,9 @@ router.post('/foodpartner/register', foodPartnerRegisterValidation, validate, au
 router.post('/foodpartner/login', loginLimiter, loginValidation, validate, authController.loginFoodPartner);
 router.get('/foodpartner/logout', authController.logoutFoodPartner); 
 
+//refresh token route
+router.post('/refresh', authController.refreshToken);
+
 //google_oauth_routes
 if (
   process.env.GOOGLE_CLIENT_ID &&
