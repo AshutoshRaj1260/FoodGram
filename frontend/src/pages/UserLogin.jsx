@@ -27,8 +27,6 @@ export default function UserLogin() {
   };
 
   const handleSubmit = async (e) => {
-    const apiUrl = import.meta.env.VITE_API_URL;
-
     setErrorMessage("");
 
     e.preventDefault();
@@ -38,7 +36,7 @@ export default function UserLogin() {
 
     try {
       await axios.post(
-        `${apiUrl}/api/auth/user/login`,
+        `/api/auth/user/login`,
         {
           email: email,
           password: password,

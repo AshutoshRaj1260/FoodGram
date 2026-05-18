@@ -11,10 +11,8 @@ const Saved = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const apiUrl = import.meta.env.VITE_API_URL;
-
     axios
-      .get(`${apiUrl}/api/food/save`, { withCredentials: true })
+      .get(`/api/food/save`, { withCredentials: true })
       .then((response) => {
         const savedFoods = response.data.savedFoods.map((item) => ({
           _id: item.food._id,
@@ -29,11 +27,9 @@ const Saved = () => {
   }, []);
 
   const removeSaved = async (item) => {
-    const apiUrl = import.meta.env.VITE_API_URL;
-
     try {
       await axios.post(
-        `${apiUrl}/api/food/save`,
+        `/api/food/save`,
         { foodId: item._id },
         { withCredentials: true }
       );
