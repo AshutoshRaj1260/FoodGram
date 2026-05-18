@@ -207,20 +207,20 @@ async function refreshToken(req, res, next) {
   try {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
-      return res.status(401).json({ message: \"Refresh token not found\" });
+      return res.status(401).json({ message: 'Refresh token not found' });
     }
 
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-    const accessToken = jwt.sign({ id: decoded.id }, process.env.JWT_SECRET, { expiresIn: \"15m\" });
+    const accessToken = jwt.sign({ id: decoded.id }, process.env.JWT_SECRET, { expiresIn: '15m' });
 
-    res.cookie(\"accessToken\", accessToken, {
+    res.cookie('accessToken', accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === \"production\",
-      sameSite: process.env.NODE_ENV === \"production\" ? \"none\" : \"lax\",
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 15 * 60 * 1000,
     });
 
-    res.status(200).json({ message: \"Token refreshed successfully\" });
+    res.status(200).json({ message: 'Token refreshed successfully' });
   } catch (error) {
     next(error);
   }
