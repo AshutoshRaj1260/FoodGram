@@ -52,6 +52,7 @@ export default function UserRegister({ onFlash }) {
       },
     );
 
+    localStorage.setItem("userType", "user");
     console.log(response.data);
     navigate("/home");
   };

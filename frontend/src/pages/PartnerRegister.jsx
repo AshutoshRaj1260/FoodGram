@@ -60,6 +60,7 @@ export default function PartnerRegister({ onFlash }) {
       },
     );
 
+    localStorage.setItem("userType", "foodpartner");
     console.log(response.data);
     navigate("/create-food");
   };
