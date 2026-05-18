@@ -5,8 +5,8 @@ const foodRoutes = require("./routes/food.routes");
 const cors = require("cors");
 const foodPartnerRoutes = require("./routes/food-partner.routes");
 const passport = require("./services/passport.service");
-const path = require("path");
 const { globalLimiter } = require("./middlewares/rateLimiter.middleware");
+const path = require("path");
 
 const app = express();
 
@@ -33,6 +33,8 @@ app.use(globalLimiter);
 
 app.use(express.json());
 app.use(cookieParser());
+
+
 app.use(passport.initialize());
 
 app.get("/api", (req, res) => {
