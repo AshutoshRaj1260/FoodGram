@@ -6,6 +6,11 @@ async function authFoodPartnerMiddleware(req, res, next) {
   try {
     const accessToken = req.cookies?.accessToken;
     
+    // Debug: log to check if cookies are arriving
+    if (!accessToken) {
+      console.log('[AUTH] No accessToken found. Cookies:', Object.keys(req.cookies || {}));
+    }
+    
     if (!accessToken) {
       return res.status(401).json({
         message: "Login to access this resource",
@@ -24,6 +29,7 @@ async function authFoodPartnerMiddleware(req, res, next) {
     req.foodPartner = foodPartner;
     next();
   } catch (error) {
+    console.log('[AUTH] Token verification error:', error.message);
     return res.status(401).json({
       message: "Invalid Token. Please login again.",
     });
@@ -33,6 +39,11 @@ async function authFoodPartnerMiddleware(req, res, next) {
 async function authUserMiddleware(req, res, next) {
   try {
     const accessToken = req.cookies?.accessToken;
+    
+    // Debug: log to check if cookies are arriving
+    if (!accessToken) {
+      console.log('[AUTH] No accessToken found. Cookies:', Object.keys(req.cookies || {}));
+    }
     
     if (!accessToken) {
       return res.status(401).json({
@@ -52,6 +63,7 @@ async function authUserMiddleware(req, res, next) {
     req.user = user;
     next();
   } catch (error) {
+    console.log('[AUTH] Token verification error:', error.message);
     return res.status(401).json({
       message: "Invalid Token. Please login again.",
     });

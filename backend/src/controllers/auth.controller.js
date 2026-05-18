@@ -13,13 +13,6 @@ const setCookies = (res, accessToken, refreshToken) => {
   // Use HTTPS if FRONTEND_URL starts with https:// OR if NODE_ENV is production
   const isSecure = process.env.FRONTEND_URL?.startsWith('https') || process.env.NODE_ENV === 'production';
   
-  // For Render: extract domain from FRONTEND_URL (e.g., onrender.com)
-  // For localhost development: don't set domain
-  let cookieDomain = undefined;
-  if (isSecure && process.env.FRONTEND_URL?.includes('render.com')) {
-    cookieDomain = '.onrender.com'; // This allows cookies across all render.com subdomains
-  }
-  
   const cookieOptions = {
     httpOnly: true,
     secure: isSecure,
@@ -27,11 +20,6 @@ const setCookies = (res, accessToken, refreshToken) => {
     path: '/',
     maxAge: 15 * 60 * 1000,
   };
-  
-  // Add domain only if on Render
-  if (cookieDomain) {
-    cookieOptions.domain = cookieDomain;
-  }
   
   res.cookie('accessToken', accessToken, cookieOptions);
   
