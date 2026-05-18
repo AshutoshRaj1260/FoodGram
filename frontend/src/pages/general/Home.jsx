@@ -66,12 +66,9 @@ const Home = () => {
       const response = await axios.post(
         `${apiUrl}/api/food/like`,
         { foodId: item._id },
-        { withCredentials: true },
+        { withCredentials: true }
       );
 
-      console.log("Like response:", response.data);
-
-      // Update the count using the backend response
       setVideos((prev) =>
         prev.map((v) =>
           v._id === item._id ? { ...v, likeCount: response.data.likeCount } : v,
@@ -89,12 +86,9 @@ const Home = () => {
       const response = await axios.post(
         `${apiUrl}/api/food/save`,
         { foodId: item._id },
-        { withCredentials: true },
+        { withCredentials: true }
       );
 
-      console.log("Save response:", response.data);
-
-      // Update the count using the backend response
       setVideos((prev) =>
         prev.map((v) =>
           v._id === item._id ? { ...v, saveCount: response.data.saveCount } : v,

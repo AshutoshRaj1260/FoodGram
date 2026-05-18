@@ -18,6 +18,9 @@ router.post('/foodpartner/register', registerValidation, validate, authControlle
 router.post('/foodpartner/login', authController.loginFoodPartner);
 router.get('/foodpartner/logout', authController.logoutFoodPartner); 
 
+//refresh token route
+router.post('/refresh', authController.refreshToken);
+
 //google_oauth_routes
 router.get("/google",passport.authenticate("google", {scope: ["profile", "email"],}));
 router.get("/google/callback",passport.authenticate("google", {session: false,failureRedirect: "/",}),authController.googleAuthCallback);

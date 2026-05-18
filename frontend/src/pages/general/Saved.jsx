@@ -30,7 +30,6 @@ const Saved = () => {
 
   const removeSaved = async (item) => {
     const apiUrl = import.meta.env.VITE_API_URL;
-
     try {
       await axios.post(
         `${apiUrl}/api/food/save`,
