@@ -3,39 +3,41 @@ const foodModel = require('../models/food.model');
 const { getOrSetCache } = require('../services/redis.service');
 const mongoose = require('mongoose');
 
-async function getFoodPartnerById(req, res) {
+async function getFoodPartnerById(req, res, next) {
+  try {
     const foodPartnerId = req.params.id;
 
     if (!mongoose.isValidObjectId(foodPartnerId)) {
         return res.status(404).json({ message: 'Food partner not found' });
     }
 
-    try {
-        const cacheKey = `partner:${foodPartnerId}`;
-        const { data: foodPartnerData, cache } = await getOrSetCache(cacheKey, async () => {
-            const foodPartner = await foodPartnerModel.findById(foodPartnerId);
-            if (!foodPartner) return null;
+    const cacheKey = `partner:${foodPartnerId}`;
+    const { data: foodPartnerData, cache } = await getOrSetCache(cacheKey, async () => {
+        const foodPartner = await foodPartnerModel
+            .findById(foodPartnerId)
+            .select('-password')
+            .lean();
+        if (!foodPartner) return null;
 
-            const foodItemsByFoodPartner = await foodModel.find({ foodPartner: foodPartnerId });
-            
-            return {
-                ...foodPartner.toObject(),
-                foodItems: foodItemsByFoodPartner
-            };
-        }, 300); // 5 minutes TTL
+        const foodItemsByFoodPartner = await foodModel.find({ foodPartner: foodPartnerId });
+        
+        return {
+            ...foodPartner,
+            foodItems: foodItemsByFoodPartner
+        };
+    }, 300); // 5 minutes TTL
 
-        if (!foodPartnerData) {
-            return res.status(404).json({ message: 'Food partner not found' });
-        }
-
-        res.setHeader('X-Cache', cache);
-        res.status(200).json({
-            foodPartner: foodPartnerData
-        });
-    } catch (error) {
-        console.error('Error in getFoodPartnerById:', error);
-        res.status(500).json({ message: 'Internal Server Error' });
+    if (!foodPartnerData) {
+        return res.status(404).json({ message: 'Food partner not found' });
     }
+
+    res.setHeader('X-Cache', cache);
+    res.status(200).json({
+        foodPartner: foodPartnerData
+    });
+  } catch (error) {
+    next(error);
+  }
 }
 
 

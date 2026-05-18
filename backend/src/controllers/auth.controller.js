@@ -26,7 +26,8 @@ function issueTokens(res, id) {
   res.cookie("refreshToken", refreshToken, refreshTokenOptions);
 }
 
-async function registerUser(req, res) {
+async function registerUser(req, res, next) {
+  try {
   const { fullName, email, password } = req.body;
 
   const isUserAlreadyExists = await userModel.findOne({
@@ -56,9 +57,13 @@ async function registerUser(req, res) {
       fullName: user.fullName,
     },
   });
+  } catch (error) {
+    next(error);
+  }
 }
 
-async function loginUser(req, res) {
+async function loginUser(req, res, next) {
+  try {
   const { email, password } = req.body;
 
   const user = await userModel.findOne({
@@ -85,17 +90,25 @@ async function loginUser(req, res) {
       fullName: user.fullName,
     },
   });
+  } catch (error) {
+    next(error);
+  }
 }
 
-function logoutUser(req, res) {
+function logoutUser(req, res, next) {
+  try {
   res.clearCookie("token", accessTokenOptions);
   res.clearCookie("refreshToken", refreshTokenOptions);
   res.status(200).json({
     message: "User Logged Out Successfully",
   });
+  } catch (error) {
+    next(error);
+  }
 }
 
-async function registerFoodPartner(req, res) {
+async function registerFoodPartner(req, res, next) {
+  try {
   const { businessName, ownerName, phone, address, email, password } = req.body;
 
   const isPartnerAlreadyExists = await foodPartnerModel.findOne({
@@ -126,9 +139,13 @@ async function registerFoodPartner(req, res) {
       email: foodPartner.email,
     },
   });
+  } catch (error) {
+    next(error);
+  }
 }
 
-async function loginFoodPartner(req, res) {
+async function loginFoodPartner(req, res, next) {
+  try {
   const { email, password } = req.body;
   const foodPartner = await foodPartnerModel.findOne({
     email,
@@ -154,28 +171,32 @@ async function loginFoodPartner(req, res) {
       name: foodPartner.name,
     },
   });
+  } catch (error) {
+    next(error);
+  }
 }
 
 //Google OAuth login/signup
-function googleAuthCallback(req, res) {
-  const token = jwt.sign(
-    {
-      id: req.user._id,
-    },
-    process.env.JWT_SECRET
-  );
-  res.cookie("token", token, {});
-
+function googleAuthCallback(req, res, next) {
+  try {
+  issueTokens(res, req.user._id);
   const frontendUrl = process.env.FRONTEND_URL || "";
   res.redirect(`${frontendUrl}/home`);
+  } catch (error) {
+    next(error);
+  }
 }
 
-function logoutFoodPartner(req, res) {
+function logoutFoodPartner(req, res, next) {
+  try {
   res.clearCookie("token", accessTokenOptions);
   res.clearCookie("refreshToken", refreshTokenOptions);
   res.status(200).json({
     message: "Food Partner Logged Out Successfully",
   });
+  } catch (error) {
+    next(error);
+  }
 }
 
 function refreshToken(req, res) {

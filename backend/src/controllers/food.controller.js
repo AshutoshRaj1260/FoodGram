@@ -6,7 +6,8 @@ const saveModel = require("../models/save.model");
 const { invalidateCache, getOrSetCache } = require("../services/redis.service");
 const mongoose = require("mongoose");
 
-async function createFood(req, res) {
+async function createFood(req, res, next) {
+  try {
   const fileUploadResult = await storageService.uploadFile(
     req.file.buffer,
     uuid()
@@ -27,9 +28,13 @@ async function createFood(req, res) {
     message: "Food Item Created Successfully",
     foodItem,
   });
+  } catch (error) {
+    next(error);
+  }
 }
 
-async function getFoodItems(req, res) {
+async function getFoodItems(req, res, next) {
+  try {
   const { data: foodItems, cache } = await getOrSetCache('all_food_items', async () => {
     return await foodModel.find({});
   }, 300); // 5 minutes TTL
@@ -39,9 +44,13 @@ async function getFoodItems(req, res) {
     message: "Food Items fetched successfully",
     foodItems,
   });
+  } catch (error) {
+    next(error);
+  }
 }
 
-async function likeFood(req, res) {
+async function likeFood(req, res, next) {
+  try {
   const { foodId } = req.body;
   const user = req.user;
 
@@ -100,7 +109,6 @@ async function likeFood(req, res) {
 
     // Only reached if transaction commits
     await invalidateCache(`partner:${result.partnerId}`);
-    await invalidateCache('all_food_items');
 
     res.status(result.status).json({ 
       message: result.message,
@@ -124,9 +132,13 @@ async function likeFood(req, res) {
   } finally {
     await session.endSession();
   }
+  } catch (error) {
+    next(error);
+  }
 }
 
-async function saveFood(req, res) {
+async function saveFood(req, res, next) {
+  try {
   const { foodId } = req.body;
   const user = req.user;
 
@@ -184,7 +196,6 @@ async function saveFood(req, res) {
 
     // Only reached if transaction commits
     await invalidateCache(`partner:${result.partnerId}`);
-    await invalidateCache('all_food_items');
 
     res.status(result.status).json({ 
       message: result.message,
@@ -208,9 +219,13 @@ async function saveFood(req, res) {
   } finally {
     await session.endSession();
   }
+  } catch (error) {
+    next(error);
+  }
 }
 
-async function getSavedFood(req, res) {
+async function getSavedFood(req, res, next) {
+  try {
   const user = req.user;
 
   const savedFoods = await saveModel.find({ user: user._id }).populate("food");
@@ -220,6 +235,9 @@ async function getSavedFood(req, res) {
     message: "Saved food items fetched successfully",
     savedFoods: savedFoods || [],
   });
+  } catch (error) {
+    next(error);
+  }
 }
 
 module.exports = {
