@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import UserRegister from "../pages/UserRegister.jsx";
 import UserLogin from "../pages/UserLogin.jsx";
@@ -10,12 +10,26 @@ import Profile from "../pages/food-partner/Profile.jsx";
 import Saved from "../pages/general/Saved.jsx";
 import VerifyEmail from "../pages/VerifyEmail.jsx";
 const AppRoutes = () => {
+    const [flashes, setFlashes] = useState([]);
+
+  const addFlash = useCallback((message, type = "success") => {
+    const id = ++flashId;
+    setFlashes((f) => [...f, { id, message, type }]);
+    setTimeout(() => setFlashes((f) => f.filter((x) => x.id !== id)), 4000);
+  }, []);
+
+  const removeFlash = useCallback((id) => {
+    setFlashes((f) => f.filter((x) => x.id !== id));
+  }, []);
+
     return (
+        <>
+        <FlashContainer flashes={flashes} onDismiss={removeFlash} />
         <Router>
             <Routes>
-                <Route path="/user/register" element={<UserRegister />} />
+                <Route path="/user/register" element={<UserRegister onFlash={addFlash}/>} />
                 <Route path="/" element={<UserLogin />} />
-                <Route path="/foodpartner/register" element={<PartnerRegister />} />
+                <Route path="/foodpartner/register" element={<PartnerRegister onFlash={addFlash}/>} />
                 <Route path="/foodpartner/login" element={<PartnerLogin />} />
                 <Route path="/home" element={<Home />} />
                 <Route path="/reels/:id" element={<Home />} />
@@ -25,6 +39,7 @@ const AppRoutes = () => {
                 <Route path="/verify-email" element={<VerifyEmail />} />
             </Routes>
         </Router>
+        </>
     )
 }
 

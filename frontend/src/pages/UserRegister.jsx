@@ -10,7 +10,11 @@ import BrandLogo from "../../public/brandLogo.png";
 import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 
-export default function UserRegister() {
+const isValidPassword = (p) =>
+  p.length >= 8 && /[0-9]/.test(p) && /[A-Z]/.test(p) && /[^A-Za-z0-9]/.test(p);
+
+
+export default function UserRegister({ onFlash }) {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = React.useState("");
   const [successMessage, setSuccessMessage] = React.useState("");
@@ -223,11 +227,15 @@ export default function UserRegister() {
                     id="password"
                     name="password"
                     type="password"
+                    maxLength={64}
                     placeholder="your password"
                     aria-label="Password"
                     required
                   />
                 </div>
+                <p className="psw_info">
+                Must contain at least 8 characters with a number, uppercase letter, and special character.
+              </p>
               </div>
 
               <button className="auth-btn" type="submit" disabled={isLoading}>
