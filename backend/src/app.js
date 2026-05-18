@@ -7,15 +7,19 @@ const foodPartnerRoutes = require("./routes/food-partner.routes");
 const passport = require("./services/passport.service");
 
 const app = express();
-app.use(
-  cors({
-    origin: process.env.FRONTEND_URL?.replace(/\/$/, "") || "http://localhost:5173",
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    maxAge: 3600,
-  })
-);
+
+// CORS configuration - must be before routes
+const corsOptions = {
+  origin: process.env.FRONTEND_URL?.replace(/\/$/, "") || "http://localhost:5173",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  exposedHeaders: ["Content-Type"],
+  maxAge: 3600,
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Enable preflight for all routes
 
 app.use(express.json());
 app.use(cookieParser());
