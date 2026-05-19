@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import "../styles/auth.css";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
@@ -11,12 +11,58 @@ import PersonOutlineIcon from "@mui/icons-material/Person";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 import LocalPhoneOutlinedIcon from '@mui/icons-material/LocalPhoneOutlined';
-
-const isValidPassword = (p) =>
-  p.length >= 8 && /[0-9]/.test(p) && /[A-Z]/.test(p) && /[^A-Za-z0-9]/.test(p);
+import {
+  hasErrors,
+  validateEmail,
+  validatePassword,
+  validatePhone,
+  validateRequired,
+} from "../utils/validation";
 
 export default function PartnerRegister({ onFlash }) {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    businessName: "",
+    ownername: "",
+    phone: "",
+    address: "",
+    email: "",
+    password: "",
+  });
+  const [touched, setTouched] = useState({});
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const errors = useMemo(
+    () => ({
+      businessName: validateRequired(formData.businessName, "Business name"),
+      ownername: validateRequired(formData.ownername, "Owner name"),
+      phone: validatePhone(formData.phone),
+      address: validateRequired(formData.address, "Address"),
+      email: validateEmail(formData.email),
+      password: validatePassword(formData.password, { strict: true }),
+    }),
+    [formData],
+  );
+
+  const isFormInvalid = hasErrors(errors);
+
+  const shouldShowError = (field) => Boolean((touched[field] || submitAttempted) && errors[field]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((current) => ({
+      ...current,
+      [name]: value,
+    }));
+  };
+
+  const handleBlur = (e) => {
+    setTouched((current) => ({
+      ...current,
+      [e.target.name]: true,
+    }));
+  };
 
   const handleUserChange = (e) => {
     console.log(e.target.value);
@@ -28,38 +74,40 @@ export default function PartnerRegister({ onFlash }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const businessName = e.target.businessName.value;
-    const owner = e.target.ownername.value;
-    const phone = e.target.phone.value;
-    const address = e.target.address.value;
-    const email = e.target.email.value;
-    const password = e.target.password.value;
+    setSubmitAttempted(true);
 
-    if (!isValidPassword(password)) {
-      onFlash(
-        "Follow the password guidelines.",
-        "error"
-      );
+    if (isFormInvalid) {
       return;
     }
 
-    const response = await axios.post(
-      `/api/auth/foodpartner/register`,
-      {
-        businessName: businessName,
-        ownerName: owner,
-        phone: phone,
-        address: address,
-        email: email,
-        password: password,
-      },
-      {
-        withCredentials: true,
-      },
-    );
+    setIsSubmitting(true);
 
-    console.log(response.data);
-    navigate("/create-food");
+    try {
+      const response = await axios.post(
+        `/api/auth/foodpartner/register`,
+        {
+          businessName: formData.businessName.trim(),
+          ownerName: formData.ownername.trim(),
+          phone: formData.phone.trim(),
+          address: formData.address.trim(),
+          email: formData.email.trim(),
+          password: formData.password,
+        },
+        {
+          withCredentials: true,
+        },
+      );
+
+      console.log(response.data);
+      navigate("/create-food");
+    } catch (err) {
+      onFlash?.(
+        err.response?.data?.message || "Unable to create your partner account. Please try again.",
+        "error",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -212,108 +260,150 @@ export default function PartnerRegister({ onFlash }) {
               Bring your flavors to the Foodgram community
             </p>
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} noValidate>
               <div className="inputBoxesWrapper">
                 {/* old Wrapper above */}
                 <div className="auth-field">
                   <label htmlFor="businessname">Business name</label>
-                  <div className="auth-input-wrapper">
+                  <div className={`auth-input-wrapper ${shouldShowError("businessName") ? "invalid" : ""}`}>
                     <StorefrontOutlinedIcon className="auth-input-icon" />
                     <input
                       id="businessName"
                       name="businessName"
+                      value={formData.businessName}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
                       placeholder="Burger Kings"
                       aria-label="Business name"
-                      required
+                      aria-invalid={shouldShowError("businessName")}
+                      aria-describedby="businessName-error"
                     />
                   </div>
+                  {shouldShowError("businessName") && (
+                    <p className="field-error" id="businessName-error">{errors.businessName}</p>
+                  )}
                 </div>
 
                 <div className="auth-field">
                   <label htmlFor="ownername">Owner name</label>
-                  <div className="auth-input-wrapper">
+                  <div className={`auth-input-wrapper ${shouldShowError("ownername") ? "invalid" : ""}`}>
                     <PersonOutlinedIcon className="auth-input-icon" />
                     <input
                       id="ownername"
                       name="ownername"
+                      value={formData.ownername}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
                       placeholder="Jane Doe"
                       aria-label="Owner name"
-                      required
+                      aria-invalid={shouldShowError("ownername")}
+                      aria-describedby="ownername-error"
                     />
                   </div>
+                  {shouldShowError("ownername") && (
+                    <p className="field-error" id="ownername-error">{errors.ownername}</p>
+                  )}
                 </div>
 
                 <div className="auth-field">
                   <label htmlFor="phone">Phone number</label>
-                  <div className="auth-input-wrapper">
+                  <div className={`auth-input-wrapper ${shouldShowError("phone") ? "invalid" : ""}`}>
                     <LocalPhoneOutlinedIcon className="auth-input-icon" />
                     <input
                       id="phone"
                       name="phone"
                       type="tel"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
                       placeholder="+91 55555 55555"
                       aria-label="Phone number"
-                      required
+                      aria-invalid={shouldShowError("phone")}
+                      aria-describedby="phone-error"
                     />
                   </div>
+                  {shouldShowError("phone") && (
+                    <p className="field-error" id="phone-error">{errors.phone}</p>
+                  )}
                 </div>
 
                 <div className="auth-field">
                   <label htmlFor="address">Address</label>
-                  <div className="auth-input-wrapper">
+                  <div className={`auth-input-wrapper ${shouldShowError("address") ? "invalid" : ""}`}>
                     <textarea
                       id="address"
                       name="address"
+                      value={formData.address}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
                       placeholder="Street, City, State, ZIP"
                       rows={3}
                       aria-label="address"
-                      required
+                      aria-invalid={shouldShowError("address")}
+                      aria-describedby="address-error"
                     ></textarea>
                   </div>
+                  {shouldShowError("address") && (
+                    <p className="field-error" id="address-error">{errors.address}</p>
+                  )}
                 </div>
 
                 <div className="auth-field">
                   <label htmlFor="email">Email</label>
-                  <div className="auth-input-wrapper">
+                  <div className={`auth-input-wrapper ${shouldShowError("email") ? "invalid" : ""}`}>
                     <MailOutlineIcon className="auth-input-icon" />
                     <input
                       id="email"
                       name="email"
                       type="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
                       placeholder="you@example.com"
                       aria-label="Email address"
-                      required
+                      aria-invalid={shouldShowError("email")}
+                      aria-describedby="email-error"
                     />
                   </div>
+                  {shouldShowError("email") && (
+                    <p className="field-error" id="email-error">{errors.email}</p>
+                  )}
                 </div>
                 <div className="auth-field">
                   <label htmlFor="password">Password</label>
-                  <div className="auth-input-wrapper">
+                  <div className={`auth-input-wrapper ${shouldShowError("password") ? "invalid" : ""}`}>
                     <LockOutlinedIcon className="auth-input-icon" />
                     <input
                       id="password"
                       name="password"
                       type="password"
                       maxLength={64}
+                      value={formData.password}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
                       placeholder="your password"
                       aria-label="Password"
-                      required
+                      aria-invalid={shouldShowError("password")}
+                      aria-describedby="password-error password-help"
                     />
                     
                   </div>
+                  {shouldShowError("password") && (
+                    <p className="field-error" id="password-error">{errors.password}</p>
+                  )}
                   <p className="psw_info">
                         Must contain at least 8 characters with a number, uppercase letter, and special character.
                   </p>
                 </div>
               </div>
 
-              <button className="auth-btn" type="submit">
-                Create account
+              <button className="auth-btn" type="submit" disabled={isFormInvalid || isSubmitting}>
+                {isSubmitting ? "Creating account..." : "Create account"}
               </button>
             </form>
 
             <div className="auth-footer">
-              Already have an account? <a href="/">Sign in</a>
+              Already have an account? <Link to="/">Sign in</Link>
             </div>
           </div>
         </div>

@@ -5,17 +5,57 @@ import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import backgroundImage from "../assets/backgroundImage.jpeg";
 import "../styles/auth.css";
 import BrandLogo from "/brandLogo.png";
+import {
+  hasErrors,
+  validateEmail,
+  validatePassword,
+} from "../utils/validation";
 
 export default function UserLogin() {
   const navigate = useNavigate();
 
   const [errorMessage, setErrorMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [touched, setTouched] = useState({});
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const errors = useMemo(
+    () => ({
+      email: validateEmail(formData.email),
+      password: validatePassword(formData.password),
+    }),
+    [formData],
+  );
+
+  const isFormInvalid = hasErrors(errors);
+
+  const shouldShowError = (field) => Boolean((touched[field] || submitAttempted) && errors[field]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setErrorMessage("");
+    setFormData((current) => ({
+      ...current,
+      [name]: value,
+    }));
+  };
+
+  const handleBlur = (e) => {
+    setTouched((current) => ({
+      ...current,
+      [e.target.name]: true,
+    }));
+  };
 
   const handleUserChange = (e) => {
     console.log(e.target.value);
@@ -29,16 +69,20 @@ export default function UserLogin() {
     setErrorMessage("");
 
     e.preventDefault();
+    setSubmitAttempted(true);
 
-    const email = e.target.email.value;
-    const password = e.target.password.value;
+    if (isFormInvalid) {
+      return;
+    }
+
+    setIsSubmitting(true);
 
     try {
       await axios.post(
         `/api/auth/user/login`,
         {
-          email: email,
-          password: password,
+          email: formData.email.trim(),
+          password: formData.password,
         },
         {
           withCredentials: true,
@@ -56,6 +100,8 @@ export default function UserLogin() {
       setErrorMessage(
         err.response?.data?.message || "Invalid Credentials"
       );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -147,37 +193,48 @@ export default function UserLogin() {
               Sign in to continue enjoying Foodgram
             </p>
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} noValidate>
               <div className="auth-field">
                 <label htmlFor="email">Email</label>
 
-                <div className="auth-input-wrapper">
+                <div className={`auth-input-wrapper ${shouldShowError("email") ? "invalid" : ""}`}>
                   <MailOutlineIcon className="auth-input-icon" />
 
                   <input
                     id="email"
                     name="email"
                     type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder="you@example.com"
                     aria-label="Email address"
-                    required
+                    aria-invalid={shouldShowError("email")}
+                    aria-describedby="email-error"
                   />
                 </div>
+                {shouldShowError("email") && (
+                  <p className="field-error" id="email-error">{errors.email}</p>
+                )}
               </div>
 
               <div className="auth-field">
                 <label htmlFor="password">Password</label>
 
-                <div className="auth-input-wrapper">
+                <div className={`auth-input-wrapper ${shouldShowError("password") ? "invalid" : ""}`}>
                   <LockOutlinedIcon className="auth-input-icon" />
 
                   <input
                     id="password"
                     name="password"
                     type={showPassword ? "text" : "password"}
+                    value={formData.password}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder="your password"
                     aria-label="Password"
-                    required
+                    aria-invalid={shouldShowError("password")}
+                    aria-describedby="password-error"
                   />
 
                   <button
@@ -200,10 +257,13 @@ export default function UserLogin() {
                     )}
                   </button>
                 </div>
+                {shouldShowError("password") && (
+                  <p className="field-error" id="password-error">{errors.password}</p>
+                )}
               </div>
 
-              <button className="auth-btn" type="submit">
-                Login
+              <button className="auth-btn" type="submit" disabled={isFormInvalid || isSubmitting}>
+                {isSubmitting ? "Logging in..." : "Login"}
               </button>
 
               <button

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import "../styles/auth.css";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
@@ -8,13 +8,52 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import PersonOutlineIcon from "@mui/icons-material/Person";
 import BrandLogo from "/brandLogo.png";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
-
-const isValidPassword = (p) =>
-  p.length >= 8 && /[0-9]/.test(p) && /[A-Z]/.test(p) && /[^A-Za-z0-9]/.test(p);
+import {
+  hasErrors,
+  validateEmail,
+  validatePassword,
+  validateRequired,
+} from "../utils/validation";
 
 
 export default function UserRegister({ onFlash }) {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+  const [touched, setTouched] = useState({});
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const errors = useMemo(
+    () => ({
+      name: validateRequired(formData.name, "Full name"),
+      email: validateEmail(formData.email),
+      password: validatePassword(formData.password, { strict: true }),
+    }),
+    [formData],
+  );
+
+  const isFormInvalid = hasErrors(errors);
+
+  const shouldShowError = (field) => Boolean((touched[field] || submitAttempted) && errors[field]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((current) => ({
+      ...current,
+      [name]: value,
+    }));
+  };
+
+  const handleBlur = (e) => {
+    setTouched((current) => ({
+      ...current,
+      [e.target.name]: true,
+    }));
+  };
 
   const handleUserChange = (e) => {
     console.log(e.target.value);
@@ -26,33 +65,37 @@ export default function UserRegister({ onFlash }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitAttempted(true);
 
-    const name = e.target.name.value;
-    const email = e.target.email.value;
-    const password = e.target.password.value;
-
-    if (!isValidPassword(password)) {
-      onFlash(
-        "Follow the password guidelines.",
-        "error"
-      );
+    if (isFormInvalid) {
       return;
     }
 
-    const response = await axios.post(
-      `/api/auth/user/register`,
-      {
-        fullName: name,
-        email: email,
-        password: password,
-      },
-      {
-        withCredentials: true,
-      },
-    );
+    setIsSubmitting(true);
 
-    console.log(response.data);
-    navigate("/home");
+    try {
+      const response = await axios.post(
+        `/api/auth/user/register`,
+        {
+          fullName: formData.name.trim(),
+          email: formData.email.trim(),
+          password: formData.password,
+        },
+        {
+          withCredentials: true,
+        },
+      );
+
+      console.log(response.data);
+      navigate("/home");
+    } catch (err) {
+      onFlash?.(
+        err.response?.data?.message || "Unable to create your account. Please try again.",
+        "error",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -175,62 +218,83 @@ export default function UserRegister({ onFlash }) {
               Join Foodgram and start exploring delicious moments
             </p>
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} noValidate>
               <div className="auth-field">
                 <label htmlFor="name">Full name</label>
-                <div className="auth-input-wrapper">
+                <div className={`auth-input-wrapper ${shouldShowError("name") ? "invalid" : ""}`}>
                   <PersonOutlinedIcon className="auth-input-icon" />
                   <input
                     id="name"
                     name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder="Jane Doe"
                     aria-label="Full name"
-                    required
+                    aria-invalid={shouldShowError("name")}
+                    aria-describedby="name-error"
                   />
                 </div>
+                {shouldShowError("name") && (
+                  <p className="field-error" id="name-error">{errors.name}</p>
+                )}
               </div>
 
               <div className="auth-field">
                 <label htmlFor="email">Email</label>
-                <div className="auth-input-wrapper">
+                <div className={`auth-input-wrapper ${shouldShowError("email") ? "invalid" : ""}`}>
                   <MailOutlineIcon className="auth-input-icon" />
                   <input
                     id="email"
                     name="email"
                     type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder="you@example.com"
                     aria-label="Email address"
-                    required
+                    aria-invalid={shouldShowError("email")}
+                    aria-describedby="email-error"
                   />
                 </div>
+                {shouldShowError("email") && (
+                  <p className="field-error" id="email-error">{errors.email}</p>
+                )}
               </div>
 
               <div className="auth-field">
                 <label htmlFor="password">Password</label>
-                <div className="auth-input-wrapper">
+                <div className={`auth-input-wrapper ${shouldShowError("password") ? "invalid" : ""}`}>
                   <LockOutlinedIcon className="auth-input-icon" />
                   <input
                     id="password"
                     name="password"
                     type="password"
                     maxLength={64}
+                    value={formData.password}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder="your password"
                     aria-label="Password"
-                    required
+                    aria-invalid={shouldShowError("password")}
+                    aria-describedby="password-error password-help"
                   />
                 </div>
+                {shouldShowError("password") && (
+                  <p className="field-error" id="password-error">{errors.password}</p>
+                )}
                 <p className="psw_info">
                 Must contain at least 8 characters with a number, uppercase letter, and special character.
               </p>
               </div>
 
-              <button className="auth-btn" type="submit">
-                Create account
+              <button className="auth-btn" type="submit" disabled={isFormInvalid || isSubmitting}>
+                {isSubmitting ? "Creating account..." : "Create account"}
               </button>
             </form>
 
             <div className="auth-footer">
-              Already have an account? <a href="/">Sign in</a>
+              Already have an account? <Link to="/">Sign in</Link>
             </div>
           </div>
         </div>

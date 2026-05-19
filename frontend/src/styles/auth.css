@@ -323,6 +323,25 @@ body {
   background: #fff;
 }
 
+.auth-input-wrapper.invalid input,
+.auth-input-wrapper.invalid textarea {
+  border-color: #e11d48;
+  background: #fff7f7;
+}
+
+.auth-input-wrapper.invalid input:focus,
+.auth-input-wrapper.invalid textarea:focus {
+  border-color: #e11d48;
+  box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.12);
+}
+
+.field-error {
+  color: #be123c;
+  font-size: 0.78rem;
+  line-height: 1.2;
+  margin: 0;
+}
+
 .auth-field input::placeholder {
   color: #bbb;
   font-size: 13px;
@@ -423,6 +442,16 @@ body {
 
 .auth-btn:active {
   transform: scale(0.98);
+}
+
+.auth-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+  transform: none;
+}
+
+.auth-btn:disabled:hover {
+  background: #c0392b;
 }
 
 .auth-footer {
