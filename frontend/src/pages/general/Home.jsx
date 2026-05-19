@@ -6,6 +6,7 @@ import BottomNavBar from "../../components/BottomNavBar";
 import LikeIcon from "@mui/icons-material/FavoriteBorder";
 import BookmarksIcon from "@mui/icons-material/BookmarkBorder";
 import ReelSkeleton from "../../components/ReelSkeleton";
+import VideoPlayer from "../../components/VideoPlayer";
 
 const API_URL = import.meta.env.VITE_API_URL || "";
 
@@ -201,13 +202,8 @@ const Home = () => {
         role="listitem"
         data-video-id={item._id}
       >
-        <video
-          src={activeVideoId === item._id ? item.video : undefined}
-          poster={getImageKitThumbnailUrl(item.video)}
-          muted
-          loop
-          playsInline
-          preload="none"
+        <VideoPlayer
+          src={activeVideoId === item._id ? item.video : null}
         />
 
         <div className="overlay">
