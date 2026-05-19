@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import VideoPlayer from "../../components/VideoPlayer";
 import "../../styles/reels.css";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
@@ -7,6 +6,8 @@ import BottomNavBar from "../../components/BottomNavBar";
 import LikeIcon from "@mui/icons-material/FavoriteBorder";
 import BookmarksIcon from "@mui/icons-material/BookmarkBorder";
 import ReelSkeleton from "../../components/ReelSkeleton";
+
+const API_URL = import.meta.env.VITE_API_URL || "";
 
 const getImageKitThumbnailUrl = (videoUrl) => {
   if (!videoUrl) return "";
@@ -25,25 +26,64 @@ const getImageKitThumbnailUrl = (videoUrl) => {
 const Home = () => {
   const [videos, setVideos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [activeVideoId, setActiveVideoId] = useState(null);
   const containerRef = useRef(null);
 
   const userType = localStorage.getItem("userType") || "user";
-
   const { id } = useParams();
 
+  // Fetch videos
   useEffect(() => {
-    if (!id || videos.length === 0) return;
+    let isMounted = true;
+    
+    const fetchVideos = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await axios.get(`${API_URL}/api/food`, { 
+          withCredentials: true 
+        });
+        
+        if (isMounted) {
+          // Safeguard: Ensure we set an array even if api returns undefined/null
+          setVideos(response.data?.foodItems || []);
+        }
+      } catch (err) {
+        if (isMounted) {
+          console.error("Failed to fetch food items:", err.response?.data || err.message);
+          setError("Failed to load feed. Please try again later.");
+          setVideos([]);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchVideos();
+    
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Handle URL ID scrolling
+  useEffect(() => {
+    if (!id || !Array.isArray(videos) || videos.length === 0) return;
+    
     const index = videos.findIndex((v) => v._id === id);
-    if (index !== -1) {
+    if (index !== -1 && containerRef.current) {
       const el = containerRef.current.querySelectorAll(".reel")[index];
       el?.scrollIntoView({ behavior: "smooth" });
     }
   }, [id, videos]);
 
+  // Intersection Observer for autoplay
   useEffect(() => {
     const container = containerRef.current;
-    if (!container || videos.length === 0) return;
+    if (!container || !Array.isArray(videos) || videos.length === 0) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -51,7 +91,7 @@ const Home = () => {
           .filter((entry) => entry.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
 
-        if (visibleEntry && visibleEntry.intersectionRatio >= 0.75) {
+        if (visibleEntry && visibleEntry.intersectionRatio >= 0.6) {
           setActiveVideoId(visibleEntry.target.dataset.videoId);
         }
 
@@ -61,15 +101,14 @@ const Home = () => {
 
           if (!entry.isIntersecting || entry.intersectionRatio < 0.25) {
             vid.pause();
-            vid.removeAttribute("src");
-            vid.load();
+            // Removed src clearance: constantly detaching/reattaching video src causes layout shifts/failed fetches
           }
         });
       },
       {
         root: container,
         rootMargin: "0px",
-        threshold: [0, 0.25, 0.75, 1],
+        threshold: [0, 0.25, 0.6, 0.75, 1],
       },
     );
 
@@ -79,6 +118,7 @@ const Home = () => {
     return () => observer.disconnect();
   }, [videos]);
 
+  // Play/Pause active video
   useEffect(() => {
     const container = containerRef.current;
     if (!container || !activeVideoId) return;
@@ -89,157 +129,135 @@ const Home = () => {
       const reel = video.closest(".reel");
 
       if (reel?.dataset.videoId === activeVideoId) {
-        video.play().catch(() => {});
+        // play() returns a promise which can reject if interrupted
+        video.play().catch((err) => console.log("Play interrupted:", err));
       } else {
         video.pause();
       }
     });
   }, [activeVideoId]);
 
-  useEffect(() => {
-    const apiUrl = import.meta.env.VITE_API_URL;
-
-    setIsLoading(true);
-
-    axios
-      .get(`${apiUrl}/api/food`, { withCredentials: true })
-      .then((response) => setVideos(response.data.foodItems))
-      .catch((error) => {
-        console.error(
-          "Failed to fetch food items:",
-          error.response?.data || error.message,
-        );
-      })
-      .finally(() => setIsLoading(false));
-  }, []);
-
-  async function likeVideo(item) {
+  const likeVideo = async (item) => {
     try {
       const response = await axios.post(
-        `/api/food/like`,
+        `${API_URL}/api/food/like`,
         { foodId: item._id },
         { withCredentials: true },
       );
 
-      console.log("Like response:", response.data);
-
-      // Update the count using the backend response
-      setVideos((prev) =>
-        prev.map((v) =>
+      setVideos((prev) => {
+        if (!Array.isArray(prev)) return [];
+        return prev.map((v) =>
           v._id === item._id ? { ...v, likeCount: response.data.likeCount } : v,
-        ),
-      );
-    } catch (error) {
-      console.error("Like error:", error.response?.data || error.message);
+        );
+      });
+    } catch (err) {
+      console.error("Like error:", err.response?.data || err.message);
     }
-  }
+  };
 
-  async function saveVideo(item) {
+  const saveVideo = async (item) => {
     try {
       const response = await axios.post(
-        `/api/food/save`,
+        `${API_URL}/api/food/save`,
         { foodId: item._id },
         { withCredentials: true },
       );
 
-      console.log("Save response:", response.data);
-
-      // Update the count using the backend response
-      setVideos((prev) =>
-        prev.map((v) =>
+      setVideos((prev) => {
+        if (!Array.isArray(prev)) return [];
+        return prev.map((v) =>
           v._id === item._id ? { ...v, saveCount: response.data.saveCount } : v,
-        ),
-      );
-    } catch (error) {
-      console.error("Save error:", error.response?.data || error.message);
+        );
+      });
+    } catch (err) {
+      console.error("Save error:", err.response?.data || err.message);
     }
-  }
+  };
+
+  const renderFeed = () => {
+    if (isLoading) return <ReelSkeleton count={3} />;
+    
+    if (error) {
+      return (
+        <div style={{ textAlign: "center", padding: "2rem", color: "#ff4d4f" }}>
+          {error}
+        </div>
+      );
+    }
+
+    if (!Array.isArray(videos) || videos.length === 0) {
+      return (
+        <div style={{ textAlign: "center", padding: "2rem", color: "#666" }}>
+          No reels found. Check back later!
+        </div>
+      );
+    }
+
+    return videos.map((item) => (
+      <article
+        className="reel"
+        key={item._id}
+        role="listitem"
+        data-video-id={item._id}
+      >
+        <video
+          src={activeVideoId === item._id ? item.video : undefined}
+          poster={getImageKitThumbnailUrl(item.video)}
+          muted
+          loop
+          playsInline
+          preload="none"
+        />
+
+        <div className="overlay">
+          <div className="description">{item?.description || ""}</div>
+          {item?.foodPartner && (
+            <Link
+              className="visit-btn"
+              to={`/food-partner/${item.foodPartner}`}
+            >
+              Visit store
+            </Link>
+          )}
+        </div>
+
+        <div className="controls" aria-hidden="true">
+          <div className="control-item">
+            <button
+              type="button"
+              onClick={() => likeVideo(item)}
+              className="control-btn"
+              aria-label="Like"
+            >
+              <LikeIcon fontSize="large" />
+            </button>
+            <div className="count">{item?.likeCount || 0}</div>
+          </div>
+
+          <div className="control-item">
+            <button
+              type="button"
+              onClick={() => saveVideo(item)}
+              className="control-btn"
+              aria-label="Save"
+            >
+              <BookmarksIcon fontSize="large" />
+            </button>
+            <div className="count">{item?.saveCount || 0}</div>
+          </div>
+        </div>
+
+        <div className="hint">Scroll to view more</div>
+      </article>
+    ));
+  };
 
   return (
     <>
       <div className="reel-section">
         <div className="reels" role="list" ref={containerRef}>
-          {isLoading ? (
-            <ReelSkeleton count={3} />
-          ) : (
-            videos.map((item) => (
-              <article
-                className="reel"
-                key={item._id}
-                role="listitem"
-                data-video-id={item._id}
-              >
-                <video
-                  src={activeVideoId === item._id ? item.video : undefined}
-                  poster={getImageKitThumbnailUrl(item.video)}
-                  muted
-                  loop
-                  playsInline
-                  preload="none"
-                />
-
-                <div className="overlay">
-                  <div className="description">{item.description}</div>
-                  <Link
-                    className="visit-btn"
-                    to={"/food-partner/" + item.foodPartner}
-                  >
-                    Visit store
-                  </Link>
-                </div>
-
-                <div className="controls" aria-hidden>
-                  <div className="control-item">
-                    <button
-                      type="button"
-                      onClick={() => likeVideo(item)}
-                      className="control-btn"
-                      aria-label="Like"
-                    >
-                      <LikeIcon fontSize="large" />
-                    </button>
-                    <div className="count">{item.likeCount || 0}</div>
-                  </div>
-
-                  <div className="control-item">
-                    <button
-                      type="button"
-                      onClick={() => saveVideo(item)}
-                      className="control-btn"
-                      aria-label="Save"
-                    >
-                      <BookmarksIcon fontSize="large" />
-                    </button>
-                    <div className="count">{item.saveCount || 0}</div>
-                  </div>
-
-                  {/* <div className="control-item">
-                  <button
-                    type="button"
-                    className="control-btn"
-                    aria-label="Comment"
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      width="18"
-                      height="18"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                  </button>
-                  <div className="count">{item.comments || 0}</div>
-                </div> */}
-                </div>
-
-                <div className="hint">Scroll to view more</div>
-              </article>
-            ))
-          )}
+          {renderFeed()}
         </div>
       </div>
       <BottomNavBar userType={userType} />
