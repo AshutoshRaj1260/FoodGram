@@ -114,19 +114,27 @@ Follow the steps below to access the ImageKit API keys necessary to run the proj
     ```
     Create a `.env` file in the `backend` directory with the following variables:
     ```ini
+    # Server configuration
+    PORT=3000
+
     # Your MongoDB connection string
     MONGO_URI=your_mongodb_connection_string
 
     # A secret string for signing JWTs (recommended: at least 32 characters)
     JWT_SECRET=your_super_secret_key
 
-    # Your frontend's local URL for CORS (Vite's default)
+    # Your frontend's local URL for CORS (Vite's default is 5173)
     FRONTEND_URL=http://localhost:5173
 
     # Your ImageKit credentials (for video uploads)
     IMAGEKIT_PRIVATE_KEY=your_imagekit_private_key
     IMAGEKIT_PUBLIC_KEY=your_imagekit_public_key
-    IMAGEKIT_URL_ENDPOINT=[https://ik.imagekit.io/your_imagekit_id/](https://ik.imagekit.io/your_imagekit_id/)
+    IMAGEKIT_URL_ENDPOINT=https://ik.imagekit.io/your_imagekit_id/
+
+    # Google OAuth Credentials
+    GOOGLE_CLIENT_ID=your_google_client_id
+    GOOGLE_CLIENT_SECRET=your_google_client_secret
+    GOOGLE_CALLBACK_URL=http://localhost:3000/api/auth/google/callback
     ```
 
 4.  **Install Frontend Dependencies:**
@@ -136,20 +144,24 @@ Follow the steps below to access the ImageKit API keys necessary to run the proj
     ```
     Create a `.env` file in the `frontend` directory with:
     ```ini
-    # Your backend's local API URL (Note: Vite uses VITE_ prefix for env vars)
-    VITE_API_URL=http://localhost:8000
+    # Your backend's API base URL (in production this can just be /api)
+    VITE_API_URL=http://localhost:3000
+
+    # The URL for Google Authentication redirect
+    VITE_GOOGLE_AUTH_URL=http://localhost:3000/api/auth/google
     ```
 ---
 
 ## Running the Application
 
-You will need two separate terminal windows.
+### Option 1: Local Development (Split Servers)
+You will need two separate terminal windows for local development with hot reloading.
 
 * **In Terminal 1 (Backend):**
     ```bash
     cd backend
     npm start # Or `nodemon server.js` if you have nodemon installed
-    # The backend server should start on http://localhost:8000
+    # The backend server should start on http://localhost:3000
     ```
 
 * **In Terminal 2 (Frontend):**
@@ -159,6 +171,42 @@ You will need two separate terminal windows.
     # The frontend application should be accessible at http://localhost:5173
     ```
     Open `http://localhost:5173` in your browser.
+
+### Option 2: Local Production Build (Testing Deployment locally)
+The application is structured to serve the frontend from the backend in production mode. You can test this locally:
+
+1.  **Build the Frontend:**
+    ```bash
+    cd frontend
+    npm run build
+    ```
+    This creates a `dist` folder populated with static assets.
+
+2.  **Start the Backend Server:**
+    ```bash
+    cd ../backend
+    npm start
+    ```
+    Now, opening `http://localhost:3000` will serve the fully built React frontend directly from the backend server!
+
+--- 
+
+## ☁️ Deployment (Render CI/CD)
+
+> **⚠️ Note for Contributors:** Open-source contributors **do not** need to deploy the application on Render or any other hosting service. Please use the **Local Development** steps above to fork, run, test locally, and raise a PR. This deployment section is documented for the project administrator who manages the live production environment.
+
+The application is configured to be deployed on Render using a **Web Service** acting as a single domain.
+
+1.  Create a new Web Service on Render and connect your GitHub repository.
+2.  **Build Command:** 
+    ```bash
+    cd frontend && npm install && npm run build && cd ../backend && npm install
+    ```
+3.  **Start Command:**
+    ```bash
+    cd backend && npm start
+    ```
+4.  Add all corresponding Environment Variables from both backend and frontend `.env` to the Render Dashboard environment.
 
 --- 
 
