@@ -193,7 +193,9 @@ function googleAuthCallback(req, res) {
     sameSite: "none",
     maxAge: 7 * 24 * 60 * 60 * 1000, //1 week
   });
-  res.redirect(`${process.env.FRONTEND_URL}/saved`);
+  
+  const frontendUrl = process.env.FRONTEND_URL || "";
+  res.redirect(`${frontendUrl}/saved`);
 }
 
 function logoutFoodPartner(req, res) {
