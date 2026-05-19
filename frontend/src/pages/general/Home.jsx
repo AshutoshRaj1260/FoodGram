@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import "../../styles/reels.css";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
+import { motion } from "framer-motion";
+
 import BottomNavBar from "../../components/BottomNavBar";
 import LikeIcon from "@mui/icons-material/FavoriteBorder";
 import BookmarksIcon from "@mui/icons-material/BookmarkBorder";
@@ -28,31 +30,32 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeVideoId, setActiveVideoId] = useState(null);
+
   const containerRef = useRef(null);
 
   const userType = localStorage.getItem("userType") || "user";
   const { id } = useParams();
 
-  // Fetch videos
   useEffect(() => {
     let isMounted = true;
-    
+
     const fetchVideos = async () => {
       setIsLoading(true);
       setError(null);
+
       try {
-        const response = await axios.get(`${API_URL}/api/food`, { 
-          withCredentials: true 
+        const response = await axios.get(`${API_URL}/api/food`, {
+          withCredentials: true,
         });
-        
+
         if (isMounted) {
-          // Safeguard: Ensure we set an array even if api returns undefined/null
           setVideos(response.data?.foodItems || []);
         }
       } catch (err) {
+        console.error(err);
+
         if (isMounted) {
-          console.error("Failed to fetch food items:", err.response?.data || err.message);
-          setError("Failed to load feed. Please try again later.");
+          setError("Failed to load reels.");
           setVideos([]);
         }
       } finally {
@@ -63,27 +66,27 @@ const Home = () => {
     };
 
     fetchVideos();
-    
+
     return () => {
       isMounted = false;
     };
   }, []);
 
-  // Handle URL ID scrolling
   useEffect(() => {
-    if (!id || !Array.isArray(videos) || videos.length === 0) return;
-    
+    if (!id || videos.length === 0) return;
+
     const index = videos.findIndex((v) => v._id === id);
+
     if (index !== -1 && containerRef.current) {
       const el = containerRef.current.querySelectorAll(".reel")[index];
       el?.scrollIntoView({ behavior: "smooth" });
     }
   }, [id, videos]);
 
-  // Intersection Observer for autoplay
   useEffect(() => {
     const container = containerRef.current;
-    if (!container || !Array.isArray(videos) || videos.length === 0) return;
+
+    if (!container || videos.length === 0) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -97,30 +100,30 @@ const Home = () => {
 
         entries.forEach((entry) => {
           const vid = entry.target.querySelector("video");
+
           if (!vid) return;
 
           if (!entry.isIntersecting || entry.intersectionRatio < 0.25) {
             vid.pause();
-            // Removed src clearance: constantly detaching/reattaching video src causes layout shifts/failed fetches
           }
         });
       },
       {
         root: container,
-        rootMargin: "0px",
-        threshold: [0, 0.25, 0.6, 0.75, 1],
-      },
+        threshold: [0, 0.25, 0.6, 1],
+      }
     );
 
     const reels = container.querySelectorAll(".reel");
+
     reels.forEach((r) => observer.observe(r));
 
     return () => observer.disconnect();
   }, [videos]);
 
-  // Play/Pause active video
   useEffect(() => {
     const container = containerRef.current;
+
     if (!container || !activeVideoId) return;
 
     const videosInFeed = container.querySelectorAll("video");
@@ -129,8 +132,7 @@ const Home = () => {
       const reel = video.closest(".reel");
 
       if (reel?.dataset.videoId === activeVideoId) {
-        // play() returns a promise which can reject if interrupted
-        video.play().catch((err) => console.log("Play interrupted:", err));
+        video.play().catch(() => {});
       } else {
         video.pause();
       }
@@ -142,17 +144,18 @@ const Home = () => {
       const response = await axios.post(
         `${API_URL}/api/food/like`,
         { foodId: item._id },
-        { withCredentials: true },
+        { withCredentials: true }
       );
 
-      setVideos((prev) => {
-        if (!Array.isArray(prev)) return [];
-        return prev.map((v) =>
-          v._id === item._id ? { ...v, likeCount: response.data.likeCount } : v,
-        );
-      });
+      setVideos((prev) =>
+        prev.map((v) =>
+          v._id === item._id
+            ? { ...v, likeCount: response.data.likeCount }
+            : v
+        )
+      );
     } catch (err) {
-      console.error("Like error:", err.response?.data || err.message);
+      console.error(err);
     }
   };
 
@@ -161,45 +164,51 @@ const Home = () => {
       const response = await axios.post(
         `${API_URL}/api/food/save`,
         { foodId: item._id },
-        { withCredentials: true },
+        { withCredentials: true }
       );
 
-      setVideos((prev) => {
-        if (!Array.isArray(prev)) return [];
-        return prev.map((v) =>
-          v._id === item._id ? { ...v, saveCount: response.data.saveCount } : v,
-        );
-      });
+      setVideos((prev) =>
+        prev.map((v) =>
+          v._id === item._id
+            ? { ...v, saveCount: response.data.saveCount }
+            : v
+        )
+      );
     } catch (err) {
-      console.error("Save error:", err.response?.data || err.message);
+      console.error(err);
     }
   };
 
   const renderFeed = () => {
     if (isLoading) return <ReelSkeleton count={3} />;
-    
+
     if (error) {
       return (
-        <div style={{ textAlign: "center", padding: "2rem", color: "#ff4d4f" }}>
-          {error}
+        <div className="empty-state">
+          <h2>⚠ Unable to load feed</h2>
+          <p>Please try again later.</p>
         </div>
       );
     }
 
-    if (!Array.isArray(videos) || videos.length === 0) {
+    if (videos.length === 0) {
       return (
-        <div style={{ textAlign: "center", padding: "2rem", color: "#666" }}>
-          No reels found. Check back later!
+        <div className="empty-state">
+          <h2>🍔 No Reels Yet</h2>
+          <p>Fresh food content coming soon!</p>
         </div>
       );
     }
 
     return videos.map((item) => (
-      <article
+      <motion.article
         className="reel"
         key={item._id}
         role="listitem"
         data-video-id={item._id}
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
       >
         <video
           src={activeVideoId === item._id ? item.video : undefined}
@@ -211,27 +220,30 @@ const Home = () => {
         />
 
         <div className="overlay">
-          <div className="description">{item?.description || ""}</div>
+          <div className="description">
+            {item?.description || "Delicious food reel 🍕"}
+          </div>
+
           {item?.foodPartner && (
             <Link
               className="visit-btn"
               to={`/food-partner/${item.foodPartner}`}
             >
-              Visit store
+              Visit Store
             </Link>
           )}
         </div>
 
-        <div className="controls" aria-hidden="true">
+        <div className="controls">
           <div className="control-item">
             <button
               type="button"
               onClick={() => likeVideo(item)}
               className="control-btn"
-              aria-label="Like"
             >
               <LikeIcon fontSize="large" />
             </button>
+
             <div className="count">{item?.likeCount || 0}</div>
           </div>
 
@@ -240,26 +252,36 @@ const Home = () => {
               type="button"
               onClick={() => saveVideo(item)}
               className="control-btn"
-              aria-label="Save"
             >
               <BookmarksIcon fontSize="large" />
             </button>
+
             <div className="count">{item?.saveCount || 0}</div>
           </div>
         </div>
 
-        <div className="hint">Scroll to view more</div>
-      </article>
+        <div className="hint">⬆ Scroll for more delicious reels</div>
+      </motion.article>
     ));
   };
 
   return (
     <>
+      <motion.div
+        className="feed-header"
+        initial={{ opacity: 0, y: -30 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <h1>Trending Food Reels 🍕</h1>
+        <p>Discover delicious moments from food creators</p>
+      </motion.div>
+
       <div className="reel-section">
         <div className="reels" role="list" ref={containerRef}>
           {renderFeed()}
         </div>
       </div>
+
       <BottomNavBar userType={userType} />
     </>
   );

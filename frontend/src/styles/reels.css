@@ -1,389 +1,354 @@
-/* @import "./variables.css";
-
-.reels {
-  --bottom-nav-height: 72px;
-  width: 100vw;
-  overflow-y: auto;
-  scroll-snap-type: y mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  background: var(--bg);
+html {
+  scroll-behavior: smooth;
 }
 
-.reel {
-  position: relative;
-  height: 100%;
-  padding: 200px;
-  width: 50%;
-  scroll-snap-align: start;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  overflow: hidden;
-  box-shadow: none; 
+body {
+  background: #0f0f0f;
+  overflow-x: hidden;
 }
 
-.reel video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover; 
+/* =========================
+   FEED HEADER
+========================= */
+
+.feed-header {
+  text-align: center;
+  padding: 24px 16px 10px;
+  color: white;
 }
 
-.reel video {
-  display: block;
-  border-radius: 0;
+.feed-header h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  background: linear-gradient(to right, #ff8a00, #ff3d54);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.reel .overlay {
-  position: absolute;
-  left: 12px;
-  bottom: calc(
-    var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px) + 12px
-  );
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  z-index: 12;
-  align-items: flex-start;
-  padding: 6px 8px;
-}
-
-.reel .description {
-  color: rgba(255, 255, 255, 0.95);
+.feed-header p {
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 6px;
   font-size: 0.95rem;
-  font-weight: 600;
-  line-height: 1.18;
-  max-width: 80vw;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.reel .visit-btn {
-  display: inline-block;
-  background: rgba(45, 212, 191, 0.95);
-  color: #001219;
-  padding: 8px 12px;
-  border-radius: 999px;
-  font-weight: 700;
-  text-decoration: none;
-  box-shadow: 0 6px 18px rgba(13, 35, 35, 0.28);
-}
-
-.reel .hint {
-  position: absolute;
-  bottom: calc(
-    var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px) + 6px
-  );
-  left: 50%;
-  transform: translateX(-50%);
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 0.9rem;
-  z-index: 10;
-}
-
-.reel .visit-btn:focus {
-  outline: 2px solid color-mix(in srgb, var(--primary) 60%, #000);
-  outline-offset: 2px;
-}
-
-@media (max-width: 720px) {
-  .reel .description {
-    max-width: 100%;
-    font-size: 0.95rem;
-  }
-  .reel .overlay {
-    bottom: calc(
-      var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px) + 10px
-    );
-    left: 12px;
-    right: auto;
-  }
-}
-
-.reel .controls {
-  position: absolute;
-  right: 14px;
-  bottom: 10rem;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  z-index: 14;
-  align-items: center;
-}
-.reel .control-btn {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.795);
-  display: grid;
-  place-items: center;
-  color: white;
-  text-decoration: none;
-  font-weight: 700;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.623);
-}
-.reel .control-btn[type="button"] {
-  border: 0;
-  padding: 0;
-  background: rgba(0, 0, 0, 0.747);
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  font-weight: 7000;
-}
-
-.reel .control-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-.reel .control-item .count {
-  font-size: 0.84rem;
-  color: rgba(255, 255, 255, 0.95);
-}
+/* =========================
+   NAVBAR
+========================= */
 
 .bottom-nav {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 60;
-  display: flex;
-  justify-content: center;
-  padding: 8px 12px;
-
-}
-.bottom-nav .nav-inner {
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-  width: min(420px, 92%);
-  padding: 2px 2px;
-  border-radius: 12px;
-  background: rgb(0, 0, 0);  
-}
-.bottom-nav .nav-link {
-  color: white;
-  text-decoration: none;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: center;
-  padding: 6px 8px;
-}
-.bottom-nav .nav-link svg {
-  width: 20px;
-  height: 20px;
-}
-.bottom-nav span {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.95);
-}
-
-.reel {
-  scroll-snap-stop: always;
-}
-
-.reel {
-  scroll-snap-stop: always;
-} */
-
-.bottom-nav {
-  width: 400px;
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  right: 0;
-  bottom: 0;
-  z-index: 60;
-  display: flex;
-  justify-content: center;
-}
-.bottom-nav .nav-inner {
   width: 100%;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 15px;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+}
+
+.bottom-nav .nav-inner {
+  width: min(420px, 92%);
   display: flex;
   justify-content: space-evenly;
   align-items: center;
-  border-end-start-radius: 12px;
-  border-end-end-radius: 12px;
-  background: rgb(0, 0, 0);
+  padding: 10px 14px;
+
+  border-radius: 24px;
+
+  background: rgba(255, 255, 255, 0.08);
+
+  backdrop-filter: blur(18px);
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
+
 .bottom-nav .nav-link {
   color: white;
   text-decoration: none;
+
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
   align-items: center;
-  padding: 6px 8px;
+
+  padding: 10px 16px;
+  border-radius: 16px;
+
+  transition: all 0.3s ease;
 }
+
+.bottom-nav .nav-link:hover {
+  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.1);
+}
+
 .bottom-nav .nav-link svg {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
 }
+
 .bottom-nav span {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.95);
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.92);
 }
+
+/* =========================
+   REEL SECTION
+========================= */
 
 .reel-section {
-  height: 100%;
+  min-height: 100vh;
   width: 100%;
+
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
+
   padding: 20px;
   color: white;
 }
+
 .reels {
-  width: 400px;
-  height: 100%;
-  border-radius: 20px;
+  width: min(420px, 100%);
+  height: 82vh;
+
+  border-radius: 30px;
+
   overflow: auto;
+
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
   scrollbar-width: none;
+
+  padding-bottom: 100px;
 }
+
+.reels::-webkit-scrollbar {
+  display: none;
+}
+
+/* =========================
+   SINGLE REEL
+========================= */
 
 .reel {
   position: relative;
+
   height: 100%;
   width: 100%;
-  border-radius: 20px;
-  margin-bottom: 40px;
+
+  border-radius: 30px;
+
+  margin-bottom: 35px;
+
+  overflow: hidden;
+
   scroll-snap-align: start;
   scroll-snap-stop: always;
+
+  background: #181818;
+
+  transition: all 0.4s ease;
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.reel:hover {
+  transform: translateY(-4px);
 }
 
 .reel video {
   width: 100%;
   height: 100%;
+
   object-fit: cover;
-  border-radius: 20px;
+
+  border-radius: 30px;
 }
 
-/* .reel .overlay {
-  width: 100%;
-  position: absolute;
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.807));
-  padding: 10px;
-  bottom: 0;
-  border-radius: 20px;
-  border: none;
-} */
+/* =========================
+   OVERLAY
+========================= */
 
 .reel .overlay {
   position: absolute;
+
   width: 100%;
   bottom: 0;
+
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
+
   z-index: 12;
+
   align-items: flex-start;
-  padding: 6px 8px 50px 8px;
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.807));
+
+  padding: 20px 14px 90px;
+
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.88),
+    rgba(0, 0, 0, 0.3),
+    transparent
+  );
 }
 
 .reel .description {
-  color: rgba(255, 255, 255, 0.95);
-  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.98);
+
+  font-size: 1rem;
   font-weight: 600;
-  line-height: 1.18;
-  max-width: 80vw;
+  line-height: 1.5;
+
+  max-width: 90%;
+
   display: -webkit-box;
+
   -webkit-line-clamp: 2;
-  line-clamp: 2;
   -webkit-box-orient: vertical;
+
   overflow: hidden;
-  text-overflow: ellipsis;
-  padding-left: 5px;
 }
 
 .reel .visit-btn {
   display: inline-block;
-  background: rgba(45, 212, 191, 0.95);
-  color: #001219;
-  padding: 8px 12px;
+
+  background: linear-gradient(to right, #ff8a00, #ff3d54);
+
+  color: white;
+
+  padding: 10px 18px;
+
   border-radius: 999px;
+
   font-weight: 700;
+
   text-decoration: none;
-  box-shadow: 0 6px 18px rgba(13, 35, 35, 0.28);
+
+  box-shadow: 0 10px 25px rgba(255, 100, 50, 0.35);
+
+  transition: all 0.3s ease;
 }
 
-.reel .hint {
-  position: absolute;
-  bottom: calc(
-    var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px) + 6px
-  );
-  left: 50%;
-  transform: translateX(-50%);
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 0.9rem;
-  z-index: 10;
+.reel .visit-btn:hover {
+  transform: scale(1.06);
 }
 
-.reel .visit-btn:focus {
-  outline: 2px solid color-mix(in srgb, var(--primary) 60%, #000);
-  outline-offset: 2px;
-}
+/* =========================
+   CONTROLS
+========================= */
 
 .reel .controls {
   position: absolute;
+
   right: 14px;
-  bottom: 10rem;
+  bottom: 11rem;
+
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
+
   z-index: 14;
+
   align-items: center;
 }
+
 .reel .control-btn {
-  width: 50px;
-  height: 50px;
+  width: 56px;
+  height: 56px;
+
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.795);
+
+  background: rgba(0, 0, 0, 0.55);
+
+  backdrop-filter: blur(12px);
+
   display: grid;
   place-items: center;
+
   color: white;
+
   text-decoration: none;
-  font-weight: 700;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.623);
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+
+  transition: all 0.3s ease;
 }
+
+.reel .control-btn:hover {
+  transform: scale(1.12);
+  background: rgba(255, 255, 255, 0.12);
+}
+
 .reel .control-btn[type="button"] {
-  border: 0;
-  padding: 0;
-  background: rgba(0, 0, 0, 0.747);
+  border: none;
   cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  font-weight: 700;
 }
 
 .reel .control-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
+
 .reel .control-item .count {
   font-size: 1rem;
-  font-weight: semi-bold;
-  color: rgba(255, 255, 255, 0.95);
+  font-weight: 700;
+
+  color: rgba(255, 255, 255, 0.96);
 }
+
+/* =========================
+   HINT
+========================= */
+
+.reel .hint {
+  position: absolute;
+
+  bottom: 24px;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  color: rgba(255, 255, 255, 0.72);
+
+  font-size: 0.88rem;
+
+  z-index: 10;
+}
+
+/* =========================
+   EMPTY STATES
+========================= */
+
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  color: white;
+}
+
+.empty-state h2 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.empty-state p {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* =========================
+   SKELETONS
+========================= */
 
 .reel-skeleton {
   background: #181818;
-  border: 1px solid rgba(255, 255, 255, 0.08);
   overflow: hidden;
 }
 
@@ -396,7 +361,9 @@
     #555555 45%,
     #242424 90%
   );
+
   background-size: 200% 100%;
+
   animation: shimmer 1.4s infinite linear;
 }
 
@@ -408,10 +375,13 @@
 
 .skeleton-overlay {
   position: absolute;
+
   left: 14px;
   right: 80px;
   bottom: 72px;
+
   z-index: 12;
+
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -432,12 +402,13 @@
 
 .skeleton-controls {
   position: absolute;
+
   right: 14px;
   bottom: 10rem;
+
   display: flex;
   flex-direction: column;
   gap: 14px;
-  z-index: 14;
 }
 
 .skeleton-circle {
@@ -453,5 +424,32 @@
 
   to {
     background-position: -200% 0;
+  }
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 768px) {
+  .feed-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .reels {
+    width: 100%;
+    height: 85vh;
+  }
+
+  .reel {
+    border-radius: 24px;
+  }
+
+  .reel video {
+    border-radius: 24px;
+  }
+
+  .reel .overlay {
+    padding-bottom: 100px;
   }
 }
