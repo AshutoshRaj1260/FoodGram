@@ -102,7 +102,6 @@ const Home = () => {
 
           if (!entry.isIntersecting || entry.intersectionRatio < 0.25) {
             vid.pause();
-            // Removed src clearance: constantly detaching/reattaching video src causes layout shifts/failed fetches
           }
         });
       },
@@ -118,25 +117,6 @@ const Home = () => {
 
     return () => observer.disconnect();
   }, [videos]);
-
-  // Play/Pause active video
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container || !activeVideoId) return;
-
-    const videosInFeed = container.querySelectorAll("video");
-
-    videosInFeed.forEach((video) => {
-      const reel = video.closest(".reel");
-
-      if (reel?.dataset.videoId === activeVideoId) {
-        // play() returns a promise which can reject if interrupted
-        video.play().catch((err) => console.log("Play interrupted:", err));
-      } else {
-        video.pause();
-      }
-    });
-  }, [activeVideoId]);
 
   const likeVideo = async (item) => {
     try {
