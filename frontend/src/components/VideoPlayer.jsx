@@ -17,18 +17,24 @@ const VideoPlayer = ({ src }) => {
   useEffect(() => {
     if (!src) return;
 
-    // Future-ready quality mapping
-    // Replace with real CDN/video URLs later
+    // Helper to generate ImageKit transformations
+    const getQualityUrl = (url, height) => {
+      if (!url) return url;
+      const separator = url.includes("?") ? "&" : "?";
+      return `${url}${separator}tr=h-${height}`;
+    };
+
+    // Mapping network speeds to specific vertical resolutions
     const qualityMap = {
-  [VIDEO_QUALITIES.SLOW]: src,   // TODO: replace with 480p URL
-  [VIDEO_QUALITIES.MEDIUM]: src, // TODO: replace with 720p URL
-  [VIDEO_QUALITIES.FAST]: src,   // TODO: replace with 1080p URL
-};
+      [VIDEO_QUALITIES.SLOW]: getQualityUrl(src, 480),   // 480p for slow networks
+      [VIDEO_QUALITIES.MEDIUM]: getQualityUrl(src, 720), // 720p for medium networks
+      [VIDEO_QUALITIES.FAST]: src,                       // Original resolution for fast networks
+    };
 
     const selectedSrc =
-  qualityMap[networkSpeed] ||
-  qualityMap[DEFAULT_VIDEO_QUALITY] ||
-  src;
+      qualityMap[networkSpeed] ||
+      qualityMap[DEFAULT_VIDEO_QUALITY] ||
+      src;
 
     // Avoid unnecessary reloads
     if (selectedSrc === videoSrc) return;

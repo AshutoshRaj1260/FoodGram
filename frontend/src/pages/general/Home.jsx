@@ -8,6 +8,7 @@ import BottomNavBar from "../../components/BottomNavBar";
 import LikeIcon from "@mui/icons-material/FavoriteBorder";
 import BookmarksIcon from "@mui/icons-material/BookmarkBorder";
 import ReelSkeleton from "../../components/ReelSkeleton";
+import VideoPlayer from "../../components/VideoPlayer";
 
 const API_URL = import.meta.env.VITE_API_URL || "";
 
@@ -121,6 +122,7 @@ const Home = () => {
     return () => observer.disconnect();
   }, [videos]);
 
+<<<<<<< HEAD
   useEffect(() => {
     const container = containerRef.current;
 
@@ -139,6 +141,8 @@ const Home = () => {
     });
   }, [activeVideoId]);
 
+=======
+>>>>>>> e74e9717fb883f4c21df1c543865751c50588316
   const likeVideo = async (item) => {
     try {
       const response = await axios.post(
@@ -210,13 +214,8 @@ const Home = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <video
-          src={activeVideoId === item._id ? item.video : undefined}
-          poster={getImageKitThumbnailUrl(item.video)}
-          muted
-          loop
-          playsInline
-          preload="none"
+        <VideoPlayer
+          src={activeVideoId === item._id ? item.video : null}
         />
 
         <div className="overlay">
