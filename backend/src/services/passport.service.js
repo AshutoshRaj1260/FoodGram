@@ -16,7 +16,12 @@ if (
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
-          const email = profile.emails[0].value;
+          const email = profile.emails?.[0]?.value;
+          if (!email) {
+            return done(null, false, {
+              message: "No email found in Google profile",
+            });
+          }
           let user = await userModel.findOne({ email });
           if (!user) {
             user = await userModel.create({
@@ -29,8 +34,8 @@ if (
         } catch (error) {
           return done(error, null);
         }
-      }
-    )
+      },
+    ),
   );
 }
 
