@@ -83,13 +83,20 @@ To contribute code, you'll need to set up the project locally.
     cd backend
     npm install
     ```
-    Create a `.env` file in the `backend` directory with the following variables:
+    Create a `.env` file in the `backend` directory. You will need to obtain free API keys for the third-party services:
+    * **MongoDB:** Create a free cluster on [MongoDB Atlas](https://www.mongodb.com/cloud/atlas/register).
+    * **ImageKit:** Sign up at [ImageKit.io](https://imagekit.io/) and get keys from the "Developer Options".
+    * **Google OAuth:** Create OAuth 2.0 Credentials in the [Google Cloud Console](https://console.cloud.google.com/). *(Note: If you are not working on the authentication flow, you can put dummy values here to bypass startup errors, but login will not work).*
+
     ```ini
+    # Server configuration
+    PORT=3000
+
     # Your MongoDB connection string
-    MONGODB_URI=your_mongodb_connection_string
+    MONGO_URI=mongodb+srv://<username>:<password>@cluster0...
 
     # A secret string for signing JWTs (recommended: at least 32 characters)
-    JWT_SECRET=your_super_secret_key
+    JWT_SECRET=super_secret_local_dev_key
 
     # Your frontend's local URL for CORS (Vite's default)
     FRONTEND_URL=http://localhost:5173
@@ -97,7 +104,12 @@ To contribute code, you'll need to set up the project locally.
     # Your ImageKit credentials (for video uploads)
     IMAGEKIT_PRIVATE_KEY=your_imagekit_private_key
     IMAGEKIT_PUBLIC_KEY=your_imagekit_public_key
-    IMAGEKIT_URL_ENDPOINT=[https://ik.imagekit.io/your_imagekit_id/](https://ik.imagekit.io/your_imagekit_id/)
+    IMAGEKIT_URL_ENDPOINT=https://ik.imagekit.io/your_imagekit_id/
+
+    # Google OAuth Credentials
+    GOOGLE_CLIENT_ID=your_google_client_id
+    GOOGLE_CLIENT_SECRET=your_google_client_secret
+    GOOGLE_CALLBACK_URL=http://localhost:3000/api/auth/google/callback
     ```
 
 4.  **Install Frontend Dependencies:**
@@ -107,19 +119,25 @@ To contribute code, you'll need to set up the project locally.
     ```
     Create a `.env` file in the `frontend` directory with:
     ```ini
-    # Your backend's local API URL (Note: Vite uses VITE_ prefix for env vars)
-    VITE_API_URL=http://localhost:8000
+    # Your backend's local API URL
+    VITE_API_URL=http://localhost:3000
+
+    # The URL for Google Authentication redirect
+    VITE_GOOGLE_AUTH_URL=http://localhost:3000/api/auth/google
     ```
 
 ### Running the Application
 
+You have two options for running the application:
+
+#### Option 1: Split Servers (Recommended for Development)
 You will need two separate terminal windows.
 
 * **In Terminal 1 (Backend):**
     ```bash
     cd backend
     npm start # Or `nodemon server.js` if you have nodemon installed
-    # The backend server should start on http://localhost:8000
+    # The backend server should start on http://localhost:3000
     ```
 
 * **In Terminal 2 (Frontend):**
@@ -129,6 +147,14 @@ You will need two separate terminal windows.
     # The frontend application should be accessible at http://localhost:5173
     ```
     Open `http://localhost:5173` in your browser.
+
+#### Option 2: Single-Domain (Testing Production Build locally)
+If you want to test how the application behaves in a production-like single-domain environment locally, you can build the frontend and serve it through the backend:
+1. Build frontend: `cd frontend && npm run build`
+2. Start backend: `cd ../backend && npm start`
+Open `http://localhost:3000` in your browser.
+
+> **Note on Deployment:** As an open-source contributor, you **do not** need to worry about hosting the project on Render or Vercel. Focus entirely on running the project locally using the steps above, testing your code on your local machine, pushing to your fork, and raising a Pull Request.
 
 ## 4. Development Workflow
 

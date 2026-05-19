@@ -184,15 +184,22 @@ async function loginFoodPartner(req, res, next) {
 }
 
 //Google OAuth login/signup
-function googleAuthCallback(req, res, next) {
-  try {
-  const { accessToken, refreshToken } = generateTokens(req.user._id);
-  setCookies(res, accessToken, refreshToken);
+function googleAuthCallback(req, res) {
+  const token = jwt.sign(
+    {
+      id: req.user._id,
+    },
+    process.env.JWT_SECRET
+  );
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    maxAge: 7 * 24 * 60 * 60 * 1000, //1 week
+  });
   
-  res.redirect(`${process.env.FRONTEND_URL}/saved`);
-  } catch (error) {
-    next(error);
-  }
+  const frontendUrl = process.env.FRONTEND_URL || "";
+  res.redirect(`${frontendUrl}/saved`);
 }
 
 function logoutFoodPartner(req, res, next) {

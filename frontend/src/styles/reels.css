@@ -380,3 +380,78 @@
   font-weight: semi-bold;
   color: rgba(255, 255, 255, 0.95);
 }
+
+.reel-skeleton {
+  background: #181818;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.skeleton-video,
+.skeleton-line,
+.skeleton-circle {
+  background: linear-gradient(
+    90deg,
+    #242424 0%,
+    #555555 45%,
+    #242424 90%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+
+.skeleton-video {
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+}
+
+.skeleton-overlay {
+  position: absolute;
+  left: 14px;
+  right: 80px;
+  bottom: 72px;
+  z-index: 12;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skeleton-line {
+  height: 14px;
+  border-radius: 999px;
+}
+
+.skeleton-line-wide {
+  width: 80%;
+}
+
+.skeleton-line-short {
+  width: 45%;
+}
+
+.skeleton-controls {
+  position: absolute;
+  right: 14px;
+  bottom: 10rem;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  z-index: 14;
+}
+
+.skeleton-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+
+  to {
+    background-position: -200% 0;
+  }
+}
