@@ -195,7 +195,7 @@ function googleAuthCallback(req, res) {
   });
   
   const frontendUrl = process.env.FRONTEND_URL || "";
-  res.redirect(`${frontendUrl}/saved`);
+  res.redirect(`${frontendUrl}/home`);
 }
 
 function logoutFoodPartner(req, res) {
