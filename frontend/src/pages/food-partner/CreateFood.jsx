@@ -19,7 +19,6 @@ const CreateFood = () => {
     e.preventDefault()
 
     const formData = new FormData();
-
     formData.append('name', e.target.name.value);  
     formData.append('description', e.target.description.value);  
     formData.append('video', e.target.video.files[0]);
@@ -28,8 +27,7 @@ const CreateFood = () => {
       withCredentials: true,
     });
 
-      navigate('/');
-
+    navigate('/');
   }
 
   return (

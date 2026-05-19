@@ -37,12 +37,10 @@ export default function PartnerLogin() {
         },
         {
           withCredentials: true,
-        },
+        }
       );
 
-      console.log(response.data);
       localStorage.setItem("userType", "partner");
-      console.log(localStorage.getItem("userType"));
       navigate("/create-food");
     } catch (err) {
       console.log(err.response.data.message);

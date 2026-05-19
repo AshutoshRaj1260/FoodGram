@@ -5,6 +5,7 @@ const foodRoutes = require("./routes/food.routes");
 const cors = require("cors");
 const foodPartnerRoutes = require("./routes/food-partner.routes");
 const passport = require("./services/passport.service");
+const { globalLimiter } = require("./middlewares/rateLimiter.middleware");
 const path = require("path");
 
 const app = express();
@@ -17,10 +18,31 @@ app.use(
   })
 );
 
+
+// Trust proxy setting for deployment environments
+const trustProxyValue = process.env.TRUST_PROXY === 'true' ? 1 : 
+                       process.env.TRUST_PROXY === 'false' ? false : 
+                       Number(process.env.TRUST_PROXY) || false;
+app.set('trust proxy', trustProxyValue);
+
+// CORS configuration - must be before routes
+const corsOptions = {
+  origin: process.env.FRONTEND_URL?.replace(/\/$/, "") || "http://localhost:5173",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  exposedHeaders: ["Content-Type"],
+  maxAge: 3600,
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Enable preflight for all routes
+
+
+app.use(globalLimiter);
+
 app.use(express.json());
 app.use(cookieParser());
-
-
 app.use(passport.initialize());
 
 app.get("/api", (req, res) => {
