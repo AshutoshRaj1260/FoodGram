@@ -75,7 +75,7 @@ export default function PartnerLogin() {
     setIsSubmitting(true);
 
     try {
-      const response = await axios.post(
+      await axios.post(
         `/api/auth/foodpartner/login`,
         {
           email: formData.email.trim(),
