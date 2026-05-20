@@ -14,8 +14,16 @@
   background: var(--surface);
   border-radius: 14px;
   padding: calc(var(--space-lg) * 0.9);
-  box-shadow: 0 12px 40px rgba(2,6,23,0.08);
-  border: 1px solid rgba(2,6,23,0.04);
+  box-shadow: 0 12px 40px rgba(2, 6, 23, 0.08);
+  border: 1px solid rgba(2, 6, 23, 0.04);
+}
+
+.card h2 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-top: 0;
 }
 
 .form-grid {
@@ -23,6 +31,7 @@
   grid-template-columns: 1fr 380px;
   gap: var(--space-lg);
   align-items: start;
+  margin-top: 28px;
 }
 
 .preview {
@@ -36,7 +45,13 @@
   justify-content: center;
 }
 
-.preview video, .preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.preview video,
+.preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
 
 .form {
   display: flex;
@@ -44,18 +59,132 @@
   gap: var(--space-sm);
 }
 
-.label { font-size: var(--text-size-sm); color: var(--muted); }
-.input, textarea, .file-input { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(2,6,23,0.06); background: color-mix(in srgb, var(--surface) 88%, transparent); color: var(--text); }
-.input.invalid, textarea.invalid, .file-input.invalid { border-color: #e11d48; background: #fff7f7; }
-textarea { min-height: 140px; resize: vertical; }
+.label {
+  font-size: var(--text-size-sm);
+  color: var(--muted);
+  margin-top: 20px;
+}
+.label:first-child {
+  margin-top: 0;
+}
 
-.actions { display: flex; gap: var(--space-sm); margin-top: var(--space-md); align-items: center; }
-.btn { background: var(--primary); color: var(--primary-contrast); padding: 10px 16px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; }
-.btn.ghost { background: transparent; border: 1px solid rgba(2,6,23,0.06); color: var(--text); }
-.btn:disabled { cursor: not-allowed; opacity: 0.65; }
-.field-error, .form-error { color: #be123c; font-size: 0.78rem; line-height: 1.2; margin: -4px 0 4px; }
+.input,
+textarea,
+.file-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(2, 6, 23, 0.06);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  color: var(--text);
+}
+
+.file-input {
+  cursor: pointer;
+}
+
+.file-input.is-placeholder {
+  color: var(--muted);
+}
+
+.input.invalid,
+textarea.invalid,
+.file-input.invalid {
+  border-color: #e11d48;
+  background: #fff7f7;
+}
+
+textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+  align-items: center;
+}
+
+.btn {
+  background: var(--primary);
+  color: var(--primary-contrast);
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+}
+
+.btn.ghost {
+  background: transparent;
+  border: 1px solid rgba(2, 6, 23, 0.06);
+  color: var(--text);
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.field-error,
+.form-error {
+  color: #be123c;
+  font-size: 0.78rem;
+  line-height: 1.2;
+  margin: -4px 0 4px;
+}
 
 @media (max-width: 880px) {
-  .form-grid { grid-template-columns: 1fr; }
-  .preview { order: -1; width: 100%; aspect-ratio: 16/9; }
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .preview {
+    order: -1;
+    width: 100%;
+    aspect-ratio: 16/9;
+  }
+}
+
+/* ReactQuill overrides to match Material Design system / .input class */
+.quill-container { width: 100%; }
+
+.quill-container .ql-toolbar.ql-snow {
+  border: 1px solid rgba(2,6,23,0.06);
+  border-bottom: 1px solid rgba(2,6,23,0.04);
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  padding: 10px 14px;
+}
+
+.quill-container .ql-container.ql-snow {
+  min-height: 140px;
+  border: 1px solid rgba(2,6,23,0.06);
+  border-top: none;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.quill-container .ql-editor {
+  padding: 14px;
+  min-height: 140px;
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+
+/* Invalid state */
+.quill-container.invalid .ql-toolbar.ql-snow,
+.quill-container.invalid .ql-container.ql-snow {
+  border-color: #e11d48;
+  background: #fff7f7;
+}
+
+.quill-container.invalid .ql-toolbar.ql-snow {
+  border-bottom-color: rgba(225, 29, 72, 0.2);
 }

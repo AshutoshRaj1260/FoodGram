@@ -1,8 +1,10 @@
 import React, { useMemo, useState } from 'react'
 import '../../styles/create-food.css'
 import axios from 'axios'
-import {Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { hasErrors, validateRequired } from '../../utils/validation'
+import ReactQuill from 'react-quill-new'
+import 'react-quill-new/dist/quill.snow.css'
 
 const CreateFood = () => {
   const [preview, setPreview] = useState(null)
@@ -24,7 +26,7 @@ const CreateFood = () => {
           : 'Choose a valid video file.'
         : 'Video is required.',
       name: validateRequired(formValues.name, 'Meal name'),
-      description: validateRequired(formValues.description, 'Description'),
+      description: validateRequired(formValues.description.replace(/<[^>]*>?/gm, '').trim(), 'Description'),
     }),
     [formValues],
   )
@@ -59,6 +61,18 @@ const CreateFood = () => {
     setPreview({ url, type: file.type })
   }
 
+  const onDescriptionChange = (content) => {
+    setFormMessage('')
+    setFormValues((current) => ({
+      ...current,
+      description: content,
+    }))
+    setTouched((current) => ({
+      ...current,
+      description: true,
+    }))
+  }
+
   const onInputChange = (e) => {
     const { name, value } = e.target
     setFormMessage('')
@@ -88,8 +102,8 @@ const CreateFood = () => {
 
     const formData = new FormData();
 
-    formData.append('name', formValues.name.trim());  
-    formData.append('description', formValues.description.trim());  
+    formData.append('name', formValues.name.trim());
+    formData.append('description', formValues.description.trim());
     formData.append('video', formValues.video);
 
     setIsSubmitting(true)
@@ -115,7 +129,7 @@ const CreateFood = () => {
         <form className="form-grid" onSubmit={onSubmit} noValidate>
           <div className="form">
             <label className="label">Video</label>
-            <label className={`file-input input ${shouldShowError('video') ? 'invalid' : ''}`} htmlFor="videoInput">
+            <label className={`file-input input ${!formValues.video ? 'is-placeholder' : ''} ${shouldShowError('video') ? 'invalid' : ''}`} htmlFor="videoInput">
               {formValues.video ? formValues.video.name : 'Choose video file'}
             </label>
             <input
@@ -148,16 +162,15 @@ const CreateFood = () => {
             )}
 
             <label className="label">Description</label>
-            <textarea
-              name="description"
-              className={`input ${shouldShowError('description') ? 'invalid' : ''}`}
-              value={formValues.description}
-              onChange={onInputChange}
-              onBlur={onInputBlur}
-              placeholder="Short description for the reel"
-              aria-invalid={shouldShowError('description')}
-              aria-describedby="description-error"
-            />
+            <div className={`quill-container ${shouldShowError('description') ? 'invalid' : ''}`}>
+              <ReactQuill
+                theme="snow"
+                value={formValues.description}
+                onChange={onDescriptionChange}
+                onBlur={() => setTouched((current) => ({ ...current, description: true }))}
+                placeholder="Short description for the reel"
+              />
+            </div>
             {shouldShowError('description') && (
               <p className="field-error" id="description-error">{errors.description}</p>
             )}
@@ -169,7 +182,7 @@ const CreateFood = () => {
                 {isSubmitting ? 'Creating...' : 'Create'}
               </button>
               <button className="btn ghost" type="button">
-                <Link to="/home" style={{textDecoration:'none'}} >Cancel</Link>
+                <Link to="/home" style={{ textDecoration: 'none' }} >Cancel</Link>
               </button>
             </div>
           </div>
