@@ -5,25 +5,6 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import BottomNavBar from "../../components/BottomNavBar";
 
-const sampleReels = [
-  { id: 1, thumb: "hhttps://www.pexels.com/download/video/4686883/" },
-  {
-    id: 2,
-    thumb:
-      "https://ik.imagekit.io/6j5alarrgo/d0d8cce6-47f6-4b52-9271-19273de99a98_mOeZATf8D",
-  },
-  {
-    id: 3,
-    thumb:
-      "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-  },
-  {
-    id: 4,
-    thumb:
-      "https://ik.imagekit.io/6j5alarrgo/5e97740f-0711-4618-981a-01ed872a7d38_de2Bk3cFY",
-  },
-];
-
 const Profile = () => {
   const userType = localStorage.getItem("userType") || "user";
 

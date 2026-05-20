@@ -10,20 +10,6 @@ import VideoPlayer from "../../components/VideoPlayer";
 
 const API_URL = import.meta.env.VITE_API_URL || "";
 
-const getImageKitThumbnailUrl = (videoUrl) => {
-  if (!videoUrl) return "";
-
-  const [urlWithoutHash, hash = ""] = videoUrl.split("#");
-  const [baseUrl, query = ""] = urlWithoutHash.split("?");
-  const thumbnailUrl = `${baseUrl}/ik-thumbnail.jpg`;
-
-  if (query && hash) return `${thumbnailUrl}?${query}#${hash}`;
-  if (query) return `${thumbnailUrl}?${query}`;
-  if (hash) return `${thumbnailUrl}#${hash}`;
-
-  return thumbnailUrl;
-};
-
 const Home = () => {
   const [videos, setVideos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);

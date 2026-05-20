@@ -34,7 +34,9 @@ const Saved = () => {
         { withCredentials: true }
       );
       setVideos((prev) => prev.filter((v) => v._id !== item._id));
-    } catch {}
+    } catch (err) {
+      console.error("Remove saved error:", err.response?.data || err.message);
+    }
   };
 
   console.log("Saved Videos State:", videos);
