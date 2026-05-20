@@ -28,7 +28,7 @@
 
 .form-grid {
   display: grid;
-  grid-template-columns: 1fr 380px;
+  grid-template-columns: 1fr 280px;
   gap: var(--space-lg);
   align-items: start;
   margin-top: 28px;
