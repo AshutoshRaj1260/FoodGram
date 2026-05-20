@@ -7,6 +7,7 @@ import LikeIcon from "@mui/icons-material/FavoriteBorder";
 import BookmarksIcon from "@mui/icons-material/BookmarkBorder";
 import ReelSkeleton from "../../components/ReelSkeleton";
 import VideoPlayer from "../../components/VideoPlayer";
+import DOMPurify from "dompurify";
 
 const API_URL = import.meta.env.VITE_API_URL || "";
 
@@ -23,15 +24,15 @@ const Home = () => {
   // Fetch videos
   useEffect(() => {
     let isMounted = true;
-    
+
     const fetchVideos = async () => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await axios.get(`${API_URL}/api/food`, { 
-          withCredentials: true 
+        const response = await axios.get(`${API_URL}/api/food`, {
+          withCredentials: true
         });
-        
+
         if (isMounted) {
           // Safeguard: Ensure we set an array even if api returns undefined/null
           setVideos(response.data?.foodItems || []);
@@ -50,7 +51,7 @@ const Home = () => {
     };
 
     fetchVideos();
-    
+
     return () => {
       isMounted = false;
     };
@@ -59,7 +60,7 @@ const Home = () => {
   // Handle URL ID scrolling
   useEffect(() => {
     if (!id || !Array.isArray(videos) || videos.length === 0) return;
-    
+
     const index = videos.findIndex((v) => v._id === id);
     if (index !== -1 && containerRef.current) {
       const el = containerRef.current.querySelectorAll(".reel")[index];
@@ -144,7 +145,7 @@ const Home = () => {
 
   const renderFeed = () => {
     if (isLoading) return <ReelSkeleton count={3} />;
-    
+
     if (error) {
       return (
         <div style={{ textAlign: "center", padding: "2rem", color: "#ff4d4f" }}>
@@ -173,7 +174,10 @@ const Home = () => {
         />
 
         <div className="overlay">
-          <div className="description">{item?.description || ""}</div>
+          <div 
+            className="description" 
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item?.description || "") }} 
+          />
           {item?.foodPartner && (
             <Link
               className="visit-btn"
