@@ -64,6 +64,7 @@
   color: var(--muted);
   margin-top: 20px;
 }
+
 .label:first-child {
   margin-top: 0;
 }
@@ -148,11 +149,13 @@ textarea {
 }
 
 /* ReactQuill overrides to match Material Design system / .input class */
-.quill-container { width: 100%; }
+.quill-container {
+  width: 100%;
+}
 
 .quill-container .ql-toolbar.ql-snow {
-  border: 1px solid rgba(2,6,23,0.06);
-  border-bottom: 1px solid rgba(2,6,23,0.04);
+  border: 1px solid rgba(2, 6, 23, 0.06);
+  border-bottom: 1px solid rgba(2, 6, 23, 0.04);
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   background: color-mix(in srgb, var(--surface) 88%, transparent);
@@ -161,7 +164,7 @@ textarea {
 
 .quill-container .ql-container.ql-snow {
   min-height: 140px;
-  border: 1px solid rgba(2,6,23,0.06);
+  border: 1px solid rgba(2, 6, 23, 0.06);
   border-top: none;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
