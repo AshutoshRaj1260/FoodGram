@@ -52,7 +52,7 @@ async function getOrSetCache(key, fetchFunction, ttl = 300) {
 
     console.log(`Cache Miss: ${key}`);
     data = await fetchFunction();
-    
+
     if (data) {
       try {
         await redis.set(key, JSON.stringify(data), 'EX', ttl);
@@ -60,12 +60,13 @@ async function getOrSetCache(key, fetchFunction, ttl = 300) {
         console.error(`Redis Set Error for key ${key}:`, setErr);
       }
     }
+
     return { data, cache: 'MISS' };
   } catch (err) {
     console.error(`Cache Error for key ${key}:`, err);
-    
+
     if (data !== undefined) return { data, cache: 'MISS' };
-    
+
     return { data: await fetchFunction(), cache: 'MISS' };
   }
 }

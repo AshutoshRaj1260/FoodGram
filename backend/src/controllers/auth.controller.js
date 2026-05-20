@@ -3,28 +3,32 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const foodPartnerModel = require("../models/foodpartner.model");
 
-const accessTokenOptions = {
-  httpOnly: true,
-  sameSite: "lax",
-  secure: process.env.NODE_ENV === "production",
+const generateTokens = (id) => {
+  const accessToken = jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "15m" });
+  const refreshToken = jwt.sign({ id }, process.env.JWT_REFRESH_SECRET, { expiresIn: "7d" });
+  return { accessToken, refreshToken };
 };
 
-const refreshTokenOptions = {
-  ...accessTokenOptions,
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+const setCookies = (res, accessToken, refreshToken) => {
+  // Use HTTPS if FRONTEND_URL starts with https:// OR if NODE_ENV is production
+  const isSecure = process.env.FRONTEND_URL?.startsWith('https') || process.env.NODE_ENV === 'production';
+  
+  const cookieOptions = {
+    httpOnly: true,
+    secure: isSecure,
+    sameSite: isSecure ? 'none' : 'lax',
+    path: '/',
+    maxAge: 15 * 60 * 1000,
+  };
+  
+  res.cookie('accessToken', accessToken, cookieOptions);
+  
+  res.cookie('refreshToken', refreshToken, {
+    ...cookieOptions,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
 };
 
-function issueTokens(res, id) {
-  const accessToken = jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: "15m",
-  });
-  const refreshToken = jwt.sign({ id }, process.env.JWT_REFRESH_SECRET, {
-    expiresIn: "7d",
-  });
-
-  res.cookie("token", accessToken, accessTokenOptions);
-  res.cookie("refreshToken", refreshToken, refreshTokenOptions);
-}
 async function registerUser(req, res, next) {
   try {
   const { fullName, email, password } = req.body;
@@ -46,7 +50,8 @@ async function registerUser(req, res, next) {
     password: hashedPassword,
   });
 
-  issueTokens(res, user._id);
+  const { accessToken, refreshToken } = generateTokens(user._id);
+  setCookies(res, accessToken, refreshToken);
 
   res.status(201).json({
     message: "User Registered Successfully",
@@ -79,7 +84,8 @@ async function loginUser(req, res, next) {
       message: "Invalid Credentials",
     });
   }
-  issueTokens(res, user._id);
+  const { accessToken, refreshToken } = generateTokens(user._id);
+  setCookies(res, accessToken, refreshToken);
 
   res.status(200).json({
     message: "User Logged In Successfully",
@@ -96,8 +102,8 @@ async function loginUser(req, res, next) {
 
 function logoutUser(req, res, next) {
   try {
-  res.clearCookie("token", accessTokenOptions);
-  res.clearCookie("refreshToken", refreshTokenOptions);
+  res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
   res.status(200).json({
     message: "User Logged Out Successfully",
   });
@@ -128,7 +134,8 @@ async function registerFoodPartner(req, res, next) {
     password: hashedPassword,
   });
 
-  issueTokens(res, foodPartner._id);
+  const { accessToken, refreshToken } = generateTokens(foodPartner._id);
+  setCookies(res, accessToken, refreshToken);
 
   res.status(201).json({
     message: "Food Partner Registered Successfully",
@@ -160,7 +167,8 @@ async function loginFoodPartner(req, res, next) {
       message: "Invalid Credentials",
     });
   }
-  issueTokens(res, foodPartner._id);
+  const { accessToken, refreshToken } = generateTokens(foodPartner._id);
+  setCookies(res, accessToken, refreshToken);
 
   res.status(200).json({
     message: "Food Partner Logged In Successfully",
@@ -178,7 +186,8 @@ async function loginFoodPartner(req, res, next) {
 //Google OAuth login/signup
 function googleAuthCallback(req, res, next) {
   try {
-  issueTokens(res, req.user._id);
+  const { accessToken, refreshToken } = generateTokens(req.user._id);
+  setCookies(res, accessToken, refreshToken);
   const frontendUrl = process.env.FRONTEND_URL || "";
   res.redirect(`${frontendUrl}/home`);
   } catch (error) {
@@ -188,8 +197,8 @@ function googleAuthCallback(req, res, next) {
 
 function logoutFoodPartner(req, res, next) {
   try {
-  res.clearCookie("token", accessTokenOptions);
-  res.clearCookie("refreshToken", refreshTokenOptions);
+  res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
   res.status(200).json({
     message: "Food Partner Logged Out Successfully",
   });
@@ -198,25 +207,27 @@ function logoutFoodPartner(req, res, next) {
   }
 }
 
-function refreshToken(req, res) {
-  const token = req.cookies.refreshToken;
-
-  if (!token) {
-    return res.status(401).json({ message: "Refresh token missing" });
-  }
-
+async function refreshToken(req, res, next) {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
-    const accessToken = jwt.sign(
-      { id: decoded.id },
-      process.env.JWT_SECRET,
-      { expiresIn: "15m" }
-    );
+    const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken) {
+      return res.status(401).json({ message: 'Refresh token not found' });
+    }
 
-    res.cookie("token", accessToken, accessTokenOptions);
-    return res.status(200).json({ message: "Token refreshed" });
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+    const accessToken = jwt.sign({ id: decoded.id }, process.env.JWT_SECRET, { expiresIn: '15m' });
+
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: process.env.FRONTEND_URL?.startsWith('https') || process.env.NODE_ENV === 'production',
+      sameSite: (process.env.FRONTEND_URL?.startsWith('https') || process.env.NODE_ENV === 'production') ? 'none' : 'lax',
+      maxAge: 15 * 60 * 1000,
+      path: '/',
+    });
+
+    res.status(200).json({ message: 'Token refreshed successfully' });
   } catch (error) {
-    return res.status(401).json({ message: "Invalid refresh token" });
+    next(error);
   }
 }
 
