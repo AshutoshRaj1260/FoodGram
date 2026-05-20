@@ -15,7 +15,6 @@ const router = express.Router();
 router.post('/user/register', userRegisterValidation, validate, authController.registerUser);
 router.post('/user/login', loginLimiter, loginValidation, validate, authController.loginUser);
 router.get('/user/logout', authController.logoutUser);
-router.get('/refresh-token', authController.refreshToken);
 
 //foodpartner_auth_routes
 router.post('/foodpartner/register', foodPartnerRegisterValidation, validate, authController.registerFoodPartner);
@@ -23,7 +22,7 @@ router.post('/foodpartner/login', loginLimiter, loginValidation, validate, authC
 router.get('/foodpartner/logout', authController.logoutFoodPartner); 
 
 //refresh token route
-router.post('/refresh', authController.refreshToken);
+router.post('/refresh-token', authController.refreshToken);
 
 //google_oauth_routes
 if (

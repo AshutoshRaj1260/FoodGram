@@ -107,9 +107,6 @@ async function likeFood(req, res, next) {
       }
     });
 
-    // Only reached if transaction commits
-    await invalidateCache(`partner:${result.partnerId}`);
-
     res.status(result.status).json({ 
       message: result.message,
       liked: result.liked,
@@ -193,9 +190,6 @@ async function saveFood(req, res, next) {
         };
       }
     });
-
-    // Only reached if transaction commits
-    await invalidateCache(`partner:${result.partnerId}`);
 
     res.status(result.status).json({ 
       message: result.message,
