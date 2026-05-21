@@ -7,19 +7,22 @@ const {
   loginValidation,
   validate,
 } = require("../middlewares/auth.validator");
-    
+const { loginLimiter } = require('../middlewares/rateLimiter.middleware');
 
 const router = express.Router();
 
 //user_auth_routes
 router.post('/user/register', userRegisterValidation, validate, authController.registerUser);
-router.post('/user/login', loginValidation, validate, authController.loginUser);
-router.get('/user/logout',authController.logoutUser);
+router.post('/user/login', loginLimiter, loginValidation, validate, authController.loginUser);
+router.get('/user/logout', authController.logoutUser);
 
 //foodpartner_auth_routes
 router.post('/foodpartner/register', foodPartnerRegisterValidation, validate, authController.registerFoodPartner);
-router.post('/foodpartner/login', loginValidation, validate, authController.loginFoodPartner);
-router.get('/foodpartner/logout',authController.logoutFoodPartner); 
+router.post('/foodpartner/login', loginLimiter, loginValidation, validate, authController.loginFoodPartner);
+router.get('/foodpartner/logout', authController.logoutFoodPartner); 
+
+//refresh token route
+router.post('/refresh-token', authController.refreshToken);
 
 //google_oauth_routes
 if (

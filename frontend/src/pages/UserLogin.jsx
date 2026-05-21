@@ -86,13 +86,10 @@ export default function UserLogin() {
         },
         {
           withCredentials: true,
-        },
+        }
       );
 
       localStorage.setItem("userType", "user");
-
-      console.log(localStorage.getItem("userType"));
-
       navigate("/home");
     } catch (err) {
       console.log(err.response?.data?.message);

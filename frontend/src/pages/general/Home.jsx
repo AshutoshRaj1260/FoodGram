@@ -110,7 +110,7 @@ const Home = () => {
       const response = await axios.post(
         `${API_URL}/api/food/like`,
         { foodId: item._id },
-        { withCredentials: true },
+        { withCredentials: true }
       );
 
       setVideos((prev) => {
@@ -129,7 +129,7 @@ const Home = () => {
       const response = await axios.post(
         `${API_URL}/api/food/save`,
         { foodId: item._id },
-        { withCredentials: true },
+        { withCredentials: true }
       );
 
       setVideos((prev) => {

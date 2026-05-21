@@ -86,6 +86,7 @@ export default function UserRegister({ onFlash }) {
         },
       );
 
+      localStorage.setItem("userType", "user");
       console.log(response.data);
       navigate("/home");
     } catch (err) {
@@ -99,76 +100,6 @@ export default function UserRegister({ onFlash }) {
   };
 
   return (
-    // <div className="auth-wrap">
-    //   <div className="brand-header">
-    //     <div className="brand-logo">
-    //       <img src="/brandLogo.png" alt="" />
-    //     </div>
-    //     FoodGram
-    //   </div>
-    //   <main className="card" role="main">
-    //     <section className="hero">
-    //       <div className="logo" aria-hidden="true" />
-    //       <h2>Welcome to Foodly</h2>
-    //       <p>
-    //         Sign up to discover great meals and quick delivery in your area.
-    //       </p>
-    //     </section>
-
-    //     <section className="form-pane">
-    //       <div className="container">
-    //         <div className="brand">
-    //           <h1>User Sign up</h1>
-    //           <p>Create an account to order food quickly.</p>
-    //         </div>
-
-    //         <form className="form" onSubmit={handleSubmit}>
-    //           <div className="input">
-    //             <label htmlFor="name">Full name</label>
-    //             <input id="name" name="name" placeholder="Jane Doe" />
-    //           </div>
-
-    //           <div className="input">
-    //             <label htmlFor="email">Email</label>
-    //             <input
-    //               id="email"
-    //               name="email"
-    //               type="email"
-    //               placeholder="you@example.com"
-    //             />
-    //           </div>
-
-    //           <div className="input">
-    //             <label htmlFor="password">Password</label>
-    //             <input
-    //               id="password"
-    //               name="password"
-    //               type="password"
-    //               placeholder="At least 8 characters"
-    //             />
-    //           </div>
-
-    //           <div className="or-row">Or continue with email</div>
-
-    //           <div className="actions">
-    //             <button className="btn" type="submit">
-    //               Create account
-    //             </button>
-    //             <Link className="switch-link" to="/">
-    //               Already have an account?
-    //             </Link>
-    //           </div>
-    //         </form>
-    //       </div>
-    //     </section>
-    //   </main>
-
-    //   <div>
-    //     <Link className="switch-link" to="/foodpartner/register">
-    //       Are you a food partner? Register here.
-    //     </Link>
-    //   </div>
-    // </div>
     <>
       <div className="auth-page">
         <div className="auth-card">
