@@ -11,14 +11,18 @@ const path = require("path");
 const app = express();
 
 // Trust proxy setting for deployment environments
-const trustProxyValue = process.env.TRUST_PROXY === 'true' ? 1 : 
-                       process.env.TRUST_PROXY === 'false' ? false : 
-                       Number(process.env.TRUST_PROXY) || false;
-app.set('trust proxy', trustProxyValue);
+const trustProxyValue =
+  process.env.TRUST_PROXY === "true"
+    ? 1
+    : process.env.TRUST_PROXY === "false"
+      ? false
+      : Number(process.env.TRUST_PROXY) || false;
+app.set("trust proxy", trustProxyValue);
 
 // CORS configuration - must be before routes
 const corsOptions = {
-  origin: process.env.FRONTEND_URL?.replace(/\/$/, "") || "http://localhost:5173",
+  origin:
+    process.env.FRONTEND_URL?.replace(/\/$/, "") || "http://localhost:5173",
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -27,30 +31,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options(/.*/, cors(corsOptions)); // Enable preflight for all routes
-
-app.use(globalLimiter);
-
-
-// Trust proxy setting for deployment environments
-const trustProxyValue = process.env.TRUST_PROXY === 'true' ? 1 : 
-                       process.env.TRUST_PROXY === 'false' ? false : 
-                       Number(process.env.TRUST_PROXY) || false;
-app.set('trust proxy', trustProxyValue);
-
-// CORS configuration - must be before routes
-const corsOptions = {
-  origin: process.env.FRONTEND_URL?.replace(/\/$/, "") || "http://localhost:5173",
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  exposedHeaders: ["Content-Type"],
-  maxAge: 3600,
-};
-
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Enable preflight for all routes
-
+app.options("*", cors(corsOptions)); // Enable preflight for all routes
 
 app.use(globalLimiter);
 
@@ -81,7 +62,7 @@ app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(err.status || 500).json({
     message: err.message || "Internal Server Error",
-    ...(process.env.NODE_ENV === "development" && { error: err })
+    ...(process.env.NODE_ENV === "development" && { error: err }),
   });
 });
 
