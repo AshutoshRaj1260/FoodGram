@@ -3,7 +3,8 @@
 /* ─── Layout shell ─────────────────────────────── */
 .reel-section {
   --bottom-nav-height: 72px;
-  height: 100vh;
+
+  height: 100dvh;
   width: 100%;
   display: flex;
   justify-content: center;
@@ -16,7 +17,7 @@
 /* ─── Scrollable reel list ─────────────────────── */
 .reels {
   width: min(400px, 100%);
-  height: calc(100vh - var(--bottom-nav-height) - 24px);
+  height: calc(100dvh - var(--bottom-nav-height) - 24px);
   border-radius: 20px;
   overflow-y: auto;
   scroll-snap-type: y mandatory;
@@ -32,7 +33,7 @@
 /* ─── Individual reel card ─────────────────────── */
 .reel {
   position: relative;
-  height: calc(100vh - var(--bottom-nav-height) - 24px);
+  height: calc(100dvh - var(--bottom-nav-height) - 24px);
   width: 100%;
   border-radius: 20px;
   margin-bottom: 20px;
@@ -106,7 +107,7 @@
 /* ─── Scroll hint ───────────────────────────────── */
 .reel .hint {
   position: absolute;
-  bottom: 10px;
+  bottom: calc(10px + env(safe-area-inset-bottom, 0px));
   left: 50%;
   transform: translateX(-50%);
   color: rgba(255, 255, 255, 0.72);
@@ -179,7 +180,7 @@
   border-end-start-radius: 12px;
   border-end-end-radius: 12px;
   background: rgb(0, 0, 0);
-  padding: 4px 0;
+  padding: 4px 0 calc(4px + env(safe-area-inset-bottom, 0px));
 }
 
 .bottom-nav .nav-link {
