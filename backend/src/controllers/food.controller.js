@@ -4,7 +4,7 @@ const foodModel = require("../models/food.model");
 const likeModel = require("../models/likes.model");
 const saveModel = require("../models/save.model");
 const storageService = require("../services/storage.service");
-const { invalidateCache, getOrSetCache } = require("../services/redis.service");
+const { invalidateCache, getOrSetCache, invalidateCachePattern } = require("../services/redis.service");
 
 async function createFood(req, res, next) {
   try {
@@ -18,7 +18,7 @@ async function createFood(req, res, next) {
     });
 
     await invalidateCache(`partner:${req.foodPartner._id}`);
-    await invalidateCache("all_food_items");
+    await invalidateCachePattern("food_feed:*");
 
     res.status(201).json({
       message: "Food Item Created Successfully",
@@ -31,16 +31,46 @@ async function createFood(req, res, next) {
 
 async function getFoodItems(req, res, next) {
   try {
-    const { data: foodItems, cache } = await getOrSetCache(
-      "all_food_items",
-      async () => await foodModel.find({}),
-      300
+    const cursor = req.query.cursor;
+    const limit = parseInt(req.query.limit, 10) || 10;
+
+    // Validate cursor format to prevent Mongoose cast errors and return a clean response
+    if (cursor && !mongoose.Types.ObjectId.isValid(cursor)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid cursor format",
+      });
+    }
+
+    // Build pagination query: if cursor exists, fetch items older than the cursor ID
+    const query = cursor ? { _id: { $lt: cursor } } : {};
+
+    // Dynamic cache key reflecting the current page cursor and size limit
+    const cacheKey = `food_feed:cursor:${cursor || "initial"}:limit:${limit}`;
+
+    const { data: paginationResult, cache } = await getOrSetCache(
+      cacheKey,
+      async () => {
+        const videos = await foodModel.find(query)
+          .sort({ _id: -1 })
+          .limit(limit);
+
+        const nextCursor = videos.length > 0 ? videos[videos.length - 1]._id : null;
+        const hasMore = videos.length === limit;
+
+        return {
+          videos,
+          nextCursor,
+          hasMore,
+        };
+      },
+      300 // Cache each page for 5 minutes
     );
 
     res.setHeader("X-Cache", cache);
     res.status(200).json({
-      message: "Food Items fetched successfully",
-      foodItems,
+      success: true,
+      data: paginationResult,
     });
   } catch (error) {
     next(error);
@@ -107,7 +137,7 @@ async function likeFood(req, res, next) {
       });
 
       await invalidateCache(`partner:${result.partnerId}`);
-      await invalidateCache("all_food_items");
+      await invalidateCachePattern("food_feed:*");
 
       res.status(result.status).json({
         message: result.message,
@@ -194,7 +224,7 @@ async function saveFood(req, res, next) {
       });
 
       await invalidateCache(`partner:${result.partnerId}`);
-      await invalidateCache("all_food_items");
+      await invalidateCachePattern("food_feed:*");
 
       res.status(result.status).json({
         message: result.message,

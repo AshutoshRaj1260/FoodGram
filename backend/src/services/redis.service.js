@@ -81,8 +81,42 @@ async function invalidateCache(key) {
   }
 }
 
+/**
+ * Invalidates cache keys matching a specific glob pattern.
+ * Uses a Redis SCAN stream rather than KEYS to avoid blocking 
+ * the Redis single-threaded event loop in production.
+ * @param {string} pattern - Glob pattern like 'food_feed:*'
+ */
+async function invalidateCachePattern(pattern) {
+  if (!redis || redis.status !== 'ready') return;
+  try {
+    const stream = redis.scanStream({
+      match: pattern,
+      count: 100, // Process in small chunks to prevent performance impacts
+    });
+
+    stream.on('data', async (keys) => {
+      if (keys.length > 0) {
+        try {
+          await redis.del(keys);
+          console.log(`Cache Pattern Invalidated (${pattern}): deleted ${keys.length} keys`);
+        } catch (delErr) {
+          console.error(`Error deleting scanned keys for pattern ${pattern}:`, delErr);
+        }
+      }
+    });
+
+    stream.on('error', (err) => {
+      console.error(`SCAN stream error for pattern ${pattern}:`, err);
+    });
+  } catch (err) {
+    console.error(`Invalidate Cache Pattern Error for pattern ${pattern}:`, err);
+  }
+}
+
 module.exports = {
   redis,
   getOrSetCache,
   invalidateCache,
+  invalidateCachePattern,
 };

@@ -16,30 +16,43 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeVideoId, setActiveVideoId] = useState(null);
+  const [nextCursor, setNextCursor] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [isFetching, setIsFetching] = useState(false);
+
   const containerRef = useRef(null);
+  const sentinelRef = useRef(null);
 
   const userType = localStorage.getItem("userType") || "user";
   const { id } = useParams();
 
-  // Fetch videos
+  // Initial fetch of videos
   useEffect(() => {
     let isMounted = true;
 
-    const fetchVideos = async () => {
+    const fetchInitialVideos = async () => {
       setIsLoading(true);
       setError(null);
       try {
         const response = await axios.get(`${API_URL}/api/food`, {
-          withCredentials: true
+          params: { limit: 10 },
+          withCredentials: true,
         });
 
         if (isMounted) {
-          // Safeguard: Ensure we set an array even if api returns undefined/null
-          setVideos(response.data?.foodItems || []);
+          const { success, data } = response.data;
+          if (success && data) {
+            setVideos(data.videos || []);
+            setNextCursor(data.nextCursor);
+            setHasMore(data.hasMore);
+          } else {
+            // Fallback for safety/backward compatibility
+            setVideos(response.data?.foodItems || []);
+          }
         }
       } catch (err) {
         if (isMounted) {
-          console.error("Failed to fetch food items:", err.response?.data || err.message);
+          console.error("Failed to fetch initial food items:", err.response?.data || err.message);
           setError("Failed to load feed. Please try again later.");
           setVideos([]);
         }
@@ -50,12 +63,41 @@ const Home = () => {
       }
     };
 
-    fetchVideos();
+    fetchInitialVideos();
 
     return () => {
       isMounted = false;
     };
   }, []);
+
+  // Fetch subsequent pages of videos
+  const fetchNextPage = async () => {
+    if (isFetching || !hasMore || !nextCursor) return;
+
+    setIsFetching(true);
+    try {
+      const response = await axios.get(`${API_URL}/api/food`, {
+        params: { cursor: nextCursor, limit: 10 },
+        withCredentials: true,
+      });
+
+      const { success, data } = response.data;
+      if (success && data) {
+        setVideos((prev) => {
+          // Safeguard against duplicate key rendering errors by filtering existing IDs
+          const existingIds = new Set(prev.map((v) => v._id));
+          const newVideos = (data.videos || []).filter((v) => !existingIds.has(v._id));
+          return [...prev, ...newVideos];
+        });
+        setNextCursor(data.nextCursor);
+        setHasMore(data.hasMore);
+      }
+    } catch (err) {
+      console.error("Failed to fetch next page of food items:", err.response?.data || err.message);
+    } finally {
+      setIsFetching(false);
+    }
+  };
 
   // Handle URL ID scrolling
   useEffect(() => {
@@ -68,7 +110,7 @@ const Home = () => {
     }
   }, [id, videos]);
 
-  // Intersection Observer for autoplay
+  // Intersection Observer for autoplaying visible videos
   useEffect(() => {
     const container = containerRef.current;
     if (!container || !Array.isArray(videos) || videos.length === 0) return;
@@ -104,6 +146,33 @@ const Home = () => {
 
     return () => observer.disconnect();
   }, [videos]);
+
+  // Intersection Observer for Infinite Scrolling
+  useEffect(() => {
+    const container = containerRef.current;
+    const sentinel = sentinelRef.current;
+
+    if (!container || !sentinel || !hasMore || isFetching) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          fetchNextPage();
+        }
+      },
+      {
+        root: container,
+        rootMargin: "100px", // Pre-fetch slightly before the user hits the scroll bottom for seamless UI
+        threshold: 0.1,
+      }
+    );
+
+    observer.observe(sentinel);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [hasMore, isFetching, nextCursor]);
 
   const likeVideo = async (item) => {
     try {
@@ -224,6 +293,25 @@ const Home = () => {
       <div className="reel-section">
         <div className="reels" role="list" ref={containerRef}>
           {renderFeed()}
+
+          {/* Conditional scroll sentinel element */}
+          {hasMore && (
+            <div
+              ref={sentinelRef}
+              style={{
+                height: "60px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                color: "#2dd4bf", // Teal matches FoodGram branding
+                fontSize: "0.95rem",
+                fontWeight: "600",
+                padding: "20px 0"
+              }}
+            >
+              {isFetching ? "Loading more delicious reels..." : ""}
+            </div>
+          )}
         </div>
       </div>
       <BottomNavBar userType={userType} />
