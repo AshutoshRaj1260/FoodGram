@@ -1,48 +1,96 @@
 @import './variables.css';
 
+/* ─── Page Layout ─────────────────────────────────────────────── */
 .create-food-page {
   min-height: 100vh;
-  padding: calc(var(--space-lg) * 1.2);
+  padding: calc(var(--space-lg) * 1.4) var(--space-lg);
   display: flex;
   justify-content: center;
-  background: linear-gradient(180deg, var(--bg), color-mix(in srgb, var(--bg) 92%, var(--surface)));
+  align-items: flex-start;
+  background: linear-gradient(
+    160deg,
+    var(--bg) 0%,
+    color-mix(in srgb, var(--bg) 88%, var(--primary)) 100%
+  );
 }
 
+/* ─── Card ─────────────────────────────────────────────────────── */
 .card {
   width: 100%;
-  max-width: 920px;
+  max-width: 940px;
   background: var(--surface);
-  border-radius: 14px;
-  padding: calc(var(--space-lg) * 0.9);
-  box-shadow: 0 12px 40px rgba(2, 6, 23, 0.08);
-  border: 1px solid rgba(2, 6, 23, 0.04);
+  border-radius: 18px;
+  padding: calc(var(--space-lg) * 1.1) calc(var(--space-lg) * 1.2);
+  box-shadow:
+    0 4px 6px -1px rgba(2, 6, 23, 0.06),
+    0 20px 50px -8px rgba(2, 6, 23, 0.14);
+  border: 1px solid rgba(2, 6, 23, 0.06);
 }
 
 .card h2 {
-  font-size: 2.2rem;
+  font-size: 2rem;
   font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--text);
   margin-top: 0;
+  margin-bottom: 4px;
 }
 
+/* Subtle colored underline accent beneath heading */
+.card h2::after {
+  content: '';
+  display: block;
+  width: 48px;
+  height: 4px;
+  border-radius: 99px;
+  background: var(--primary);
+  margin-top: 8px;
+}
+
+/* ─── Form Grid ────────────────────────────────────────────────── */
 .form-grid {
   display: grid;
-  grid-template-columns: 1fr 280px;
+  grid-template-columns: 1fr 272px;
   gap: var(--space-lg);
   align-items: start;
-  margin-top: 28px;
+  margin-top: 32px;
 }
 
+/* ─── Video Preview Panel ──────────────────────────────────────── */
 .preview {
-  background: #000;
-  border-radius: 12px;
+  background: color-mix(in srgb, var(--bg) 60%, #000);
+  border-radius: 14px;
   overflow: hidden;
-  height: 100%;
+  width: 100%;
   aspect-ratio: 9/16;
+  align-self: start;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  border: 2px dashed color-mix(in srgb, var(--primary) 40%, transparent);
+  transition: border-color 0.25s ease, background 0.25s ease;
+  gap: 10px;
+}
+
+.preview:has(video),
+.preview:has(img) {
+  border-style: solid;
+  border-color: var(--primary);
+  background: #000;
+}
+
+.preview-placeholder-icon {
+  font-size: 2.2rem;
+  opacity: 0.5;
+}
+
+.preview-placeholder-text {
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-align: center;
+  padding: 0 16px;
+  line-height: 1.5;
 }
 
 .preview video,
@@ -53,53 +101,100 @@
   display: block;
 }
 
+/* ─── Form Column ──────────────────────────────────────────────── */
 .form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: 4px;
 }
 
+/* ─── Labels ───────────────────────────────────────────────────── */
 .label {
   font-size: var(--text-size-sm);
+  font-weight: 600;
   color: var(--muted);
-  margin-top: 20px;
+  margin-top: 18px;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
 }
 
 .label:first-child {
   margin-top: 0;
 }
 
+/* ─── Inputs & File Picker ─────────────────────────────────────── */
 .input,
 textarea,
 .file-input {
   width: 100%;
+  box-sizing: border-box;
   padding: 12px 14px;
   border-radius: 10px;
-  border: 1px solid rgba(2, 6, 23, 0.06);
-  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  /* Distinct background — slightly tinted so boxes stand out from card */
+  background: color-mix(in srgb, var(--bg) 70%, var(--surface));
   color: var(--text);
+  border: 1.5px solid color-mix(in srgb, var(--muted) 22%, transparent);
+  font-family: var(--font-sans);
+  font-size: var(--text-size-md);
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+  outline: none;
 }
 
+.input:hover,
+textarea:hover,
+.file-input:hover {
+  border-color: color-mix(in srgb, var(--primary) 55%, transparent);
+  background: color-mix(in srgb, var(--bg) 80%, var(--surface));
+}
+
+.input:focus,
+textarea:focus {
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 4%, var(--surface));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 15%, transparent);
+}
+
+/* ─── File Input ───────────────────────────────────────────────── */
 .file-input {
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-sans);
+  font-size: var(--text-size-md);
+  user-select: none;
+}
+
+.file-input::before {
+  content: '📎';
+  font-size: 1rem;
+  flex-shrink: 0;
 }
 
 .file-input.is-placeholder {
   color: var(--muted);
 }
 
+/* ─── Invalid State ─────────────────────────────────────────────── */
 .input.invalid,
 textarea.invalid,
 .file-input.invalid {
-  border-color: #e11d48;
-  background: #fff7f7;
+  border-color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 6%, var(--surface));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 12%, transparent);
 }
 
+/* ─── Textarea ──────────────────────────────────────────────────── */
 textarea {
   min-height: 140px;
   resize: vertical;
 }
 
+/* ─── Actions Row ───────────────────────────────────────────────── */
 .actions {
   display: flex;
   gap: var(--space-sm);
@@ -107,35 +202,73 @@ textarea {
   align-items: center;
 }
 
+/* ─── Buttons ───────────────────────────────────────────────────── */
 .btn {
   background: var(--primary);
   color: var(--primary-contrast);
-  padding: 10px 16px;
+  padding: 10px 22px;
   border-radius: 10px;
   font-weight: 700;
+  font-size: 1rem;
+  font-family: inherit;
   border: none;
   cursor: pointer;
+  line-height: 1.2;
+  transition:
+    filter 0.18s ease,
+    transform 0.12s ease,
+    box-shadow 0.18s ease;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--primary) 30%, transparent);
+}
+
+.btn:hover:not(:disabled) {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--primary) 35%, transparent);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(0);
+  filter: brightness(0.95);
 }
 
 .btn.ghost {
   background: transparent;
-  border: 1px solid rgba(2, 6, 23, 0.06);
+  border: 1.5px solid color-mix(in srgb, var(--muted) 30%, transparent);
   color: var(--text);
+  box-shadow: none;
+}
+
+.btn.ghost:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--muted) 10%, transparent);
+  border-color: var(--muted);
+  filter: none;
 }
 
 .btn:disabled {
   cursor: not-allowed;
-  opacity: 0.65;
+  opacity: 0.55;
+  transform: none;
 }
 
+/* ─── Field / Form Errors ───────────────────────────────────────── */
 .field-error,
 .form-error {
-  color: #be123c;
+  color: var(--danger);
   font-size: 0.78rem;
-  line-height: 1.2;
-  margin: -4px 0 4px;
+  line-height: 1.3;
+  margin: 2px 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
+.field-error::before {
+  content: '⚠';
+  font-size: 0.75rem;
+}
+
+/* ─── Responsive ────────────────────────────────────────────────── */
 @media (max-width: 880px) {
   .form-grid {
     grid-template-columns: 1fr;
@@ -148,30 +281,67 @@ textarea {
   }
 }
 
-/* ReactQuill overrides to match Material Design system / .input class */
+@media (max-width: 480px) {
+  .create-food-page {
+    padding: var(--space-md);
+  }
+
+  .card {
+    padding: var(--space-lg) var(--space-md);
+    border-radius: 14px;
+  }
+
+  .card h2 {
+    font-size: 1.6rem;
+  }
+}
+
+/* ─── ReactQuill Overrides ──────────────────────────────────────── */
 .quill-container {
   width: 100%;
+  overflow: hidden;
+  max-width: 100%;
+  border-radius: 10px;
+  transition: box-shadow 0.2s ease;
+}
+
+.quill-container:focus-within {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 15%, transparent);
 }
 
 .quill-container .ql-toolbar.ql-snow {
-  border: 1px solid rgba(2, 6, 23, 0.06);
-  border-bottom: 1px solid rgba(2, 6, 23, 0.04);
+  border: 1.5px solid color-mix(in srgb, var(--muted) 22%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--muted) 12%, transparent);
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
-  background: color-mix(in srgb, var(--surface) 88%, transparent);
-  padding: 10px 14px;
+  background: color-mix(in srgb, var(--bg) 70%, var(--surface));
+  padding: 8px 12px;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.quill-container:focus-within .ql-toolbar.ql-snow {
+  border-color: var(--primary);
+  border-bottom-color: color-mix(in srgb, var(--primary) 25%, transparent);
+  background: color-mix(in srgb, var(--primary) 4%, var(--surface));
 }
 
 .quill-container .ql-container.ql-snow {
   min-height: 140px;
-  border: 1px solid rgba(2, 6, 23, 0.06);
+  border: 1.5px solid color-mix(in srgb, var(--muted) 22%, transparent);
   border-top: none;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
-  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  background: color-mix(in srgb, var(--bg) 70%, var(--surface));
   color: var(--text);
   font-family: inherit;
   font-size: 1rem;
+  overflow: hidden;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.quill-container:focus-within .ql-container.ql-snow {
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 4%, var(--surface));
 }
 
 .quill-container .ql-editor {
@@ -179,15 +349,46 @@ textarea {
   min-height: 140px;
   font-family: inherit;
   font-size: 0.95rem;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: pre-wrap;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
-/* Invalid state */
+.quill-container .ql-editor.ql-blank::before {
+  color: var(--muted);
+  font-style: normal;
+}
+
+/* Toolbar icon colors for dark mode */
+@media (prefers-color-scheme: dark) {
+  .quill-container .ql-toolbar .ql-stroke {
+    stroke: var(--text);
+  }
+  .quill-container .ql-toolbar .ql-fill {
+    fill: var(--text);
+  }
+  .quill-container .ql-toolbar .ql-picker {
+    color: var(--text);
+  }
+  .quill-container .ql-toolbar .ql-picker-options {
+    background: var(--surface);
+    border-color: color-mix(in srgb, var(--muted) 30%, transparent);
+  }
+}
+
+/* ─── Invalid State (Quill) ─────────────────────────────────────── */
 .quill-container.invalid .ql-toolbar.ql-snow,
 .quill-container.invalid .ql-container.ql-snow {
-  border-color: #e11d48;
-  background: #fff7f7;
+  border-color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 6%, var(--surface));
 }
 
 .quill-container.invalid .ql-toolbar.ql-snow {
-  border-bottom-color: rgba(225, 29, 72, 0.2);
+  border-bottom-color: color-mix(in srgb, var(--danger) 20%, transparent);
+}
+
+.quill-container.invalid {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 12%, transparent);
 }
