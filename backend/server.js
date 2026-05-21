@@ -5,9 +5,10 @@ const connectDB = require('./src/db/db');
 const PORT = process.env.PORT || 3000;
 
 console.log("Loaded URI:", process.env.MONGO_URI);
-connectDB();
-
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+(async () => {
+  await connectDB();
+  
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+})();

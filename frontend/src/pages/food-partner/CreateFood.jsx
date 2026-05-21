@@ -118,7 +118,6 @@ const CreateFood = () => {
     } finally {
       setIsSubmitting(false)
     }
-
   }
 
   return (

@@ -1,26 +1,48 @@
+const mongoose = require('mongoose');
 const foodPartnerModel = require('../models/foodpartner.model');
 const foodModel = require('../models/food.model');
+const { getOrSetCache } = require('../services/redis.service');
 
-async function getFoodPartnerById(req, res) {
+async function getFoodPartnerById(req, res, next) {
+  try {
     const foodPartnerId = req.params.id;
 
-    const foodPartner = await foodPartnerModel.findById(foodPartnerId);
+    if (!mongoose.isValidObjectId(foodPartnerId)) {
+      return res.status(404).json({ message: 'Food partner not found' });
+    }
 
-    const foodItemsByFoodPartner = await foodModel.find({ foodPartner: foodPartnerId });
+    const cacheKey = `partner:${foodPartnerId}`;
+    const { data: foodPartnerData, cache } = await getOrSetCache(
+      cacheKey,
+      async () => {
+        const foodPartner = await foodPartnerModel.findById(foodPartnerId);
+        if (!foodPartner) return null;
 
-    if (!foodPartner) {
-        return res.status(404).json({ message: 'Food partner not found' });
-    }   
+        const foodItemsByFoodPartner = await foodModel.find({
+          foodPartner: foodPartnerId,
+        });
+
+        return {
+          ...foodPartner.toObject(),
+          foodItems: foodItemsByFoodPartner,
+        };
+      },
+      300
+    );
+
+    if (!foodPartnerData) {
+      return res.status(404).json({ message: 'Food partner not found' });
+    }
+
+    res.setHeader('X-Cache', cache);
     res.status(200).json({
-        foodPartner:{
-            ...foodPartner.toObject(),
-            foodItems: foodItemsByFoodPartner
-        }
+      foodPartner: foodPartnerData,
     });
-
+  } catch (error) {
+    next(error);
+  }
 }
 
-
 module.exports = {
-    getFoodPartnerById,
+  getFoodPartnerById,
 };

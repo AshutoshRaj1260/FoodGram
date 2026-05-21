@@ -1,13 +1,22 @@
 const mongoose = require('mongoose');
 
-function connectDB(){
-    mongoose.connect(process.env.MONGO_URI)
-    .then(() => {
+async function connectDB() {
+    try {
+        await mongoose.connect(process.env.MONGO_URI);
         console.log("Connected to MongoDB");
-    })
-    .catch((err) => {
-        console.error("Error connecting to MongoDB", err);
-    });
+
+        // Ensure collections are created for transactions
+        const likeModel = require('../models/likes.model');
+        const saveModel = require('../models/save.model');
+
+        await Promise.all([
+            likeModel.createCollection(),
+            saveModel.createCollection()
+        ]);
+        console.log("Collections initialized for transactions");
+    } catch (err) {
+        console.error("Error connecting to MongoDB or initializing collections:", err);
+    }
 }
 
 module.exports = connectDB;

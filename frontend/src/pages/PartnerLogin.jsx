@@ -75,7 +75,7 @@ export default function PartnerLogin() {
     setIsSubmitting(true);
 
     try {
-      const response = await axios.post(
+      await axios.post(
         `/api/auth/foodpartner/login`,
         {
           email: formData.email.trim(),
@@ -83,12 +83,10 @@ export default function PartnerLogin() {
         },
         {
           withCredentials: true,
-        },
+        }
       );
 
-      console.log(response.data);
       localStorage.setItem("userType", "partner");
-      console.log(localStorage.getItem("userType"));
       navigate("/create-food");
     } catch (err) {
       console.log(err.response?.data?.message);
