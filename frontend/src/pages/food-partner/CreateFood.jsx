@@ -89,7 +89,7 @@ const CreateFood = () => {
     }))
   }
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const onSubmit = async (e) => {
     e.preventDefault()
@@ -100,19 +100,19 @@ const CreateFood = () => {
       return
     }
 
-    const formData = new FormData();
+    const formData = new FormData()
 
-    formData.append('name', formValues.name.trim());
-    formData.append('description', formValues.description.trim());
-    formData.append('video', formValues.video);
+    formData.append('name', formValues.name.trim())
+    formData.append('description', formValues.description.trim())
+    formData.append('video', formValues.video)
 
     setIsSubmitting(true)
 
     try {
       await axios.post(`/api/food`, formData, {
         withCredentials: true,
-      });
-      navigate('/');
+      })
+      navigate('/')
     } catch (err) {
       setFormMessage(err.response?.data?.message || 'Unable to create this meal. Please try again.')
     } finally {
@@ -128,7 +128,10 @@ const CreateFood = () => {
         <form className="form-grid" onSubmit={onSubmit} noValidate>
           <div className="form">
             <label className="label">Video</label>
-            <label className={`file-input input ${!formValues.video ? 'is-placeholder' : ''} ${shouldShowError('video') ? 'invalid' : ''}`} htmlFor="videoInput">
+            <label
+              className={`file-input input ${!formValues.video ? 'is-placeholder' : ''} ${shouldShowError('video') ? 'invalid' : ''}`}
+              htmlFor="videoInput"
+            >
               {formValues.video ? formValues.video.name : 'Choose video file'}
             </label>
             <input
@@ -180,9 +183,13 @@ const CreateFood = () => {
               <button className="btn" type="submit" disabled={isFormInvalid || isSubmitting}>
                 {isSubmitting ? 'Creating...' : 'Create'}
               </button>
-              <button className="btn ghost" type="button">
-                <Link to="/home" style={{ textDecoration: 'none' }} >Cancel</Link>
-              </button>
+              <Link
+                to="/"
+                className="btn ghost"
+                style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
+              >
+                Cancel
+              </Link>
             </div>
           </div>
 
@@ -194,7 +201,10 @@ const CreateFood = () => {
                 <img src={preview.url} alt="preview" />
               )
             ) : (
-              <div style={{ color: 'rgba(255,255,255,0.7)', padding: 20 }}>Video preview will appear here</div>
+              <>
+                <span className="preview-placeholder-icon">🎬</span>
+                <p className="preview-placeholder-text">Video preview will appear here</p>
+              </>
             )}
           </div>
         </form>
