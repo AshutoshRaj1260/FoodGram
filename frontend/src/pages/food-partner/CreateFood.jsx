@@ -12,6 +12,7 @@ const CreateFood = () => {
     name: '',
     description: '',
     video: null,
+    tags: [],
   })
   const [touched, setTouched] = useState({})
   const [submitAttempted, setSubmitAttempted] = useState(false)
@@ -90,7 +91,18 @@ const CreateFood = () => {
   }
 
   const navigate = useNavigate()
+  const toggleTag = (tag) => {
+    setFormValues((current) => {
+      const alreadySelected = current.tags.includes(tag)
 
+      return {
+        ...current,
+        tags: alreadySelected
+          ? current.tags.filter((t) => t !== tag)
+          : [...current.tags, tag],
+      }
+    })
+  }
   const onSubmit = async (e) => {
     e.preventDefault()
     setSubmitAttempted(true)
@@ -105,6 +117,7 @@ const CreateFood = () => {
     formData.append('name', formValues.name.trim())
     formData.append('description', formValues.description.trim())
     formData.append('video', formValues.video)
+    formData.append('tags', JSON.stringify(formValues.tags))
 
     setIsSubmitting(true)
 
@@ -174,8 +187,40 @@ const CreateFood = () => {
               />
             </div>
             {shouldShowError('description') && (
-              <p className="field-error" id="description-error">{errors.description}</p>
-            )}
+            <p className="field-error" id="description-error">{errors.description}</p>
+          )}
+
+          <label className="label">Mood Tags</label>
+          <div className="mood-tags">
+           <button
+            type="button"
+            className={formValues.tags.includes('Spicy') ? 'active-tag' : ''}
+            onClick={() => toggleTag('Spicy')}
+          >
+            Spicy
+          </button>
+            <button
+            type="button"
+            className={formValues.tags.includes('Sweet') ? 'active-tag' : ''}
+            onClick={() => toggleTag('Sweet')}
+          >
+            Sweet
+          </button>
+            <button
+              type="button"
+              className={formValues.tags.includes('Healthy') ? 'active-tag' : ''}
+              onClick={() => toggleTag('Healthy')}
+            >
+              Healthy
+            </button>
+            <button
+            type="button"
+            className={formValues.tags.includes('Street Food') ? 'active-tag' : ''}
+            onClick={() => toggleTag('Street Food')}
+          >
+            Street Food
+          </button>
+          </div>
 
             {formMessage && <p className="form-error">{formMessage}</p>}
 

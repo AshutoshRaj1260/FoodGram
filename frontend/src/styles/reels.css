@@ -289,3 +289,29 @@
     padding: 40px 8px 14px 8px;
   }
 }
+
+.mood-filter {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 12px;
+  scrollbar-width: none;
+}
+
+.mood-filter::-webkit-scrollbar {
+  display: none;
+}
+
+.mood-filter button {
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  white-space: nowrap;
+  background: #f1f1f1;
+}
+
+.mood-filter button:hover {
+  background: #ff7a00;
+  color: white;
+}

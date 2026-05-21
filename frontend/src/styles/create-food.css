@@ -391,3 +391,23 @@ textarea {
 .quill-container.invalid {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 12%, transparent);
 }
+
+.mood-tags {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.mood-tags button {
+  border: none;
+  padding: 8px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  background: #f1f1f1;
+}
+
+.mood-tags button.active-tag {
+  background: #ff7a00;
+  color: white;
+}

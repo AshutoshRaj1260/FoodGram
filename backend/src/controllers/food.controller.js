@@ -14,6 +14,7 @@ async function createFood(req, res, next) {
       name: req.body.name,
       video: fileUploadResult.url,
       description: req.body.description,
+      tags: req.body.tags ? JSON.parse(req.body.tags) : [],
       foodPartner: req.foodPartner._id,
     });
 
@@ -31,9 +32,11 @@ async function createFood(req, res, next) {
 
 async function getFoodItems(req, res, next) {
   try {
+    const mood = req.query.mood
+    const query = mood ? { tags: mood } : {}
     const { data: foodItems, cache } = await getOrSetCache(
       "all_food_items",
-      async () => await foodModel.find({}),
+      async () => await foodModel.find(query).limit(10),
       300
     );
 

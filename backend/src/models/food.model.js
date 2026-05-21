@@ -12,6 +12,10 @@ const foodSchema = new mongoose.Schema({
     description: {
         type: String,
     },
+    tags: {
+    type: [String],
+    default: []
+    },
     foodPartner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "foodpartner",

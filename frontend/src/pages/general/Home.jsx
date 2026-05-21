@@ -16,6 +16,7 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeVideoId, setActiveVideoId] = useState(null);
+  const [selectedMood, setSelectedMood] = useState('');
   const containerRef = useRef(null);
 
   const userType = localStorage.getItem("userType") || "user";
@@ -29,7 +30,7 @@ const Home = () => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await axios.get(`${API_URL}/api/food`, {
+        const response = await axios.get(`${API_URL}/api/food?mood=${selectedMood}`, {
           withCredentials: true
         });
 
@@ -55,7 +56,7 @@ const Home = () => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [selectedMood]);
 
   // Handle URL ID scrolling
   useEffect(() => {
@@ -161,6 +162,26 @@ const Home = () => {
         </div>
       );
     }
+
+    <div className="mood-filter">
+      <button onClick={() => setSelectedMood('')}>All</button>
+
+      <button onClick={() => setSelectedMood('Spicy')}>
+        Spicy
+      </button>
+
+      <button onClick={() => setSelectedMood('Sweet')}>
+        Sweet
+      </button>
+
+      <button onClick={() => setSelectedMood('Healthy')}>
+        Healthy
+      </button>
+
+      <button onClick={() => setSelectedMood('Street Food')}>
+        Street Food
+      </button>
+    </div>
 
     return videos.map((item) => (
       <article
