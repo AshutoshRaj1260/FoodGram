@@ -89,29 +89,43 @@ async function invalidateCache(key) {
  */
 async function invalidateCachePattern(pattern) {
   if (!redis || redis.status !== 'ready') return;
-  try {
-    const stream = redis.scanStream({
-      match: pattern,
-      count: 100, // Process in small chunks to prevent performance impacts
-    });
+  return new Promise((resolve, reject) => {
+    try {
+      const stream = redis.scanStream({
+        match: pattern,
+        count: 100, // Process in small chunks to prevent performance impacts
+      });
 
-    stream.on('data', async (keys) => {
-      if (keys.length > 0) {
-        try {
-          await redis.del(keys);
-          console.log(`Cache Pattern Invalidated (${pattern}): deleted ${keys.length} keys`);
-        } catch (delErr) {
-          console.error(`Error deleting scanned keys for pattern ${pattern}:`, delErr);
+      const deletionPromises = [];
+
+      stream.on('data', (keys) => {
+        if (keys.length > 0) {
+          const p = redis.del(keys).catch((delErr) => {
+            console.error(`Error deleting scanned keys for pattern ${pattern}:`, delErr);
+          });
+          deletionPromises.push(p);
         }
-      }
-    });
+      });
 
-    stream.on('error', (err) => {
-      console.error(`SCAN stream error for pattern ${pattern}:`, err);
-    });
-  } catch (err) {
-    console.error(`Invalidate Cache Pattern Error for pattern ${pattern}:`, err);
-  }
+      stream.on('end', async () => {
+        try {
+          await Promise.all(deletionPromises);
+          console.log(`Cache Pattern Invalidated (${pattern}): successfully completed deletion`);
+          resolve();
+        } catch (err) {
+          reject(err);
+        }
+      });
+
+      stream.on('error', (err) => {
+        console.error(`SCAN stream error for pattern ${pattern}:`, err);
+        reject(err);
+      });
+    } catch (err) {
+      console.error(`Invalidate Cache Pattern Error for pattern ${pattern}:`, err);
+      reject(err);
+    }
+  });
 }
 
 module.exports = {

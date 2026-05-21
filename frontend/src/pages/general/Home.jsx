@@ -48,6 +48,8 @@ const Home = () => {
           } else {
             // Fallback for safety/backward compatibility
             setVideos(response.data?.foodItems || []);
+            setNextCursor(null);
+            setHasMore(false);
           }
         }
       } catch (err) {
@@ -91,9 +93,12 @@ const Home = () => {
         });
         setNextCursor(data.nextCursor);
         setHasMore(data.hasMore);
+      } else {
+        setHasMore(false);
       }
     } catch (err) {
       console.error("Failed to fetch next page of food items:", err.response?.data || err.message);
+      setHasMore(false);
     } finally {
       setIsFetching(false);
     }

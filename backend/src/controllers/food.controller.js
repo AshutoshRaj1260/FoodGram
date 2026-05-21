@@ -32,7 +32,9 @@ async function createFood(req, res, next) {
 async function getFoodItems(req, res, next) {
   try {
     const cursor = req.query.cursor;
-    const limit = parseInt(req.query.limit, 10) || 10;
+    let limit = parseInt(req.query.limit, 10) || 10;
+    if (limit <= 0) limit = 10;
+    if (limit > 50) limit = 50; // Cap at 50 to prevent oversized page queries
 
     // Validate cursor format to prevent Mongoose cast errors and return a clean response
     if (cursor && !mongoose.Types.ObjectId.isValid(cursor)) {
