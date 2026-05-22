@@ -5,6 +5,9 @@ const likeModel = require("../models/likes.model");
 const saveModel = require("../models/save.model");
 const storageService = require("../services/storage.service");
 const { invalidateCache, getOrSetCache } = require("../services/redis.service");
+const jwt = require("jsonwebtoken");
+const userModel = require("../models/user.model");
+const axios = require("axios");
 
 async function createFood(req, res, next) {
   try {
@@ -31,17 +34,60 @@ async function createFood(req, res, next) {
 
 async function getFoodItems(req, res, next) {
   try {
-    const { data: foodItems, cache } = await getOrSetCache(
-      "all_food_items",
-      async () => await foodModel.find({}),
+    // Check for optional authentication (accessToken cookie)
+    const accessToken = req.cookies?.accessToken;
+    let user = null;
+
+    if (accessToken) {
+      try {
+        const decoded = jwt.verify(accessToken, process.env.JWT_SECRET);
+        user = await userModel.findById(decoded.id);
+      } catch (err) {
+        user = null;
+      }
+    }
+
+    // If we have an authenticated user with enough interactions, request personalized recommendations
+    if (user) {
+      const userLikes = await likeModel.countDocuments({ user: user._id });
+      const userSaves = await saveModel.countDocuments({ user: user._id });
+      const interactions = userLikes + userSaves;
+
+      // Cold-start handling: require at least 3 interactions
+      if (interactions >= 3) {
+        try {
+          const recommenderUrl = process.env.RECOMMENDER_URL || "http://localhost:8000";
+          const resp = await axios.get(`${recommenderUrl}/recommend/${user._id}`, { params: { n: 50 } , timeout: 180});
+          const recommendedIds = resp?.data?.recommendations || [];
+
+          if (recommendedIds.length > 0) {
+            // Fetch the recommended food items and preserve the recommender order
+            const foods = await foodModel.find({ _id: { $in: recommendedIds } });
+            const orderMap = new Map(recommendedIds.map((id, idx) => [String(id), idx]));
+            foods.sort((a, b) => (orderMap.get(String(a._id)) ?? 9999) - (orderMap.get(String(b._id)) ?? 9999));
+
+            return res.status(200).json({ message: "Personalized feed", foodItems: foods });
+          }
+        } catch (err) {
+          console.error("Recommender service error:", err.message || err);
+          // fall through to trending fallback
+        }
+      }
+    }
+
+    // Trending fallback for guests and cold-start users
+    const { data: trendingItems, cache } = await getOrSetCache(
+      "trending_food_items",
+      async () =>
+        await foodModel
+          .find({})
+          .sort({ likeCount: -1, saveCount: -1, createdAt: -1 })
+          .limit(50),
       300
     );
 
     res.setHeader("X-Cache", cache);
-    res.status(200).json({
-      message: "Food Items fetched successfully",
-      foodItems,
-    });
+    res.status(200).json({ message: "Trending feed", foodItems: trendingItems });
   } catch (error) {
     next(error);
   }

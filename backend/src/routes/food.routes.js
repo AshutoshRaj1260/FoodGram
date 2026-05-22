@@ -15,7 +15,7 @@ router.post(
   foodController.createFood
 );  
 
-router.get("/", authMiddleware.authUserMiddleware, foodController.getFoodItems);
+router.get("/", foodController.getFoodItems);
 
 router.post(
   "/like",
