@@ -106,6 +106,9 @@ def build_matrix():
     data = []
 
     for (u, i), r in interactions.items():
+        if u not in next_user_index or i not in next_item_index:
+            logging.warning("Skipping interaction with missing index: user=%s item=%s", u, i)
+            continue
         rows.append(next_user_index[u])
         cols.append(next_item_index[i])
         data.append(r)
@@ -161,8 +164,23 @@ class RecommendResponse(BaseModel):
     recommendations: list
 
 
+def normalize_limit(value, min_n=1, max_n=100):
+    try:
+        limit = int(value)
+    except (TypeError, ValueError):
+        raise HTTPException(status_code=400, detail="n must be an integer")
+
+    clamped_limit = max(min_n, min(limit, max_n))
+    if clamped_limit != limit:
+        logging.warning("Clamped recommendation limit from %s to %s", limit, clamped_limit)
+
+    return clamped_limit
+
+
 @app.get("/recommend/{user_id}", response_model=RecommendResponse)
 def recommend(user_id: str, n: int = 20):
+    n = normalize_limit(n)
+
     with model_lock:
         current_user_index = user_index
         current_index_item = index_item

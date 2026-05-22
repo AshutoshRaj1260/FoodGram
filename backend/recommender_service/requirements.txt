@@ -1,7 +1,7 @@
-fastapi
-uvicorn[standard]
-pymongo
-scikit-learn
-numpy
-scipy
-python-dotenv
+fastapi>=0.115.0,<0.116.0
+uvicorn>=0.34.0,<0.35.0
+pymongo>=4.10.0,<5.0.0
+scikit-learn>=1.6.0,<1.7.0
+numpy>=2.2.0,<3.0.0
+scipy>=1.15.0,<1.16.0
+python-dotenv>=1.2.2,<2.0.0

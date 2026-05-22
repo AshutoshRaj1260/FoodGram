@@ -22,6 +22,7 @@ async function createFood(req, res, next) {
 
     await invalidateCache(`partner:${req.foodPartner._id}`);
     await invalidateCache("all_food_items");
+    await invalidateCache("trending_food_items");
 
     res.status(201).json({
       message: "Food Item Created Successfully",
@@ -56,8 +57,8 @@ async function getFoodItems(req, res, next) {
       // Cold-start handling: require at least 3 interactions
       if (interactions >= 3) {
         try {
-          const recommenderUrl = process.env.RECOMMENDER_URL || "http://localhost:8000";
-          const resp = await axios.get(`${recommenderUrl}/recommend/${user._id}`, { params: { n: 50 } , timeout: 180});
+          const recommenderUrl = process.env.RECOMMENDER_URL || "http://localhost:8002";
+          const resp = await axios.get(`${recommenderUrl}/recommend/${user._id}`, { params: { n: 50 }, timeout: 2000 });
           const recommendedIds = resp?.data?.recommendations || [];
 
           if (recommendedIds.length > 0) {
@@ -154,6 +155,7 @@ async function likeFood(req, res, next) {
 
       await invalidateCache(`partner:${result.partnerId}`);
       await invalidateCache("all_food_items");
+      await invalidateCache("trending_food_items");
 
       res.status(result.status).json({
         message: result.message,
@@ -241,6 +243,7 @@ async function saveFood(req, res, next) {
 
       await invalidateCache(`partner:${result.partnerId}`);
       await invalidateCache("all_food_items");
+      await invalidateCache("trending_food_items");
 
       res.status(result.status).json({
         message: result.message,
