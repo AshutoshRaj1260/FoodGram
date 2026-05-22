@@ -34,6 +34,7 @@ View detailed information about a restaurant including its profile, uploaded foo
 ### ❤️ Saved Items
 Access your collection of saved food reels for later viewing.
 ![Saved Items](Screenshots/Saved-reels.png)
+
 ---
 
 ## 🛠️ Tech Stack
