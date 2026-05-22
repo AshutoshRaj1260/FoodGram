@@ -31,16 +31,34 @@ async function createFood(req, res, next) {
 
 async function getFoodItems(req, res, next) {
   try {
+    const user = req.user;
+
     const { data: foodItems, cache } = await getOrSetCache(
       "all_food_items",
       async () => await foodModel.find({}),
       300
     );
 
+    const foodIds = foodItems.map(f => f._id);
+
+    const [userLikes, userSaves] = await Promise.all([
+      likeModel.find({ user: user._id, food: { $in: foodIds } }).lean(),
+      saveModel.find({ user: user._id, food: { $in: foodIds } }).lean(),
+    ]);
+
+    const likedSet = new Set(userLikes.map(l => l.food.toString()));
+    const savedSet = new Set(userSaves.map(s => s.food.toString()));
+
+    const enrichedItems = foodItems.map(item => ({
+      ...item.toObject?.() ?? item,
+      liked: likedSet.has(item._id.toString()),
+      saved: savedSet.has(item._id.toString()),
+    }));
+
     res.setHeader("X-Cache", cache);
     res.status(200).json({
       message: "Food Items fetched successfully",
-      foodItems,
+      foodItems: enrichedItems,
     });
   } catch (error) {
     next(error);
@@ -107,7 +125,7 @@ async function likeFood(req, res, next) {
       });
 
       await invalidateCache(`partner:${result.partnerId}`);
-      await invalidateCache("all_food_items");
+      await invalidateCache(`food_items:${user._id}`);
 
       res.status(result.status).json({
         message: result.message,
@@ -194,7 +212,7 @@ async function saveFood(req, res, next) {
       });
 
       await invalidateCache(`partner:${result.partnerId}`);
-      await invalidateCache("all_food_items");
+      await invalidateCache(`food_items:${user._id}`);
 
       res.status(result.status).json({
         message: result.message,

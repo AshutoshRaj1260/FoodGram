@@ -3,8 +3,10 @@ import "../../styles/reels.css";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 import BottomNavBar from "../../components/BottomNavBar";
-import LikeIcon from "@mui/icons-material/FavoriteBorder";
-import BookmarksIcon from "@mui/icons-material/BookmarkBorder";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
 import ReelSkeleton from "../../components/ReelSkeleton";
 import VideoPlayer from "../../components/VideoPlayer";
 import DOMPurify from "dompurify";
@@ -106,43 +108,56 @@ const Home = () => {
   }, [videos]);
 
   const likeVideo = async (item) => {
+    setVideos((prev) =>
+      prev.map((v) =>
+        v._id === item._id
+          ? {
+              ...v,
+              liked: !v.liked,
+              likeCount: v.liked
+                ? Math.max(0, v.likeCount - 1)
+                : v.likeCount + 1,
+            }
+          : v
+      )
+    );
+
     try {
-      const response = await axios.post(
+      await axios.post(
         `${API_URL}/api/food/like`,
         { foodId: item._id },
         { withCredentials: true }
       );
-
-      setVideos((prev) => {
-        if (!Array.isArray(prev)) return [];
-        return prev.map((v) =>
-          v._id === item._id ? { ...v, likeCount: response.data.likeCount } : v,
-        );
-      });
     } catch (err) {
       console.error("Like error:", err.response?.data || err.message);
     }
   };
-
   const saveVideo = async (item) => {
+    setVideos((prev) =>
+      prev.map((v) =>
+        v._id === item._id
+          ? {
+              ...v,
+              saved: !v.saved,
+              saveCount: v.saved
+                ? Math.max(0, v.saveCount - 1)
+                : v.saveCount + 1,
+            }
+          : v
+      )
+    );
+
     try {
-      const response = await axios.post(
+      await axios.post(
         `${API_URL}/api/food/save`,
         { foodId: item._id },
         { withCredentials: true }
       );
-
-      setVideos((prev) => {
-        if (!Array.isArray(prev)) return [];
-        return prev.map((v) =>
-          v._id === item._id ? { ...v, saveCount: response.data.saveCount } : v,
-        );
-      });
     } catch (err) {
       console.error("Save error:", err.response?.data || err.message);
     }
   };
-
+  
   const renderFeed = () => {
     if (isLoading) return <ReelSkeleton count={3} />;
 
@@ -196,7 +211,7 @@ const Home = () => {
               className="control-btn"
               aria-label="Like"
             >
-              <LikeIcon fontSize="large" />
+              {item.liked ? (<FavoriteIcon fontSize="large" style={{ color: "red" }}/>) : (<FavoriteBorderIcon fontSize="large"/>)}
             </button>
             <div className="count">{item?.likeCount || 0}</div>
           </div>
@@ -208,7 +223,7 @@ const Home = () => {
               className="control-btn"
               aria-label="Save"
             >
-              <BookmarksIcon fontSize="large" />
+              {item.saved ? (<BookmarkIcon fontSize="large" style={{ color: "white" }} />) : (<BookmarkBorderIcon fontSize="large" />)}
             </button>
             <div className="count">{item?.saveCount || 0}</div>
           </div>
