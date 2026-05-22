@@ -1202,3 +1202,21 @@ body {
   color: #9ca3af;         
   margin-top: 0.375rem;
 }
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  background: transparent;
+  cursor: pointer;
+
+  color: #ff7a00;
+  padding: 0;
+}
