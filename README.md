@@ -20,20 +20,20 @@ Users can securely log in using their credentials or Google authentication.
 
 ### 📝 Sign Up Page
 New users can create an account using email/password or Google authentication to access the platform.
-![Sign Up Page](Screenshots/Sign up page.png)
+![Sign Up Page](Screenshots/Signup-page.png)
 
 ### 🍔 Food Reels Feed
 Browse engaging food reels from local food partners and discover new restaurants.
-![Food Reels Feed](Screenshots/Food Reels Feed.png)
+![Food Reels Feed](Screenshots/Food-Reels-Feed.png)
 
 ### 🏪 Restaurant Details Page
 View detailed information about a restaurant including its profile, uploaded food reels and offerings.
 
-![Restaurant Details Page](Screenshots/Restaurant Details.png)
+![Restaurant Details Page](Screenshots/Restaurant-Details.png)
 
 ### ❤️ Saved Items
 Access your collection of saved food reels for later viewing.
-![Saved Items](Screenshots/Saved Reels.png)
+![Saved Items](Screenshots/Saved-reels.png)
 ---
 
 ## 🛠️ Tech Stack
