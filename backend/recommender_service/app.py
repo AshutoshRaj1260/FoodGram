@@ -239,3 +239,8 @@ def rebuild_model():
         return {"status": "ok"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/health")
+def health_check():
+    """Lightweight endpoint for uptime monitoring to keep the service awake."""
+    return {"status": "ok"}
