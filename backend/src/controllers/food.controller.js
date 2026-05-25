@@ -5,6 +5,9 @@ const likeModel = require("../models/likes.model");
 const saveModel = require("../models/save.model");
 const storageService = require("../services/storage.service");
 const { invalidateCache, getOrSetCache } = require("../services/redis.service");
+const jwt = require("jsonwebtoken");
+const userModel = require("../models/user.model");
+const axios = require("axios");
 
 async function createFood(req, res, next) {
   try {
@@ -20,6 +23,7 @@ async function createFood(req, res, next) {
 
     await invalidateCache(`partner:${req.foodPartner._id}`);
     await invalidateCache("all_food_items");
+    await invalidateCache("trending_food_items");
 
     res.status(201).json({
       message: "Food Item Created Successfully",
@@ -41,10 +45,7 @@ async function getFoodItems(req, res, next) {
     );
 
     res.setHeader("X-Cache", cache);
-    res.status(200).json({
-      message: "Food Items fetched successfully",
-      foodItems,
-    });
+    res.status(200).json({ message: "Trending feed", foodItems: trendingItems });
   } catch (error) {
     next(error);
   }
@@ -111,6 +112,7 @@ async function likeFood(req, res, next) {
 
       await invalidateCache(`partner:${result.partnerId}`);
       await invalidateCache("all_food_items");
+      await invalidateCache("trending_food_items");
 
       res.status(result.status).json({
         message: result.message,
@@ -198,6 +200,7 @@ async function saveFood(req, res, next) {
 
       await invalidateCache(`partner:${result.partnerId}`);
       await invalidateCache("all_food_items");
+      await invalidateCache("trending_food_items");
 
       res.status(result.status).json({
         message: result.message,

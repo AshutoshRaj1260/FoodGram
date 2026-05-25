@@ -8,6 +8,8 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import PersonOutlineIcon from "@mui/icons-material/Person";
 import BrandLogo from "/brandLogo.png";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import {
   hasErrors,
   validateEmail,
@@ -26,6 +28,7 @@ export default function UserRegister({ onFlash }) {
   const [touched, setTouched] = useState({});
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const errors = useMemo(
     () => ({
@@ -200,7 +203,7 @@ export default function UserRegister({ onFlash }) {
                   <input
                     id="password"
                     name="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     maxLength={64}
                     value={formData.password}
                     onChange={handleChange}
@@ -210,6 +213,17 @@ export default function UserRegister({ onFlash }) {
                     aria-invalid={shouldShowError("password")}
                     aria-describedby="password-error password-help"
                   />
+                  <button
+                    type="button"
+                    className="password-toggle"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <VisibilityOffOutlinedIcon fontSize="small" />
+                    ) : (
+                      <VisibilityOutlinedIcon fontSize="small" />
+                    )}
+                  </button>
                 </div>
                 {shouldShowError("password") && (
                   <p className="field-error" id="password-error">{errors.password}</p>
