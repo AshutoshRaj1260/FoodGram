@@ -240,7 +240,7 @@ def rebuild_model():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/health")
+@app.api_route("/health", methods=["GET", "HEAD"])
 def health_check():
     """Lightweight endpoint for uptime monitoring to keep the service awake."""
     return {"status": "ok"}
