@@ -16,32 +16,40 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeVideoId, setActiveVideoId] = useState(null);
-  const [selectedMood, setSelectedMood] = useState('');
+  const [selectedMood, setSelectedMood] = useState("");
+
   const containerRef = useRef(null);
 
   const userType = localStorage.getItem("userType") || "user";
   const { id } = useParams();
 
-  // Fetch videos
+  // Fetch Videos
   useEffect(() => {
     let isMounted = true;
 
     const fetchVideos = async () => {
       setIsLoading(true);
       setError(null);
+
       try {
-        const response = await axios.get(`${API_URL}/api/food?mood=${selectedMood}`, {
-          withCredentials: true
-        });
+        const response = await axios.get(
+          `${API_URL}/api/food`,
+          {
+            params: selectedMood
+              ? { mood: selectedMood }
+              : {},
+            withCredentials: true,
+          }
+        );
 
         if (isMounted) {
-          // Safeguard: Ensure we set an array even if api returns undefined/null
           setVideos(response.data?.foodItems || []);
         }
       } catch (err) {
+        console.error("Feed fetch error:", err);
+
         if (isMounted) {
-          console.error("Failed to fetch food items:", err.response?.data || err.message);
-          setError("Failed to load feed. Please try again later.");
+          setError("Failed to load feed.");
           setVideos([]);
         }
       } finally {
@@ -58,21 +66,24 @@ const Home = () => {
     };
   }, [selectedMood]);
 
-  // Handle URL ID scrolling
+  // Scroll to reel by URL id
   useEffect(() => {
     if (!id || !Array.isArray(videos) || videos.length === 0) return;
 
     const index = videos.findIndex((v) => v._id === id);
+
     if (index !== -1 && containerRef.current) {
       const el = containerRef.current.querySelectorAll(".reel")[index];
       el?.scrollIntoView({ behavior: "smooth" });
     }
   }, [id, videos]);
 
-  // Intersection Observer for autoplay
+  // Auto-play visible reel
   useEffect(() => {
     const container = containerRef.current;
-    if (!container || !Array.isArray(videos) || videos.length === 0) return;
+
+    if (!container || !Array.isArray(videos) || videos.length === 0)
+      return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -86,6 +97,7 @@ const Home = () => {
 
         entries.forEach((entry) => {
           const vid = entry.target.querySelector("video");
+
           if (!vid) return;
 
           if (!entry.isIntersecting || entry.intersectionRatio < 0.25) {
@@ -97,15 +109,17 @@ const Home = () => {
         root: container,
         rootMargin: "0px",
         threshold: [0, 0.25, 0.6, 0.75, 1],
-      },
+      }
     );
 
     const reels = container.querySelectorAll(".reel");
+
     reels.forEach((r) => observer.observe(r));
 
     return () => observer.disconnect();
   }, [videos]);
 
+  // Like Reel
   const likeVideo = async (item) => {
     try {
       const response = await axios.post(
@@ -114,17 +128,22 @@ const Home = () => {
         { withCredentials: true }
       );
 
-      setVideos((prev) => {
-        if (!Array.isArray(prev)) return [];
-        return prev.map((v) =>
-          v._id === item._id ? { ...v, likeCount: response.data.likeCount } : v,
-        );
-      });
+      setVideos((prev) =>
+        prev.map((v) =>
+          v._id === item._id
+            ? {
+                ...v,
+                likeCount: response.data.likeCount,
+              }
+            : v
+        )
+      );
     } catch (err) {
-      console.error("Like error:", err.response?.data || err.message);
+      console.error("Like error:", err);
     }
   };
 
+  // Save Reel
   const saveVideo = async (item) => {
     try {
       const response = await axios.post(
@@ -133,23 +152,35 @@ const Home = () => {
         { withCredentials: true }
       );
 
-      setVideos((prev) => {
-        if (!Array.isArray(prev)) return [];
-        return prev.map((v) =>
-          v._id === item._id ? { ...v, saveCount: response.data.saveCount } : v,
-        );
-      });
+      setVideos((prev) =>
+        prev.map((v) =>
+          v._id === item._id
+            ? {
+                ...v,
+                saveCount: response.data.saveCount,
+              }
+            : v
+        )
+      );
     } catch (err) {
-      console.error("Save error:", err.response?.data || err.message);
+      console.error("Save error:", err);
     }
   };
 
   const renderFeed = () => {
-    if (isLoading) return <ReelSkeleton count={3} />;
+    if (isLoading) {
+      return <ReelSkeleton count={3} />;
+    }
 
     if (error) {
       return (
-        <div style={{ textAlign: "center", padding: "2rem", color: "#ff4d4f" }}>
+        <div
+          style={{
+            textAlign: "center",
+            padding: "2rem",
+            color: "#ff4d4f",
+          }}
+        >
           {error}
         </div>
       );
@@ -157,96 +188,143 @@ const Home = () => {
 
     if (!Array.isArray(videos) || videos.length === 0) {
       return (
-        <div style={{ textAlign: "center", padding: "2rem", color: "#666" }}>
-          No reels found. Check back later!
+        <div
+          style={{
+            textAlign: "center",
+            padding: "2rem",
+            color: "#666",
+          }}
+        >
+          No reels found for this mood.
         </div>
       );
     }
 
-    <div className="mood-filter">
-      <button onClick={() => setSelectedMood('')}>All</button>
+    return (
+      <>
+        {/* Mood Filter */}
+        <div className="mood-filter">
+          <button
+            className={!selectedMood ? "active" : ""}
+            onClick={() => setSelectedMood("")}
+          >
+            All
+          </button>
 
-      <button onClick={() => setSelectedMood('Spicy')}>
-        Spicy
-      </button>
+          <button
+            className={selectedMood === "Spicy" ? "active" : ""}
+            onClick={() => setSelectedMood("Spicy")}
+          >
+            Spicy
+          </button>
 
-      <button onClick={() => setSelectedMood('Sweet')}>
-        Sweet
-      </button>
+          <button
+            className={selectedMood === "Sweet" ? "active" : ""}
+            onClick={() => setSelectedMood("Sweet")}
+          >
+            Sweet
+          </button>
 
-      <button onClick={() => setSelectedMood('Healthy')}>
-        Healthy
-      </button>
+          <button
+            className={selectedMood === "Healthy" ? "active" : ""}
+            onClick={() => setSelectedMood("Healthy")}
+          >
+            Healthy
+          </button>
 
-      <button onClick={() => setSelectedMood('Street Food')}>
-        Street Food
-      </button>
-    </div>
-
-    return videos.map((item) => (
-      <article
-        className="reel"
-        key={item._id}
-        role="listitem"
-        data-video-id={item._id}
-      >
-        <VideoPlayer
-          src={activeVideoId === item._id ? item.video : null}
-        />
-
-        <div className="overlay">
-          <div 
-            className="description" 
-            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item?.description || "") }} 
-          />
-          {item?.foodPartner && (
-            <Link
-              className="visit-btn"
-              to={`/food-partner/${item.foodPartner}`}
-            >
-              Visit store
-            </Link>
-          )}
+          <button
+            className={selectedMood === "Street Food" ? "active" : ""}
+            onClick={() => setSelectedMood("Street Food")}
+          >
+            Street Food
+          </button>
         </div>
 
-        <div className="controls" aria-hidden="true">
-          <div className="control-item">
-            <button
-              type="button"
-              onClick={() => likeVideo(item)}
-              className="control-btn"
-              aria-label="Like"
-            >
-              <LikeIcon fontSize="large" />
-            </button>
-            <div className="count">{item?.likeCount || 0}</div>
-          </div>
+        {/* Reels */}
+        {videos.map((item) => (
+          <article
+            className="reel"
+            key={item._id}
+            role="listitem"
+            data-video-id={item._id}
+          >
+            <VideoPlayer
+              src={activeVideoId === item._id ? item.video : null}
+            />
 
-          <div className="control-item">
-            <button
-              type="button"
-              onClick={() => saveVideo(item)}
-              className="control-btn"
-              aria-label="Save"
-            >
-              <BookmarksIcon fontSize="large" />
-            </button>
-            <div className="count">{item?.saveCount || 0}</div>
-          </div>
-        </div>
+            <div className="overlay">
+              <div
+                className="description"
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(
+                    item?.description || ""
+                  ),
+                }}
+              />
 
-        <div className="hint">Scroll to view more</div>
-      </article>
-    ));
+              {item?.foodPartner && (
+                <Link
+                  className="visit-btn"
+                  to={`/food-partner/${item.foodPartner}`}
+                >
+                  Visit Store
+                </Link>
+              )}
+            </div>
+
+            <div className="controls" aria-hidden="true">
+              <div className="control-item">
+                <button
+                  type="button"
+                  onClick={() => likeVideo(item)}
+                  className="control-btn"
+                  aria-label="Like"
+                >
+                  <LikeIcon fontSize="large" />
+                </button>
+
+                <div className="count">
+                  {item?.likeCount || 0}
+                </div>
+              </div>
+
+              <div className="control-item">
+                <button
+                  type="button"
+                  onClick={() => saveVideo(item)}
+                  className="control-btn"
+                  aria-label="Save"
+                >
+                  <BookmarksIcon fontSize="large" />
+                </button>
+
+                <div className="count">
+                  {item?.saveCount || 0}
+                </div>
+              </div>
+            </div>
+
+            <div className="hint">
+              Scroll to view more
+            </div>
+          </article>
+        ))}
+      </>
+    );
   };
 
   return (
     <>
       <div className="reel-section">
-        <div className="reels" role="list" ref={containerRef}>
+        <div
+          className="reels"
+          role="list"
+          ref={containerRef}
+        >
           {renderFeed()}
         </div>
       </div>
+
       <BottomNavBar userType={userType} />
     </>
   );
