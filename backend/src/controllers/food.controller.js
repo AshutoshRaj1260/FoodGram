@@ -58,7 +58,7 @@ async function getFoodItems(req, res, next) {
       if (interactions >= 3) {
         try {
           const recommenderUrl = process.env.RECOMMENDER_URL || "http://localhost:8002";
-          const resp = await axios.get(`${recommenderUrl}/recommend/${user._id}`, { params: { n: 50 }, timeout: 2000 });
+          const resp = await axios.get(`${recommenderUrl}/recommend/${user._id}`, { params: { n: 50 }, timeout: 5000 });
           const recommendedIds = resp?.data?.recommendations || [];
 
           if (recommendedIds.length > 0) {
