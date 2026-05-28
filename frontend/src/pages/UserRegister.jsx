@@ -24,6 +24,7 @@ export default function UserRegister({ onFlash }) {
     name: "",
     email: "",
     password: "",
+    confirmPassword: "",
   });
   const [touched, setTouched] = useState({});
   const [submitAttempted, setSubmitAttempted] = useState(false);
@@ -35,6 +36,12 @@ export default function UserRegister({ onFlash }) {
       name: validateRequired(formData.name, "Full name"),
       email: validateEmail(formData.email),
       password: validatePassword(formData.password, { strict: true }),
+      confirmPassword:
+        formData.password && !formData.confirmPassword
+          ? "Please confirm your password"
+          : formData.confirmPassword && formData.password !== formData.confirmPassword
+            ? "Passwords do not match"
+            : "",
     }),
     [formData],
   );
@@ -229,10 +236,31 @@ export default function UserRegister({ onFlash }) {
                   <p className="field-error" id="password-error">{errors.password}</p>
                 )}
                 <p className="psw_info">
-                Must contain at least 8 characters with a number, uppercase letter, and special character.
-              </p>
+                  Must contain at least 8 characters with a number, uppercase letter, and special character.
+                </p>
               </div>
-
+              <div className="auth-field">
+                <label htmlFor="confirmPassword">Confirm Password</label>
+                <div className={`auth-input-wrapper ${shouldShowError("confirmPassword") ? "invalid" : ""}`}>
+                  <LockOutlinedIcon className="auth-input-icon" />
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type={showPassword ? "text" : "password"}
+                    maxLength={64}
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    placeholder="confirm your password"
+                    aria-label="Confirm Password"
+                    aria-invalid={shouldShowError("confirmPassword")}
+                    aria-describedby="confirmPassword-error"
+                  />
+                </div>
+                {shouldShowError("confirmPassword") && (
+                  <p className="field-error" id="confirmPassword-error">{errors.confirmPassword}</p>
+                )}
+              </div>
               <button className="auth-btn" type="submit" disabled={isFormInvalid || isSubmitting}>
                 {isSubmitting ? "Creating account..." : "Create account"}
               </button>
