@@ -245,6 +245,7 @@ export default function UserRegister({ onFlash }) {
                     id="confirmPassword"
                     name="confirmPassword"
                     type={showPassword ? "text" : "password"}
+                    maxLength={64}
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     onBlur={handleBlur}
