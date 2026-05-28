@@ -45,10 +45,12 @@ export default function PartnerRegister({ onFlash }) {
       address: validateRequired(formData.address, "Address"),
       email: validateEmail(formData.email),
       password: validatePassword(formData.password, { strict: true }),
-      confirmPassword:     // <-- ADD THIS TRACKING BLOCK
-        formData.confirmPassword && formData.password !== formData.confirmPassword
-          ? "Passwords do not match"
-          : "",
+      confirmPassword:
+        formData.password && !formData.confirmPassword
+          ? "Please confirm your password"
+          : formData.confirmPassword && formData.password !== formData.confirmPassword
+            ? "Passwords do not match"
+            : "",
     }),
     [formData],
   );
@@ -300,7 +302,7 @@ export default function PartnerRegister({ onFlash }) {
                       className="password-toggle"
                       onClick={() => setShowPassword(!showPassword)}
                       aria-label={showPassword ? "Hide password" : "Show password"}
-aria-pressed={showPassword}
+                      aria-pressed={showPassword}
                     >
                       {showPassword ? (
                         <VisibilityOffOutlinedIcon fontSize="small" />
