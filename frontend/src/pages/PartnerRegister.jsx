@@ -299,6 +299,8 @@ export default function PartnerRegister({ onFlash }) {
                       type="button"
                       className="password-toggle"
                       onClick={() => setShowPassword(!showPassword)}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+aria-pressed={showPassword}
                     >
                       {showPassword ? (
                         <VisibilityOffOutlinedIcon fontSize="small" />
@@ -322,7 +324,7 @@ export default function PartnerRegister({ onFlash }) {
                   <input
                     id="confirmPassword"
                     name="confirmPassword"
-                    type="password" to type={showPassword ? "text" : "password"}
+                    type={showPassword ? "text" : "password"}
                     maxLength={64}
                     value={formData.confirmPassword}
                     onChange={handleChange}
