@@ -3,7 +3,8 @@ import "../../styles/reels.css";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 import BottomNavBar from "../../components/BottomNavBar";
-import LikeIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import BookmarksIcon from "@mui/icons-material/BookmarkBorder";
 import ReelSkeleton from "../../components/ReelSkeleton";
 import VideoPlayer from "../../components/VideoPlayer";
@@ -16,6 +17,7 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeVideoId, setActiveVideoId] = useState(null);
+  const [animatingLikeId, setAnimatingLikeId] = useState(null);
   const containerRef = useRef(null);
 
   const userType = localStorage.getItem("userType") || "user";
@@ -106,6 +108,21 @@ const Home = () => {
   }, [videos]);
 
   const likeVideo = async (item) => {
+    const nextLiked = !item.liked;
+    const nextLikeCount = Math.max((item.likeCount || 0) + (nextLiked ? 1 : -1), 0);
+
+    setAnimatingLikeId(item._id);
+    window.setTimeout(() => {
+      setAnimatingLikeId((currentId) => (currentId === item._id ? null : currentId));
+    }, 260);
+
+    setVideos((prev) => {
+      if (!Array.isArray(prev)) return [];
+      return prev.map((v) =>
+        v._id === item._id ? { ...v, liked: nextLiked, likeCount: nextLikeCount } : v,
+      );
+    });
+
     try {
       const response = await axios.post(
         `${API_URL}/api/food/like`,
@@ -116,11 +133,25 @@ const Home = () => {
       setVideos((prev) => {
         if (!Array.isArray(prev)) return [];
         return prev.map((v) =>
-          v._id === item._id ? { ...v, likeCount: response.data.likeCount } : v,
+          v._id === item._id
+            ? {
+                ...v,
+                liked: response.data.liked,
+                likeCount: response.data.likeCount ?? nextLikeCount,
+              }
+            : v,
         );
       });
     } catch (err) {
       console.error("Like error:", err.response?.data || err.message);
+      setVideos((prev) => {
+        if (!Array.isArray(prev)) return [];
+        return prev.map((v) =>
+          v._id === item._id
+            ? { ...v, liked: item.liked, likeCount: item.likeCount || 0 }
+            : v,
+        );
+      });
     }
   };
 
@@ -162,61 +193,78 @@ const Home = () => {
       );
     }
 
-    return videos.map((item) => (
-      <article
-        className="reel"
-        key={item._id}
-        role="listitem"
-        data-video-id={item._id}
-      >
-        <VideoPlayer
-          src={activeVideoId === item._id ? item.video : null}
-        />
+    return videos.map((item) => {
+      const isLiked = Boolean(item?.liked);
+      const likeButtonClass = [
+        "control-btn",
+        "like-btn",
+        isLiked ? "active" : "",
+        animatingLikeId === item._id ? "pop" : "",
+      ]
+        .filter(Boolean)
+        .join(" ");
 
-        <div className="overlay">
-          <div 
-            className="description" 
-            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item?.description || "") }} 
+      return (
+        <article
+          className="reel"
+          key={item._id}
+          role="listitem"
+          data-video-id={item._id}
+        >
+          <VideoPlayer
+            src={activeVideoId === item._id ? item.video : null}
           />
-          {item?.foodPartner && (
-            <Link
-              className="visit-btn"
-              to={`/food-partner/${item.foodPartner}`}
-            >
-              Visit store
-            </Link>
-          )}
-        </div>
 
-        <div className="controls" aria-hidden="true">
-          <div className="control-item">
-            <button
-              type="button"
-              onClick={() => likeVideo(item)}
-              className="control-btn"
-              aria-label="Like"
-            >
-              <LikeIcon fontSize="large" />
-            </button>
-            <div className="count">{item?.likeCount || 0}</div>
+          <div className="overlay">
+            <div
+              className="description"
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item?.description || "") }}
+            />
+            {item?.foodPartner && (
+              <Link
+                className="visit-btn"
+                to={`/food-partner/${item.foodPartner}`}
+              >
+                Visit store
+              </Link>
+            )}
           </div>
 
-          <div className="control-item">
-            <button
-              type="button"
-              onClick={() => saveVideo(item)}
-              className="control-btn"
-              aria-label="Save"
-            >
-              <BookmarksIcon fontSize="large" />
-            </button>
-            <div className="count">{item?.saveCount || 0}</div>
-          </div>
-        </div>
+          <div className="controls">
+            <div className="control-item">
+              <button
+                type="button"
+                onClick={() => likeVideo(item)}
+                className={likeButtonClass}
+                aria-label={isLiked ? "Unlike" : "Like"}
+                aria-pressed={isLiked}
+              >
+                {isLiked ? (
+                  <FavoriteIcon fontSize="large" />
+                ) : (
+                  <FavoriteBorderIcon fontSize="large" />
+                )}
+              </button>
+              <div className="count">{item?.likeCount || 0}</div>
+            </div>
 
-        <div className="hint">Scroll to view more</div>
-      </article>
-    ));
+            <div className="control-item">
+              <button
+                type="button"
+                onClick={() => saveVideo(item)}
+                className="control-btn"
+                aria-label="Save"
+              >
+                <BookmarksIcon fontSize="large" />
+              </button>
+              <div className="count">{item?.saveCount || 0}</div>
+            </div>
+          </div>
+
+          <div className="hint">Scroll to view more</div>
+        </article>
+      );
+    });
   };
 
   return (

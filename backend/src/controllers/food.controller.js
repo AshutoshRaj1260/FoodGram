@@ -48,6 +48,28 @@ async function getFoodItems(req, res, next) {
       }
     }
 
+    const attachUserLikes = async (foodItems) => {
+      const normalizedFoods = foodItems.map((food) =>
+        typeof food.toObject === "function" ? food.toObject() : food
+      );
+
+      if (!user || foodItems.length === 0) {
+        return normalizedFoods.map((food) => ({ ...food, liked: false }));
+      }
+
+      const foodIds = normalizedFoods.map((food) => food._id);
+      const likes = await likeModel.find(
+        { user: user._id, food: { $in: foodIds } },
+        { food: 1 }
+      );
+      const likedFoodIds = new Set(likes.map((like) => String(like.food)));
+
+      return normalizedFoods.map((food) => ({
+        ...food,
+        liked: likedFoodIds.has(String(food._id)),
+      }));
+    };
+
     // If we have an authenticated user with enough interactions, request personalized recommendations
     if (user) {
       const userLikes = await likeModel.countDocuments({ user: user._id });
@@ -67,7 +89,10 @@ async function getFoodItems(req, res, next) {
             const orderMap = new Map(recommendedIds.map((id, idx) => [String(id), idx]));
             foods.sort((a, b) => (orderMap.get(String(a._id)) ?? 9999) - (orderMap.get(String(b._id)) ?? 9999));
 
-            return res.status(200).json({ message: "Personalized feed", foodItems: foods });
+            return res.status(200).json({
+              message: "Personalized feed",
+              foodItems: await attachUserLikes(foods),
+            });
           }
         } catch (err) {
           console.error("Recommender service error:", err.message || err);
@@ -88,7 +113,10 @@ async function getFoodItems(req, res, next) {
     );
 
     res.setHeader("X-Cache", cache);
-    res.status(200).json({ message: "Trending feed", foodItems: trendingItems });
+    res.status(200).json({
+      message: "Trending feed",
+      foodItems: await attachUserLikes(trendingItems),
+    });
   } catch (error) {
     next(error);
   }

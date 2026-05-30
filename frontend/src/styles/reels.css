@@ -145,6 +145,34 @@
   cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.reel .control-btn:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.95);
+  outline-offset: 3px;
+}
+
+.reel .like-btn svg {
+  transition: transform 0.2s ease;
+}
+
+.reel .like-btn.active {
+  color: var(--danger);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.35);
+}
+
+.reel .like-btn.pop {
+  animation: like-pop 0.26s ease;
+}
+
+.reel .like-btn.pop svg {
+  animation: heart-beat 0.26s ease;
 }
 
 .reel .control-item {
@@ -279,6 +307,42 @@
 }
 
 /* ─── Responsive ────────────────────────────────── */
+@keyframes like-pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes heart-beat {
+  0% {
+    transform: scale(0.85);
+  }
+  55% {
+    transform: scale(1.16);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reel .control-btn,
+  .reel .like-btn svg {
+    transition: none;
+  }
+
+  .reel .like-btn.pop,
+  .reel .like-btn.pop svg {
+    animation: none;
+  }
+}
+
 @media (max-width: 480px) {
   .reel .description {
     max-width: 70%;
