@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import "../../styles/reels.css";
+import "../../styles/cooking-mode.css";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 import BottomNavBar from "../../components/BottomNavBar";
@@ -7,6 +8,7 @@ import LikeIcon from "@mui/icons-material/FavoriteBorder";
 import BookmarksIcon from "@mui/icons-material/BookmarkBorder";
 import ReelSkeleton from "../../components/ReelSkeleton";
 import VideoPlayer from "../../components/VideoPlayer";
+import CookingModeOverlay from "../../components/CookingModeOverlay";
 import DOMPurify from "dompurify";
 
 const API_URL = import.meta.env.VITE_API_URL || "";
@@ -16,6 +18,7 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeVideoId, setActiveVideoId] = useState(null);
+  const [cookingVideo, setCookingVideo] = useState(null); // URL of video in cooking mode
   const containerRef = useRef(null);
 
   const userType = localStorage.getItem("userType") || "user";
@@ -188,7 +191,7 @@ const Home = () => {
           )}
         </div>
 
-        <div className="controls" aria-hidden="true">
+        <div className="controls">
           <div className="control-item">
             <button
               type="button"
@@ -212,6 +215,20 @@ const Home = () => {
             </button>
             <div className="count">{item?.saveCount || 0}</div>
           </div>
+
+          {/* Cook button — launches distraction-free cooking mode */}
+          <div className="control-item">
+            <button
+              id={`cook-btn-${item._id}`}
+              type="button"
+              className="cook-btn"
+              onClick={() => setCookingVideo(item.video)}
+              aria-label="Enter Cooking Mode"
+            >
+              <span className="cook-btn__icon">🍴</span>
+            </button>
+            <span className="cook-btn__label">Cook</span>
+          </div>
         </div>
 
         <div className="hint">Scroll to view more</div>
@@ -227,6 +244,14 @@ const Home = () => {
         </div>
       </div>
       <BottomNavBar userType={userType} />
+
+      {/* Cooking Mode — mounts as a portal-like fixed overlay */}
+      {cookingVideo && (
+        <CookingModeOverlay
+          videoSrc={cookingVideo}
+          onExit={() => setCookingVideo(null)}
+        />
+      )}
     </>
   );
 };

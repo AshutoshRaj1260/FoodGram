@@ -6,7 +6,7 @@ import { hasErrors, validateRequired } from '../../utils/validation'
 import ReactQuill from 'react-quill-new'
 import 'react-quill-new/dist/quill.snow.css'
 
-const CreateFood = () => {
+const CreateFood = ({ onFlash }) => {
   const [preview, setPreview] = useState(null)
   const [formValues, setFormValues] = useState({
     name: '',
@@ -112,7 +112,11 @@ const CreateFood = () => {
       await axios.post(`/api/food`, formData, {
         withCredentials: true,
       })
-      navigate('/')
+
+      if (onFlash) {
+        onFlash('Meal created successfully!', 'success')
+      }
+      navigate('/home')
     } catch (err) {
       setFormMessage(err.response?.data?.message || 'Unable to create this meal. Please try again.')
     } finally {

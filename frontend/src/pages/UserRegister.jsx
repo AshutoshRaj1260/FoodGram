@@ -8,6 +8,8 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import PersonOutlineIcon from "@mui/icons-material/Person";
 import BrandLogo from "/brandLogo.png";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import {
   hasErrors,
   validateEmail,
@@ -22,16 +24,24 @@ export default function UserRegister({ onFlash }) {
     name: "",
     email: "",
     password: "",
+    confirmPassword: "",
   });
   const [touched, setTouched] = useState({});
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const errors = useMemo(
     () => ({
       name: validateRequired(formData.name, "Full name"),
       email: validateEmail(formData.email),
       password: validatePassword(formData.password, { strict: true }),
+      confirmPassword:
+        formData.password && !formData.confirmPassword
+          ? "Please confirm your password"
+          : formData.confirmPassword && formData.password !== formData.confirmPassword
+            ? "Passwords do not match"
+            : "",
     }),
     [formData],
   );
@@ -200,7 +210,7 @@ export default function UserRegister({ onFlash }) {
                   <input
                     id="password"
                     name="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     maxLength={64}
                     value={formData.password}
                     onChange={handleChange}
@@ -210,15 +220,47 @@ export default function UserRegister({ onFlash }) {
                     aria-invalid={shouldShowError("password")}
                     aria-describedby="password-error password-help"
                   />
+                  <button
+                    type="button"
+                    className="password-toggle"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <VisibilityOffOutlinedIcon fontSize="small" />
+                    ) : (
+                      <VisibilityOutlinedIcon fontSize="small" />
+                    )}
+                  </button>
                 </div>
                 {shouldShowError("password") && (
                   <p className="field-error" id="password-error">{errors.password}</p>
                 )}
                 <p className="psw_info">
-                Must contain at least 8 characters with a number, uppercase letter, and special character.
-              </p>
+                  Must contain at least 8 characters with a number, uppercase letter, and special character.
+                </p>
               </div>
-
+              <div className="auth-field">
+                <label htmlFor="confirmPassword">Confirm Password</label>
+                <div className={`auth-input-wrapper ${shouldShowError("confirmPassword") ? "invalid" : ""}`}>
+                  <LockOutlinedIcon className="auth-input-icon" />
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type={showPassword ? "text" : "password"}
+                    maxLength={64}
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    placeholder="confirm your password"
+                    aria-label="Confirm Password"
+                    aria-invalid={shouldShowError("confirmPassword")}
+                    aria-describedby="confirmPassword-error"
+                  />
+                </div>
+                {shouldShowError("confirmPassword") && (
+                  <p className="field-error" id="confirmPassword-error">{errors.confirmPassword}</p>
+                )}
+              </div>
               <button className="auth-btn" type="submit" disabled={isFormInvalid || isSubmitting}>
                 {isSubmitting ? "Creating account..." : "Create account"}
               </button>
