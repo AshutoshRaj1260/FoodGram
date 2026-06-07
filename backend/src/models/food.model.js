@@ -28,6 +28,10 @@ const foodSchema = new mongoose.Schema({
 },
  { timestamps: true });
 
+foodSchema.index({ foodPartner: 1 , createdAt: -1 });
+foodSchema.index({ foodPartner: 1 , likeCount: -1 });
+foodSchema.index({ foodPartner: 1 , saveCount: -1 });
+
 const foodModel = mongoose.model("food", foodSchema);
 
 module.exports = foodModel;

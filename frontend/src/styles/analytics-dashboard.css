@@ -1,0 +1,145 @@
+.analytics-page {
+  min-height: 100vh;
+  padding: var(--space-lg);
+  padding-bottom: 90px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+
+.analytics-header {
+  margin-bottom: var(--space-lg);
+}
+
+.analytics-header h1 {
+  font-size: 28px;
+  margin-bottom: var(--space-xs);
+  color: var(--text);
+}
+
+.analytics-header p {
+  color: var(--muted);
+  font-size: var(--text-size-sm);
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-md);
+}
+
+.analytics-card {
+  min-height: 110px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: var(--space-md);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.analytics-card p {
+  color: var(--muted);
+  font-size: var(--text-size-sm);
+}
+
+.analytics-card h2 {
+  margin-top: var(--space-sm);
+  font-size: 26px;
+  color: var(--text);
+}
+
+.analytics-section {
+  margin-top: var(--space-lg);
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: var(--space-md);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.analytics-section h2 {
+  margin-bottom: var(--space-md);
+  color: var(--text);
+}
+
+.chart-box {
+  width: 100%;
+  height: 300px;
+}
+
+.top-reel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.top-reel:last-child {
+  border-bottom: none;
+}
+
+.top-reel h3 {
+  color: var(--text);
+  font-size: var(--text-size-md);
+}
+
+.top-reel p {
+  color: var(--muted);
+  font-size: var(--text-size-sm);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--muted);
+}
+
+.empty-state h2 {
+  color: var(--text);
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(148, 163, 184, 0.2) 25%,
+    rgba(148, 163, 184, 0.35) 50%,
+    rgba(148, 163, 184, 0.2) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.2s infinite;
+}
+
+.skeleton-card {
+  height: 110px;
+  border-radius: var(--radius);
+}
+
+.skeleton-chart {
+  height: 300px;
+  border-radius: var(--radius);
+  margin-top: var(--space-lg);
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .analytics-page {
+    padding: var(--space-md);
+    padding-bottom: 90px;
+  }
+
+  .analytics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .analytics-header h1 {
+    font-size: 24px;
+  }
+}

@@ -6,6 +6,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import LogoutIcon from "@mui/icons-material/Logout";
 import axios from "axios";
 import AddBoxIcon from '@mui/icons-material/AddBox';
+import BarChartIcon from "@mui/icons-material/BarChart";
 
 const BottomNavBar = ({ userType }) => {
   const navigate = useNavigate();
@@ -52,10 +53,17 @@ const BottomNavBar = ({ userType }) => {
         </button>
 
         {userType === "partner" && (
-          <Link to="/create-food" className="nav-link">
-            <AddBoxIcon />
-            <span>Add food</span>
-          </Link>
+          <>
+            <Link to="/food-partner/analytics" className="nav-link">
+              <BarChartIcon />
+              <span>Analytics</span>
+            </Link>
+
+            <Link to="/create-food" className="nav-link">
+              <AddBoxIcon />
+              <span>Add food</span>
+            </Link>
+          </>
         )}
       </div>
     </nav>

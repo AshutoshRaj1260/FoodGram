@@ -9,6 +9,7 @@ import CreateFood from "../pages/food-partner/CreateFood.jsx";
 import Profile from "../pages/food-partner/Profile.jsx";
 import Saved from "../pages/general/Saved.jsx";
 import { FlashContainer } from "../components/FlashMessage.jsx";
+import AnalyticsDashboard from "../pages/food-partner/AnalyticsDashboard.jsx";
 
 let flashId = 0;
 const AppRoutes = () => {
@@ -36,6 +37,7 @@ const AppRoutes = () => {
                 <Route path="/home" element={<Home />} />
                 <Route path="/reels/:id" element={<Home />} />
                 <Route path="/create-food" element={<CreateFood onFlash={addFlash} />} />
+                <Route path="/food-partner/analytics" element={<AnalyticsDashboard />} />
                 <Route path="/food-partner/:id" element={<Profile />} />
                 <Route path="/saved" element={<Saved />} />
             </Routes>

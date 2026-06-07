@@ -7,6 +7,7 @@ const foodPartnerRoutes = require("./routes/food-partner.routes");
 const passport = require("./services/passport.service");
 const { globalLimiter } = require("./middlewares/rateLimiter.middleware");
 const path = require("path");
+const analyticsRoutes = require("./routes/analytics.routes");
 
 const app = express();
 
@@ -46,6 +47,7 @@ app.get("/api", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/food", foodRoutes);
 app.use("/api/food-partner", foodPartnerRoutes);
+app.use("/api/analytics", analyticsRoutes);
 
 // --- Serve Frontend Static Files ---
 // 1. Point Express to the React/Vite build directory
