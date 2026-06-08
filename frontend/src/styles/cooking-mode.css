@@ -1,0 +1,213 @@
+@import './variables.css';
+
+.cm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #05070f;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  animation: cm-fade-in 0.3s ease;
+}
+
+@keyframes cm-fade-in {
+  from { opacity: 0; transform: scale(1.02); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Exit button */
+.cm-exit-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: var(--danger);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  font-family: inherit;
+  z-index: 10001;
+}
+
+.cm-exit-btn:hover {
+  filter: brightness(0.88);
+  transform: translateY(-1px);
+}
+
+.cm-exit-btn:active {
+  transform: translateY(0);
+}
+
+/* Video container */
+.cm-video-wrapper {
+  position: relative;
+  width: min(600px, 92vw);
+  aspect-ratio: 9 / 16;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #0e1117;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 24px 60px rgba(0, 0, 0, 0.8);
+  cursor: pointer;
+}
+
+.cm-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Paused overlay — shows the ▶ icon */
+.cm-play-indicator {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.35);
+  opacity: 1;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.cm-play-indicator--hidden {
+  opacity: 0;
+}
+
+.cm-play-icon {
+  font-size: 3.5rem;
+  color: rgba(255, 255, 255, 0.9);
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.6));
+}
+
+/* Play / Pause button */
+.cm-playpause-btn {
+  background: var(--primary);
+  color: var(--primary-contrast, #001219);
+  border: none;
+  border-radius: 999px;
+  padding: 14px 36px;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  box-shadow: 0 6px 24px rgba(14, 165, 164, 0.35);
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  font-family: inherit;
+  z-index: 10001;
+}
+
+.cm-playpause-btn:hover {
+  filter: brightness(0.9);
+  transform: translateY(-2px);
+}
+
+.cm-playpause-btn:active {
+  transform: translateY(0);
+}
+
+.cm-label {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  margin: 0;
+  user-select: none;
+  z-index: 10001;
+}
+
+/* Cook button on each reel */
+.cook-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  padding: 0;
+  font-family: inherit;
+}
+
+.cook-btn__icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.75);
+  display: grid;
+  place-items: center;
+  font-size: 1.3rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.62);
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.cook-btn:hover .cook-btn__icon {
+  background: var(--primary);
+  transform: scale(1.08);
+}
+
+.cook-btn__label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* Mobile — video fills the full viewport, controls float on top */
+@media (max-width: 600px) {
+  .cm-overlay {
+    gap: 0;
+    justify-content: flex-start;
+  }
+
+  .cm-video-wrapper {
+    width: 100vw;
+    height: 100dvh;
+    aspect-ratio: unset;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .cm-exit-btn {
+    top: calc(14px + env(safe-area-inset-top, 0px));
+    right: 14px;
+    padding: 8px 16px;
+    font-size: 0.82rem;
+  }
+
+  .cm-playpause-btn {
+    position: absolute;
+    bottom: calc(32px + env(safe-area-inset-bottom, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 14px 40px;
+    font-size: 1rem;
+    white-space: nowrap;
+  }
+
+  .cm-playpause-btn:hover {
+    transform: translateX(-50%) translateY(-2px);
+  }
+
+  .cm-playpause-btn:active {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .cm-label {
+    position: absolute;
+    bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+  }
+}

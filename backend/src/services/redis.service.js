@@ -8,7 +8,12 @@ const redisConfig = {
   port: process.env.REDIS_PORT || 6379,
   password: process.env.REDIS_PASSWORD || undefined,
   retryStrategy: (times) => {
-    // Retry connection after 2, 4, 8, 16... seconds, max 30 seconds
+    // In development without Redis, stop retrying after 3 attempts
+    if (!process.env.REDIS_HOST && times > 3) {
+      console.warn('Redis unavailable — running without cache (development mode).');
+      return null; // Stop retrying
+    }
+    // In production, retry with exponential backoff, max 30 seconds
     const delay = Math.min(times * 1000 * 2, 30000);
     return delay;
   },

@@ -112,6 +112,7 @@ const CreateFood = ({ onFlash }) => {
       await axios.post(`/api/food`, formData, {
         withCredentials: true,
       })
+
       if (onFlash) {
         onFlash('Meal created successfully!', 'success')
       }
