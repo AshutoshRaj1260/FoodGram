@@ -9,3 +9,75 @@ html, body, #root {
   width: 100%;
   font-family: 'Roboto', sans-serif;
 }
+
+/* ==========================================
+   Responsive Enhancements
+   ========================================== */
+
+/* Small Laptops */
+@media screen and (max-width: 992px) {
+  html {
+    font-size: 95%;
+  }
+
+  body {
+    padding: 0 1rem;
+  }
+}
+
+/* Tablets */
+@media screen and (max-width: 768px) {
+  html {
+    font-size: 90%;
+  }
+
+  body {
+    padding: 0 0.75rem;
+  }
+
+  img,
+  video,
+  svg,
+  canvas {
+    max-width: 100%;
+    height: auto;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* Mobile Devices */
+@media screen and (max-width: 480px) {
+  html {
+    font-size: 87.5%;
+  }
+
+  body {
+    padding: 0 0.5rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+    line-height: 1.2;
+  }
+
+  h2 {
+    font-size: 1.6rem;
+    line-height: 1.25;
+  }
+
+  h3 {
+    font-size: 1.3rem;
+  }
+
+  button {
+    width: 100%;
+  }
+}
+
