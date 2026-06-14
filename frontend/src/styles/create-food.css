@@ -360,21 +360,35 @@ textarea {
   font-style: normal;
 }
 
-/* Toolbar icon colors for dark mode */
+/* quill dark mode overrides */
 @media (prefers-color-scheme: dark) {
-  .quill-container .ql-toolbar .ql-stroke {
+  :root:not(.light-theme) .quill-container .ql-toolbar .ql-stroke {
     stroke: var(--text);
   }
-  .quill-container .ql-toolbar .ql-fill {
+  :root:not(.light-theme) .quill-container .ql-toolbar .ql-fill {
     fill: var(--text);
   }
-  .quill-container .ql-toolbar .ql-picker {
+  :root:not(.light-theme) .quill-container .ql-toolbar .ql-picker {
     color: var(--text);
   }
-  .quill-container .ql-toolbar .ql-picker-options {
+  :root:not(.light-theme) .quill-container .ql-toolbar .ql-picker-options {
     background: var(--surface);
     border-color: color-mix(in srgb, var(--muted) 30%, transparent);
   }
+}
+
+.dark-theme .quill-container .ql-toolbar .ql-stroke {
+  stroke: var(--text);
+}
+.dark-theme .quill-container .ql-toolbar .ql-fill {
+  fill: var(--text);
+}
+.dark-theme .quill-container .ql-toolbar .ql-picker {
+  color: var(--text);
+}
+.dark-theme .quill-container .ql-toolbar .ql-picker-options {
+  background: var(--surface);
+  border-color: color-mix(in srgb, var(--muted) 30%, transparent);
 }
 
 /* ─── Invalid State (Quill) ─────────────────────────────────────── */

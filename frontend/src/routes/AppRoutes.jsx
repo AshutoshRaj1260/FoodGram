@@ -9,6 +9,7 @@ import CreateFood from "../pages/food-partner/CreateFood.jsx";
 import Profile from "../pages/food-partner/Profile.jsx";
 import Saved from "../pages/general/Saved.jsx";
 import { FlashContainer } from "../components/FlashMessage.jsx";
+import ThemeToggle from "../components/ThemeToggle.jsx";
 
 let flashId = 0;
 const AppRoutes = () => {
@@ -27,6 +28,7 @@ const AppRoutes = () => {
     return (
         <>
         <FlashContainer flashes={flashes} onDismiss={removeFlash} />
+        <ThemeToggle />
         <Router>
             <Routes>
                 <Route path="/user/register" element={<UserRegister onFlash={addFlash}/>} />
