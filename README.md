@@ -238,7 +238,7 @@ The application is configured to be deployed on Render using a **Web Service** a
 FoodGram is **actively looking for contributors**, built in the open, and every PR matters.
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) for the full workflow, coding guidelines, and how to find
-good first issues. Ensure all interactions follow the [CODE_OF_CONDUCT.md] (CODE_OF_CONDUCT.md).
+good first issues. Ensure all interactions follow the [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
 
 
 ```bash
