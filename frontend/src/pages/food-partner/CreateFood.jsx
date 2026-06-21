@@ -109,14 +109,16 @@ const CreateFood = ({ onFlash }) => {
     setIsSubmitting(true)
 
     try {
-      await axios.post(`/api/food`, formData, {
+      const response = await axios.post(`/api/food`, formData, {
         withCredentials: true,
       })
 
       if (onFlash) {
         onFlash('Meal created successfully!', 'success')
       }
-      navigate('/home')
+      setTimeout(() => {
+        navigate(`/food-partner/${response.data.foodItem.foodPartner}`);
+      }, 1500);
     } catch (err) {
       setFormMessage(err.response?.data?.message || 'Unable to create this meal. Please try again.')
     } finally {
