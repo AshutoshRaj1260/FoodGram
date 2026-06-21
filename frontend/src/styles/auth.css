@@ -1220,3 +1220,110 @@ body {
   color: #ff7a00;
   padding: 0;
 }
+
+/* auth dark mode overrides */
+.dark-theme .auth-page {
+  background: var(--bg);
+}
+
+.dark-theme .auth-card {
+  background: var(--surface);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.45), 0 1px 4px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dark-theme .auth-logo-text,
+.dark-theme .auth-title {
+  color: var(--text);
+}
+
+.dark-theme .auth-subtitle {
+  color: var(--muted);
+}
+
+.dark-theme .auth-field label {
+  color: var(--text);
+  opacity: 0.85;
+}
+
+.dark-theme .auth-field input,
+.dark-theme .auth-role-select,
+.dark-theme .auth-field textarea {
+  background: color-mix(in srgb, var(--bg) 60%, var(--surface));
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--muted) 22%, transparent);
+}
+
+.dark-theme .auth-field input:focus,
+.dark-theme .auth-role-select:focus,
+.dark-theme .auth-field textarea:focus {
+  background: color-mix(in srgb, var(--primary) 4%, var(--surface));
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 15%, transparent);
+}
+
+.dark-theme .auth-input-wrapper.invalid input,
+.dark-theme .auth-input-wrapper.invalid textarea {
+  border-color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 8%, var(--surface));
+}
+
+.dark-theme .auth-input-wrapper.invalid input:focus,
+.dark-theme .auth-input-wrapper.invalid textarea:focus {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 12%, transparent);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light-theme) .auth-page {
+    background: var(--bg);
+  }
+  
+  :root:not(.light-theme) .auth-card {
+    background: var(--surface);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.45), 0 1px 4px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  
+  :root:not(.light-theme) .auth-logo-text,
+  :root:not(.light-theme) .auth-title {
+    color: var(--text);
+  }
+  
+  :root:not(.light-theme) .auth-subtitle {
+    color: var(--muted);
+  }
+  
+  :root:not(.light-theme) .auth-field label {
+    color: var(--text);
+    opacity: 0.85;
+  }
+  
+  :root:not(.light-theme) .auth-field input,
+  :root:not(.light-theme) .auth-role-select,
+  :root:not(.light-theme) .auth-field textarea {
+    background: color-mix(in srgb, var(--bg) 60%, var(--surface));
+    color: var(--text);
+    border-color: color-mix(in srgb, var(--muted) 22%, transparent);
+  }
+  
+  :root:not(.light-theme) .auth-field input:focus,
+  :root:not(.light-theme) .auth-role-select:focus,
+  :root:not(.light-theme) .auth-field textarea:focus {
+    background: color-mix(in srgb, var(--primary) 4%, var(--surface));
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 15%, transparent);
+  }
+  
+  :root:not(.light-theme) .auth-input-wrapper.invalid input,
+  :root:not(.light-theme) .auth-input-wrapper.invalid textarea {
+    border-color: var(--danger);
+    background: color-mix(in srgb, var(--danger) 8%, var(--surface));
+  }
+  
+  :root:not(.light-theme) .auth-input-wrapper.invalid input:focus,
+  :root:not(.light-theme) .auth-input-wrapper.invalid textarea:focus {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 12%, transparent);
+  }
+}

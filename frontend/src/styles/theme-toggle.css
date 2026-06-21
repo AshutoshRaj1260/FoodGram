@@ -1,0 +1,76 @@
+/* Floating theme toggle button */
+.theme-toggle-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  outline: none;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+              background-color 0.3s ease, 
+              box-shadow 0.3s ease, 
+              border-color 0.3s ease;
+}
+
+/* Glassmorphism background for light/dark modes */
+.light-theme .theme-toggle-btn {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-color: rgba(15, 23, 42, 0.1);
+  color: #0f172a;
+}
+
+.dark-theme .theme-toggle-btn {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #fbbf24;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), 
+              0 0 12px rgba(251, 191, 36, 0.2);
+}
+
+/* System-level dark mode fallback */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light-theme) .theme-toggle-btn {
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #fbbf24;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), 
+                0 0 12px rgba(251, 191, 36, 0.2);
+  }
+}
+
+/* Hover & click animations */
+.theme-toggle-btn:hover {
+  transform: scale(1.1) rotate(15deg);
+}
+
+.theme-toggle-btn:active {
+  transform: scale(0.95);
+}
+
+/* Outline for keyboard navigation */
+.theme-toggle-btn:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Smooth transitions when switching themes */
+body, html, .reel-section, .card, .profile-card, .bottom-nav .nav-inner, .input, textarea, .file-input, .btn.ghost {
+  transition: background-color 0.35s ease, 
+              border-color 0.35s ease, 
+              color 0.35s ease, 
+              box-shadow 0.35s ease;
+}
