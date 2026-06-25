@@ -1,15 +1,24 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "../../styles/profile.css";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { useState, useEffect } from "react";
 import BottomNavBar from "../../components/BottomNavBar";
+import PartnerStoryOverlay from "../../components/PartnerStoryOverlay";
+
+function getInitials(name = "") {
+  return name
+    .split(" ")
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase() ?? "")
+    .join("");
+}
 
 const Profile = () => {
   const userType = localStorage.getItem("userType") || "user";
 
   const [profile, setProfile] = useState(null);
   const [videos, setVideos] = useState([]);
+  const [showStory, setShowStory] = useState(false);
 
   const { id } = useParams();
 
@@ -29,13 +38,22 @@ const Profile = () => {
     customers: 9870,
   };
 
+  const initials = getInitials(profile?.businessName) || "FP";
+
   return (
     <div className="profile-page">
       <div className="profile-card">
         <div className="header-row">
-          <div className="avatar" aria-hidden>
-            TB
-          </div>
+          {/* Clickable avatar — opens story overlay */}
+          <button
+            className="avatar avatar--clickable"
+            onClick={() => setShowStory(true)}
+            aria-label={`View ${profile?.businessName ?? "partner"} stories`}
+            title="View stories"
+          >
+            {initials}
+          </button>
+
           <div className="details">
             <h2 className="business-name">{profile?.businessName}</h2>
             <div className="business-address">{profile?.address}</div>
@@ -65,7 +83,6 @@ const Profile = () => {
           {videos.map((r) => (
             <div key={r._id} className="reel-thumb">
               <video src={r.video} muted></video>
-
               <div className="overlay">
                 <span className="mini-btn">Visit</span>
                 <span className="mini-btn">❤ 1.2k</span>
@@ -74,7 +91,16 @@ const Profile = () => {
           ))}
         </div>
       </div>
+
       <BottomNavBar userType={userType} />
+
+      {showStory && (
+        <PartnerStoryOverlay
+          partnerId={id}
+          partnerInitials={initials}
+          onClose={() => setShowStory(false)}
+        />
+      )}
     </div>
   );
 };
