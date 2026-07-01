@@ -183,9 +183,9 @@ const Home = () => {
       // Derive initials — item.foodPartner may be a populated object or bare id
       const partnerName =
         typeof item.foodPartner === "object"
-          ? item.foodPartner?.businessName ?? ""
+          ? item.foodPartner?.businessName
           : "";
-      const initials = getInitials(partnerName) || "FP";
+      const initials = getInitials(partnerName) || "BK";
 
       return (
         <article
