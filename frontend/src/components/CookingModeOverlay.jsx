@@ -1,10 +1,16 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import "../styles/cooking-mode.css";
 
+// Check if Speech Recognition is supported in the current browser
+const SpeechRecognition = typeof window !== "undefined" && (window.SpeechRecognition || window.webkitSpeechRecognition);
+const isSpeechSupported = !!SpeechRecognition;
+
 const CookingModeOverlay = ({ videoSrc, onExit }) => {
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const wakeLockRef = useRef(null);
+  const recognitionRef = useRef(null);
 
   // Request wake lock
   useEffect(() => {
@@ -105,6 +111,86 @@ const CookingModeOverlay = ({ videoSrc, onExit }) => {
     }
   };
 
+  // Setting up the voice command companion.
+  // It handles microphone activation, speech parsing, and restarts.
+  useEffect(() => {
+    // If the user turns it off, we stop listening and clean up.
+    if (!isListening) {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+        recognitionRef.current = null;
+      }
+      return;
+    }
+
+    if (!isSpeechSupported) {
+      console.warn("Hey, your browser does not support Speech Recognition.");
+      setIsListening(false);
+      return;
+    }
+
+    // Creating the recognition instance
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = false;
+    recognition.lang = "en-US";
+
+    recognition.onstart = () => {
+      console.log("Speech engine active...");
+    };
+
+    recognition.onresult = (event) => {
+      const currentResultIndex = event.resultIndex;
+      const transcript = event.results[currentResultIndex][0].transcript.trim().toLowerCase();
+      
+      const video = videoRef.current;
+      if (!video) return;
+
+      // Speech recognition can be tricky with homophones or accent variations.
+      // 'pause' often gets transcribed as 'paws', 'pose', or 'pass'. We check for these to be safe.
+      const isPlayCommand = transcript.includes("play") || transcript.includes("start");
+      const isPauseCommand = transcript.includes("pause") || transcript.includes("paws") || transcript.includes("pose") || transcript.includes("stop");
+
+      if (isPlayCommand) {
+        video.play().catch(() => {});
+      } else if (isPauseCommand) {
+        video.pause();
+      }
+    };
+
+    recognition.onerror = (event) => {
+      console.error("Speech service error:", event.error);
+    };
+
+    recognition.onend = () => {
+      // Chrome stops listening if the user stays quiet for too long.
+      // Since their hands are covered in cookie dough, let's restart it automatically.
+      if (isListening && recognitionRef.current) {
+        try {
+          recognition.start();
+        } catch (err) {
+          console.warn("Failed to restart speech recognition:", err);
+        }
+      }
+    };
+
+    recognitionRef.current = recognition;
+    try {
+      recognition.start();
+    } catch (err) {
+      console.error("Failed to start speech recognition:", err);
+      setIsListening(false);
+    }
+
+    // Stop listening when the component is unmounted or isListening is toggled off
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+        recognitionRef.current = null;
+      }
+    };
+  }, [isListening]);
+
   return (
     <div className="cm-overlay" role="dialog" aria-modal="true" aria-label="Cooking Mode">
       {/* Exit button */}
@@ -137,18 +223,32 @@ const CookingModeOverlay = ({ videoSrc, onExit }) => {
         </div>
       </div>
 
-      {/* Play / Pause */}
-      <button
-        id="cm-playpause-btn"
-        className="cm-playpause-btn"
-        onClick={togglePlayPause}
-        aria-label={isPlaying ? "Pause" : "Play"}
-      >
-        {isPlaying ? "⏸ Pause" : "▶ Play"}
-      </button>
+      <div className="cm-controls-container">
+        {/* Play / Stop */}
+        <button
+          id="cm-playpause-btn"
+          className="cm-playpause-btn"
+          onClick={togglePlayPause}
+          aria-label={isPlaying ? "Stop" : "Play"}
+        >
+          {isPlaying ? "⏸ Stop" : "▶ Play"}
+        </button>
+
+        {/* Voice control button */}
+        <button
+          id="cm-voice-btn"
+          className={`cm-voice-btn ${isListening ? "cm-voice-btn--listening" : ""}`}
+          onClick={() => setIsListening(!isListening)}
+          aria-label={isListening ? "Stop voice control" : "Start voice control"}
+          title={isSpeechSupported ? "Voice Control" : "Voice control not supported in your browser"}
+          disabled={!isSpeechSupported}
+        >
+          {isListening ? "Listening..." : "🎤 Voice Control"}
+        </button>
+      </div>
 
       <p className="cm-label" aria-hidden="true">
-        Cooking Mode: Distraction-Free
+        {isListening ? "Voice active: say 'play' or 'stop'" : "Cooking Mode: Distraction-Free"}
       </p>
     </div>
   );
