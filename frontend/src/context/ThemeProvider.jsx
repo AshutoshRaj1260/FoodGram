@@ -39,9 +39,11 @@ export const ThemeProvider = ({ children }) => {
   }, []);
 
   const toggleTheme = () => {
-    const updated = theme === "dark" ? "light" : "dark";
-    setTheme(updated);
-    localStorage.setItem("theme", updated);
+    setTheme((prevTheme) => {
+      const updated = prevTheme === "dark" ? "light" : "dark";
+      localStorage.setItem("theme", updated);
+      return updated;
+    });
   };
 
   return (

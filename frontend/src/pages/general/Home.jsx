@@ -25,6 +25,7 @@ const Home = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [loadMoreError, setLoadMoreError] = useState(null);
 
   const userType = localStorage.getItem("userType") || "user";
   const { id } = useParams();
@@ -35,9 +36,9 @@ const Home = () => {
 
     const fetchVideos = async () => {
       if (page === 1) setIsLoading(true);
-      else setIsFetchingMore(true);
 
       setError(null);
+      setLoadMoreError(null);
       try {
         const response = await axios.get(`${API_URL}/api/food?page=${page}&limit=10`, {
           withCredentials: true
@@ -60,8 +61,12 @@ const Home = () => {
       } catch (err) {
         if (isMounted) {
           console.error("Failed to fetch food items:", err.response?.data || err.message);
-          setError("Failed to load feed. Please try again later.");
-          if (page === 1) setVideos([]);
+          if (page === 1) {
+            setError("Failed to load feed. Please try again later.");
+            setVideos([]);
+          } else {
+            setLoadMoreError("Failed to load more. Please try again.");
+          }
         }
       } finally {
         if (isMounted) {
@@ -84,6 +89,7 @@ const Home = () => {
       (entries) => {
         const first = entries[0];
         if (first.isIntersecting && hasMore && !isFetchingMore && !isLoading) {
+          setIsFetchingMore(true);
           setPage(prev => prev + 1);
         }
       },
@@ -278,12 +284,17 @@ const Home = () => {
             <div className="hint">Scroll to view more</div>
           </article>
         ))}
-        {isFetchingMore && (
+        {isFetchingMore && !loadMoreError && (
            <div style={{ padding: "1rem", display: "flex", justifyContent: "center" }}>
              <ReelSkeleton count={1} />
            </div>
         )}
-        {!isFetchingMore && hasMore && (
+        {loadMoreError && (
+           <div style={{ textAlign: "center", padding: "1rem", color: "#ff4d4f" }}>
+             {loadMoreError}
+           </div>
+        )}
+        {!isFetchingMore && hasMore && !loadMoreError && (
            <div ref={loadMoreRef} style={{ height: "20px", margin: "10px 0" }}></div>
         )}
         {!hasMore && videos.length > 0 && (

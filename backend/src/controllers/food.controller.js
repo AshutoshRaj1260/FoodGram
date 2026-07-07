@@ -35,8 +35,11 @@ async function createFood(req, res, next) {
 
 async function getFoodItems(req, res, next) {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    let page = parseInt(req.query.page) || 1;
+    let limit = parseInt(req.query.limit) || 10;
+    if (page < 1) page = 1;
+    if (limit < 1) limit = 10;
+    if (limit > 50) limit = 50;
 
     // Check for optional authentication (accessToken cookie)
     const accessToken = req.cookies?.accessToken;
@@ -77,6 +80,8 @@ async function getFoodItems(req, res, next) {
 
               const hasMore = endIndex < recommendedIds.length;
               return res.status(200).json({ message: "Personalized feed", foodItems: foods, pagination: { currentPage: page, hasMore } });
+            } else {
+              return res.status(200).json({ message: "Personalized feed", foodItems: [], pagination: { currentPage: page, hasMore: false } });
             }
           }
         } catch (err) {
@@ -92,7 +97,7 @@ async function getFoodItems(req, res, next) {
       async () => {
         const items = await foodModel
           .find({})
-          .sort({ likeCount: -1, saveCount: -1, createdAt: -1 })
+          .sort({ likeCount: -1, saveCount: -1, createdAt: -1, _id: -1 })
           .skip((page - 1) * limit)
           .limit(limit);
         const total = await foodModel.countDocuments();
