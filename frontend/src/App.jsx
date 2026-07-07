@@ -1,7 +1,7 @@
 import React from 'react'
 import './App.css'
 import AppRoutes from './routes/AppRoutes.jsx'
-import { ThemeProvider } from './context/ThemeContext.jsx'
+import { ThemeProvider } from './context/ThemeProvider.jsx'
 
 function App() {
   return (

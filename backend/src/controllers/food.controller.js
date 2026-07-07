@@ -22,7 +22,7 @@ async function createFood(req, res, next) {
 
     await invalidateCache(`partner:${req.foodPartner._id}`);
     await invalidateCache("all_food_items");
-    await invalidateCache("trending_food_items");
+    await invalidateCache("trending_food_items*");
 
     res.status(201).json({
       message: "Food Item Created Successfully",
@@ -35,6 +35,9 @@ async function createFood(req, res, next) {
 
 async function getFoodItems(req, res, next) {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
     // Check for optional authentication (accessToken cookie)
     const accessToken = req.cookies?.accessToken;
     let user = null;
@@ -62,12 +65,19 @@ async function getFoodItems(req, res, next) {
           const recommendedIds = resp?.data?.recommendations || [];
 
           if (recommendedIds.length > 0) {
-            // Fetch the recommended food items and preserve the recommender order
-            const foods = await foodModel.find({ _id: { $in: recommendedIds } });
-            const orderMap = new Map(recommendedIds.map((id, idx) => [String(id), idx]));
-            foods.sort((a, b) => (orderMap.get(String(a._id)) ?? 9999) - (orderMap.get(String(b._id)) ?? 9999));
+            const startIndex = (page - 1) * limit;
+            const endIndex = page * limit;
+            const paginatedIds = recommendedIds.slice(startIndex, endIndex);
 
-            return res.status(200).json({ message: "Personalized feed", foodItems: foods });
+            if (paginatedIds.length > 0) {
+              // Fetch the recommended food items and preserve the recommender order
+              const foods = await foodModel.find({ _id: { $in: paginatedIds } });
+              const orderMap = new Map(paginatedIds.map((id, idx) => [String(id), idx]));
+              foods.sort((a, b) => (orderMap.get(String(a._id)) ?? 9999) - (orderMap.get(String(b._id)) ?? 9999));
+
+              const hasMore = endIndex < recommendedIds.length;
+              return res.status(200).json({ message: "Personalized feed", foodItems: foods, pagination: { currentPage: page, hasMore } });
+            }
           }
         } catch (err) {
           console.error("Recommender service error:", err.message || err);
@@ -77,18 +87,23 @@ async function getFoodItems(req, res, next) {
     }
 
     // Trending fallback for guests and cold-start users
-    const { data: trendingItems, cache } = await getOrSetCache(
-      "trending_food_items",
-      async () =>
-        await foodModel
+    const { data: trendingData, cache } = await getOrSetCache(
+      `trending_food_items_page_${page}_limit_${limit}`,
+      async () => {
+        const items = await foodModel
           .find({})
           .sort({ likeCount: -1, saveCount: -1, createdAt: -1 })
-          .limit(50),
+          .skip((page - 1) * limit)
+          .limit(limit);
+        const total = await foodModel.countDocuments();
+        return { items, total };
+      },
       300
     );
 
     res.setHeader("X-Cache", cache);
-    res.status(200).json({ message: "Trending feed", foodItems: trendingItems });
+    const hasMore = (page * limit) < trendingData.total;
+    res.status(200).json({ message: "Trending feed", foodItems: trendingData.items, pagination: { currentPage: page, hasMore } });
   } catch (error) {
     next(error);
   }
@@ -155,7 +170,7 @@ async function likeFood(req, res, next) {
 
       await invalidateCache(`partner:${result.partnerId}`);
       await invalidateCache("all_food_items");
-      await invalidateCache("trending_food_items");
+      await invalidateCache("trending_food_items*");
 
       res.status(result.status).json({
         message: result.message,
@@ -243,7 +258,7 @@ async function saveFood(req, res, next) {
 
       await invalidateCache(`partner:${result.partnerId}`);
       await invalidateCache("all_food_items");
-      await invalidateCache("trending_food_items");
+      await invalidateCache("trending_food_items*");
 
       res.status(result.status).json({
         message: result.message,
