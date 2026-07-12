@@ -79,8 +79,27 @@ async function getOrSetCache(key, fetchFunction, ttl = 300) {
 async function invalidateCache(key) {
   if (!redis || redis.status !== 'ready') return;
   try {
-    await redis.del(key);
-    console.log(`Cache Invalidated: ${key}`);
+    if (key.includes('*')) {
+      // Avoid KEYS in production (blocks Redis); use SCAN to iterate safely.
+      let cursor = "0";
+      const keysToDelete = [];
+
+      do {
+        const [nextCursor, batch] = await redis.scan(cursor, "MATCH", key, "COUNT", 200);
+        cursor = nextCursor;
+        if (batch.length) keysToDelete.push(...batch);
+      } while (cursor !== "0");
+
+      if (keysToDelete.length > 0) {
+        for (let i = 0; i < keysToDelete.length; i += 5000) {
+          await redis.del(...keysToDelete.slice(i, i + 5000));
+        }
+      }
+      console.log(`Cache Pattern Invalidated: ${key}`);
+    } else {
+      await redis.del(key);
+      console.log(`Cache Invalidated: ${key}`);
+    }
   } catch (err) {
     console.error(`Invalidate Cache Error for key ${key}:`, err);
   }

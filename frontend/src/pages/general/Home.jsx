@@ -20,6 +20,12 @@ const Home = () => {
   const [activeVideoId, setActiveVideoId] = useState(null);
   const [cookingVideo, setCookingVideo] = useState(null); // URL of video in cooking mode
   const containerRef = useRef(null);
+  const loadMoreRef = useRef(null);
+
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [loadMoreError, setLoadMoreError] = useState(null);
 
   const userType = localStorage.getItem("userType") || "user";
   const { id } = useParams();
@@ -29,26 +35,43 @@ const Home = () => {
     let isMounted = true;
 
     const fetchVideos = async () => {
-      setIsLoading(true);
+      if (page === 1) setIsLoading(true);
+
       setError(null);
+      setLoadMoreError(null);
       try {
-        const response = await axios.get(`${API_URL}/api/food`, {
+        const response = await axios.get(`${API_URL}/api/food?page=${page}&limit=10`, {
           withCredentials: true
         });
 
         if (isMounted) {
-          // Safeguard: Ensure we set an array even if api returns undefined/null
-          setVideos(response.data?.foodItems || []);
+          const newVideos = response.data?.foodItems || [];
+          if (page === 1) {
+            setVideos(newVideos);
+          } else {
+            setVideos(prev => {
+              // Prevent duplicates if API returns overlapping data
+              const existingIds = new Set(prev.map(v => v._id));
+              const filteredNew = newVideos.filter(v => !existingIds.has(v._id));
+              return [...prev, ...filteredNew];
+            });
+          }
+          setHasMore(response.data?.pagination?.hasMore ?? false);
         }
       } catch (err) {
         if (isMounted) {
           console.error("Failed to fetch food items:", err.response?.data || err.message);
-          setError("Failed to load feed. Please try again later.");
-          setVideos([]);
+          if (page === 1) {
+            setError("Failed to load feed. Please try again later.");
+            setVideos([]);
+          } else {
+            setLoadMoreError("Failed to load more. Please try again.");
+          }
         }
       } finally {
         if (isMounted) {
           setIsLoading(false);
+          setIsFetchingMore(false);
         }
       }
     };
@@ -58,7 +81,32 @@ const Home = () => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [page]);
+
+  // Load More Observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const first = entries[0];
+        if (first.isIntersecting && hasMore && !isFetchingMore && !isLoading) {
+          setIsFetchingMore(true);
+          setPage(prev => prev + 1);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const currentLoadMoreRef = loadMoreRef.current;
+    if (currentLoadMoreRef) {
+      observer.observe(currentLoadMoreRef);
+    }
+
+    return () => {
+      if (currentLoadMoreRef) {
+        observer.unobserve(currentLoadMoreRef);
+      }
+    };
+  }, [hasMore, isFetchingMore, isLoading]);
 
   // Handle URL ID scrolling
   useEffect(() => {
@@ -165,75 +213,97 @@ const Home = () => {
       );
     }
 
-    return videos.map((item) => (
-      <article
-        className="reel"
-        key={item._id}
-        role="listitem"
-        data-video-id={item._id}
-      >
-        <VideoPlayer
-          src={activeVideoId === item._id ? item.video : null}
-        />
+    return (
+      <>
+        {videos.map((item) => (
+          <article
+            className="reel"
+            key={item._id}
+            role="listitem"
+            data-video-id={item._id}
+          >
+            <VideoPlayer
+              src={activeVideoId === item._id ? item.video : null}
+            />
 
-        <div className="overlay">
-          <div 
-            className="description" 
-            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item?.description || "") }} 
-          />
-          {item?.foodPartner && (
-            <Link
-              className="visit-btn"
-              to={`/food-partner/${item.foodPartner}`}
-            >
-              Visit store
-            </Link>
-          )}
-        </div>
+            <div className="overlay">
+              <div 
+                className="description" 
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item?.description || "") }} 
+              />
+              {item?.foodPartner && (
+                <Link
+                  className="visit-btn"
+                  to={`/food-partner/${item.foodPartner}`}
+                >
+                  Visit store
+                </Link>
+              )}
+            </div>
 
-        <div className="controls">
-          <div className="control-item">
-            <button
-              type="button"
-              onClick={() => likeVideo(item)}
-              className="control-btn"
-              aria-label="Like"
-            >
-              <LikeIcon fontSize="large" />
-            </button>
-            <div className="count">{item?.likeCount || 0}</div>
-          </div>
+            <div className="controls">
+              <div className="control-item">
+                <button
+                  type="button"
+                  onClick={() => likeVideo(item)}
+                  className="control-btn"
+                  aria-label="Like"
+                >
+                  <LikeIcon fontSize="large" />
+                </button>
+                <div className="count">{item?.likeCount || 0}</div>
+              </div>
 
-          <div className="control-item">
-            <button
-              type="button"
-              onClick={() => saveVideo(item)}
-              className="control-btn"
-              aria-label="Save"
-            >
-              <BookmarksIcon fontSize="large" />
-            </button>
-            <div className="count">{item?.saveCount || 0}</div>
-          </div>
+              <div className="control-item">
+                <button
+                  type="button"
+                  onClick={() => saveVideo(item)}
+                  className="control-btn"
+                  aria-label="Save"
+                >
+                  <BookmarksIcon fontSize="large" />
+                </button>
+                <div className="count">{item?.saveCount || 0}</div>
+              </div>
 
-          {/* Cook button — launches distraction-free cooking mode */}
-          <div className="control-item">
-            <button
-              id={`cook-btn-${item._id}`}
-              type="button"
-              className="cook-btn"
-              onClick={() => setCookingVideo(item.video)}
-              aria-label="Enter Cooking Mode"
-            >
-              <span className="cook-btn__icon">🍴</span>
-            </button>
-            <span className="cook-btn__label">Cook</span>
-          </div>
-        </div>
+              {/* Cook button — launches distraction-free cooking mode */}
+              <div className="control-item">
+                <button
+                  id={`cook-btn-${item._id}`}
+                  type="button"
+                  className="cook-btn"
+                  onClick={() => setCookingVideo(item.video)}
+                  aria-label="Enter Cooking Mode"
+                >
+                  <span className="cook-btn__icon">🍴</span>
+                </button>
+                <span className="cook-btn__label">Cook</span>
+              </div>
+            </div>
 
-        <div className="hint">Scroll to view more</div>
-      </article>
-    ));
+            <div className="hint">Scroll to view more</div>
+          </article>
+        ))}
+        {isFetchingMore && !loadMoreError && (
+           <div style={{ padding: "1rem", display: "flex", justifyContent: "center" }}>
+             <ReelSkeleton count={1} />
+           </div>
+        )}
+        {loadMoreError && (
+           <div style={{ textAlign: "center", padding: "1rem", color: "#ff4d4f" }}>
+             {loadMoreError}
+           </div>
+        )}
+        {!isFetchingMore && hasMore && !loadMoreError && (
+           <div ref={loadMoreRef} style={{ height: "20px", margin: "10px 0" }}></div>
+        )}
+        {!hasMore && videos.length > 0 && (
+           <div style={{ textAlign: "center", padding: "2rem", color: "#666" }}>
+             You've reached the end!
+           </div>
+        )}
+      </>
+    );
   };
 
   return (
