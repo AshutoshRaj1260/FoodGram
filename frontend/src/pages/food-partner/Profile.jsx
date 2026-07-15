@@ -30,6 +30,7 @@ const Profile = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   useEffect(() => {
     axios
@@ -56,11 +57,13 @@ const Profile = () => {
       name: video.name,
       description: video.description || "",
     });
+    setSubmitError("");
     setEditModalOpen(true);
   };
 
   const handleDeleteClick = (video) => {
     setCurrentVideo(video);
+    setSubmitError("");
     setDeleteDialogOpen(true);
   };
 
@@ -68,6 +71,7 @@ const Profile = () => {
     e.preventDefault();
     if (!currentVideo) return;
     setIsSubmitting(true);
+    setSubmitError("");
     try {
       const response = await axios.put(
         `/api/food/${currentVideo._id}`,
@@ -85,6 +89,7 @@ const Profile = () => {
       setEditModalOpen(false);
     } catch (err) {
       console.error("Failed to edit food reel:", err);
+      setSubmitError("Failed to update the food reel. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -93,6 +98,7 @@ const Profile = () => {
   const handleDeleteConfirm = async () => {
     if (!currentVideo) return;
     setIsSubmitting(true);
+    setSubmitError("");
     try {
       await axios.delete(`/api/food/${currentVideo._id}`, {
         withCredentials: true,
@@ -101,6 +107,7 @@ const Profile = () => {
       setDeleteDialogOpen(false);
     } catch (err) {
       console.error("Failed to delete food reel:", err);
+      setSubmitError("Failed to delete the food reel. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -123,7 +130,7 @@ const Profile = () => {
           <div className="stat">
             <div>
               <div className="label">Total meals</div>
-              <div className="value">{videos.length || business.meals}</div>
+              <div className="value">{videos.length}</div>
             </div>
             <div className="muted">🍽️</div>
           </div>
@@ -187,6 +194,7 @@ const Profile = () => {
             </div>
             <form onSubmit={handleEditSubmit}>
               <div className="modal-body">
+                {submitError && <div className="modal-error-message">{submitError}</div>}
                 <div className="modal-field">
                   <label htmlFor="edit-name">Meal Name</label>
                   <input
@@ -205,7 +213,7 @@ const Profile = () => {
                   <div className="modal-quill-container">
                     <ReactQuill
                       theme="snow"
-                      value={editForm.description}
+                      defaultValue={editForm.description}
                       onChange={(val) =>
                         setEditForm((prev) => ({ ...prev, description: val }))
                       }
@@ -251,6 +259,7 @@ const Profile = () => {
               </button>
             </div>
             <div className="modal-body">
+              {submitError && <div className="modal-error-message">{submitError}</div>}
               <p>Are you sure you want to delete this food reel?</p>
               <p>
                 <strong>This action cannot be undone.</strong>

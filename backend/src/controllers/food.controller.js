@@ -330,6 +330,10 @@ async function deleteFood(req, res, next) {
       return res.status(403).json({ message: "Unauthorized: You do not own this food reel" });
     }
 
+    if (foodItem.video) {
+      await storageService.deleteFile(foodItem.video);
+    }
+
     await foodModel.findByIdAndDelete(id);
     await likeModel.deleteMany({ food: id });
     await saveModel.deleteMany({ food: id });
