@@ -285,10 +285,73 @@ async function getSavedFood(req, res, next) {
   }
 }
 
+async function editFood(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { name, description } = req.body;
+
+    const foodItem = await foodModel.findById(id);
+    if (!foodItem) {
+      return res.status(404).json({ message: "Food item not found" });
+    }
+
+    if (foodItem.foodPartner.toString() !== req.foodPartner._id.toString()) {
+      return res.status(403).json({ message: "Unauthorized: You do not own this food reel" });
+    }
+
+    if (name !== undefined) foodItem.name = name;
+    if (description !== undefined) foodItem.description = description;
+
+    await foodItem.save();
+
+    await invalidateCache(`partner:${req.foodPartner._id}`);
+    await invalidateCache("all_food_items");
+    await invalidateCache("trending_food_items");
+
+    res.status(200).json({
+      message: "Food Item Updated Successfully",
+      foodItem,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function deleteFood(req, res, next) {
+  try {
+    const { id } = req.params;
+
+    const foodItem = await foodModel.findById(id);
+    if (!foodItem) {
+      return res.status(404).json({ message: "Food item not found" });
+    }
+
+    if (foodItem.foodPartner.toString() !== req.foodPartner._id.toString()) {
+      return res.status(403).json({ message: "Unauthorized: You do not own this food reel" });
+    }
+
+    await foodModel.findByIdAndDelete(id);
+    await likeModel.deleteMany({ food: id });
+    await saveModel.deleteMany({ food: id });
+
+    await invalidateCache(`partner:${req.foodPartner._id}`);
+    await invalidateCache("all_food_items");
+    await invalidateCache("trending_food_items");
+
+    res.status(200).json({
+      message: "Food Item Deleted Successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   createFood,
   getFoodItems,
   likeFood,
   saveFood,
   getSavedFood,
+  editFood,
+  deleteFood,
 };

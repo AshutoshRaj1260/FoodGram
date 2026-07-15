@@ -20,6 +20,7 @@ const BottomNavBar = ({ userType }) => {
       await axios.get(logoutEndpoint, { withCredentials: true });
 
       localStorage.removeItem("userType");
+      localStorage.removeItem("foodPartnerId");
       navigate(userType === "partner" ? "/foodpartner/login" : "/");
     } catch (err) {
       console.log("Logout failed", err);

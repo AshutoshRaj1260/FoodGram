@@ -70,7 +70,42 @@ async function authUserMiddleware(req, res, next) {
   }
 }
 
+async function authFoodPartnerOrUserMiddleware(req, res, next) {
+  try {
+    const accessToken = req.cookies?.accessToken;
+    
+    if (!accessToken) {
+      return res.status(401).json({
+        message: "Login to access this resource",
+      });
+    }
+
+    const decoded = jwt.verify(accessToken, process.env.JWT_SECRET);
+    
+    const user = await userModel.findById(decoded.id);
+    if (user) {
+      req.user = user;
+      return next();
+    }
+
+    const foodPartner = await foodPartnerModel.findById(decoded.id);
+    if (foodPartner) {
+      req.foodPartner = foodPartner;
+      return next();
+    }
+
+    return res.status(401).json({
+      message: "User/Partner not found. Please login again.",
+    });
+  } catch (error) {
+    return res.status(401).json({
+      message: "Invalid Token. Please login again.",
+    });
+  }
+}
+
 module.exports = {
   authFoodPartnerMiddleware,
-  authUserMiddleware
+  authUserMiddleware,
+  authFoodPartnerOrUserMiddleware
 };
