@@ -17,6 +17,18 @@ router.post(
 
 router.get("/", foodController.getFoodItems);
 
+router.put(
+  "/:id",
+  authMiddleware.authFoodPartnerMiddleware,
+  foodController.editFood
+);
+
+router.delete(
+  "/:id",
+  authMiddleware.authFoodPartnerMiddleware,
+  foodController.deleteFood
+);
+
 router.post(
   "/like",
   authMiddleware.authUserMiddleware,

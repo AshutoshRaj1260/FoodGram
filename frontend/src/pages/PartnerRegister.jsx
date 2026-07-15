@@ -109,7 +109,10 @@ export default function PartnerRegister({ onFlash }) {
       );
 
       console.log(response.data);
-      localStorage.setItem("userType", "foodpartner");
+      localStorage.setItem("userType", "partner");
+      if (response.data?.foodPartner?.id) {
+        localStorage.setItem("foodPartnerId", response.data.foodPartner.id);
+      }
       navigate("/create-food");
     } catch (err) {
       onFlash?.(
